@@ -58,7 +58,7 @@
     "extra" : {
         "laravel" : {
             "providers" : [
-                "Spatie\\TypescriptTransformer\\TypescriptTransformerServiceProvider"
+                "Spatie\\LaravelTypescriptTransformer\\TypescriptTransformerServiceProvider"
             ]
         }
     },
