@@ -34,7 +34,7 @@ class EnumTransformerTest extends TestCase
     /** @test */
     public function it_can_transform_an_enum()
     {
-       $type = $this->transformer->transform(
+        $type = $this->transformer->transform(
             new ReflectionClass(Enum::class),
             'FakeEnum'
         );

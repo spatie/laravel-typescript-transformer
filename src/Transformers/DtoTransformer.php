@@ -2,13 +2,11 @@
 
 namespace Spatie\LaravelTypescriptTransformer\Transformers;
 
-use ReflectionClass;
 use ReflectionProperty;
 use Spatie\DataTransferObject\FieldValidator;
 use Spatie\LaravelTypescriptTransformer\Actions\ResolvePropertyTypesAction;
 use Spatie\TypescriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypescriptTransformer\Transformers\DtoTransformer as BaseDtoTransformer;
-use Spatie\TypescriptTransformer\Transformers\Transformer;
 
 class DtoTransformer extends BaseDtoTransformer
 {
@@ -26,5 +24,6 @@ class DtoTransformer extends BaseDtoTransformer
             $fieldValidator->isNullable
         );
 
-        return "{$property->getName()} : " . implode(' | ', $types) . ';';    }
+        return "{$property->getName()} : " . implode(' | ', $types) . ';';
+    }
 }

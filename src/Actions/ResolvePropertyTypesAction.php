@@ -23,7 +23,7 @@ class ResolvePropertyTypesAction extends BaseResolvePropertyTypesAction
     {
         $found = array_filter(
             $allowedTypes,
-            fn(string $type) => $this->isLaravelCollection($type)
+            fn (string $type) => $this->isLaravelCollection($type)
         );
 
         return ! empty($found);
@@ -33,7 +33,7 @@ class ResolvePropertyTypesAction extends BaseResolvePropertyTypesAction
     {
         $allowedTypes = array_values(array_filter(
             $allowedTypes,
-            fn(string $type) => ! $this->isLaravelCollection($type)
+            fn (string $type) => ! $this->isLaravelCollection($type)
         ));
 
         if (! in_array('array', $allowedTypes) && empty($allowedArrayTypes)) {

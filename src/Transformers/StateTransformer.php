@@ -4,9 +4,8 @@ namespace Spatie\LaravelTypescriptTransformer\Transformers;
 
 use ReflectionClass;
 use Spatie\ModelStates\State;
-use Spatie\TypescriptTransformer\Transformers\Transformer;
 use Spatie\TypescriptTransformer\Structures\Type;
-
+use Spatie\TypescriptTransformer\Transformers\Transformer;
 
 class StateTransformer implements Transformer
 {
@@ -36,7 +35,7 @@ class StateTransformer implements Transformer
         $state = $class->getName();
 
         $options = array_map(
-            fn(string $stateClass) => "'{$stateClass::getMorphClass()}'",
+            fn (string $stateClass) => "'{$stateClass::getMorphClass()}'",
             $state::all()->toArray()
         );
 

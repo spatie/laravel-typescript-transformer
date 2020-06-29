@@ -2,7 +2,6 @@
 
 namespace Spatie\LaravelTypescriptTransformer\Tests;
 
-use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Spatie\LaravelTypescriptTransformer\TypescriptTransformerServiceProvider;
 

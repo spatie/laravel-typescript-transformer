@@ -39,13 +39,13 @@ class StateTransformerTest extends TestCase
     /** @test */
     public function it_can_transform_an_state()
     {
-       $type = $this->transformer->transform(
+        $type = $this->transformer->transform(
             new ReflectionClass(State::class),
             'FakeState'
         );
 
-       $this->assertEquals("export type FakeState = 'child' | 'other_child';", $type->transformed);
-       $this->assertTrue($type->missingSymbols->isEmpty());
-       $this->assertFalse($type->isInline);
+        $this->assertEquals("export type FakeState = 'child' | 'other_child';", $type->transformed);
+        $this->assertTrue($type->missingSymbols->isEmpty());
+        $this->assertFalse($type->isInline);
     }
 }

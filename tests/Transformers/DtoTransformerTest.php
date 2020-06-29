@@ -3,15 +3,11 @@
 namespace Spatie\LaravelTypescriptTransformer\Tests\Transformers;
 
 use ReflectionClass;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\ChildState;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\Dto;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\DtoCollection;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Enum;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\State;
 use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer;
-use Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TypescriptTransformer\Tests\FakeClasses\Integration\OtherDtoCollection;
 
@@ -43,16 +39,16 @@ class DtoTransformerTest extends TestCase
     /** @test */
     public function it_can_transform_a_dto()
     {
-       $type = $this->transformer->transform(
+        $type = $this->transformer->transform(
             new ReflectionClass(Dto::class),
             'FakeDto'
         );
 
-       $this->assertMatchesSnapshot($type->transformed);
-       $this->assertEquals([
+        $this->assertMatchesSnapshot($type->transformed);
+        $this->assertEquals([
            OtherDto::class,
-           OtherDtoCollection::class
+           OtherDtoCollection::class,
        ], $type->missingSymbols->all());
-       $this->assertFalse($type->isInline);
+        $this->assertFalse($type->isInline);
     }
 }

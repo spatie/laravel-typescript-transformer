@@ -2,9 +2,9 @@
 
 namespace Spatie\LaravelTypescriptTransformer\Commands;
 
-use Illuminate\Console\ConfirmableTrait;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Spatie\TypescriptTransformer\TypescriptTransformer;
 
 class MapOptionsToTypescriptCommand extends Command

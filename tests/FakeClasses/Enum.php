@@ -12,5 +12,4 @@ use Spatie\Enum\Enum as BaseEnum;
  */
 class Enum extends BaseEnum
 {
-
 }
