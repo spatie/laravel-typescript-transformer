@@ -29,7 +29,7 @@ class EnumTransformer implements Transformer
         $enum = $class->getName();
 
         $options = array_map(
-            fn(string $enum) => "'{$enum}'",
+            fn (string $enum) => "'{$enum}'",
             $enum::toArray()
         );
 
