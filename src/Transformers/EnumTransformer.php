@@ -1,9 +1,11 @@
 <?php
 
-namespace Spatie\TypescriptTransformer\Transformers;
+namespace Spatie\LaravelTypescriptTransformer\Transformers;
 
 use ReflectionClass;
 use Spatie\Enum\Enum;
+use Spatie\TypescriptTransformer\Structures\Type;
+use Spatie\TypescriptTransformer\Transformers\Transformer;
 
 class EnumTransformer implements Transformer
 {
@@ -12,9 +14,13 @@ class EnumTransformer implements Transformer
         return $class->isSubclassOf(Enum::class);
     }
 
-    public function transform(ReflectionClass $class, string $name): string
+    public function transform(ReflectionClass $class, string $name): Type
     {
-        return "export type {$name} = {$this->resolveOptions($class)};";
+        return Type::create(
+            $class,
+            $name,
+            "export type {$name} = {$this->resolveOptions($class)};"
+        );
     }
 
     private function resolveOptions(ReflectionClass $class): string

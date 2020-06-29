@@ -1,9 +1,10 @@
 <?php
 
-namespace Spatie\TypescriptTransformer;
+namespace Spatie\LaravelTypescriptTransformer;
 
 use Illuminate\Support\ServiceProvider;
-use Spatie\TypescriptTransformer\Commands\MapOptionsToTypescriptCommand;
+use Spatie\LaravelTypescriptTransformer\Commands\MapOptionsToTypescriptCommand;
+use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
 
 class TypescriptTransformerServiceProvider extends ServiceProvider
 {
@@ -16,22 +17,23 @@ class TypescriptTransformerServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../config/typescript-transformer.php' => config_path('typescript-transformer.php'),
+            __DIR__ . '/../config/typescript-transformer.php' => config_path('typescript-transformer.php'),
         ]);
     }
 
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/typescript-transformer.php',
+            __DIR__ . '/../config/typescript-transformer.php',
             'typescript-transformer'
         );
 
-        $this->app->instance(TypeScriptTransformerConfig::class, new TypeScriptTransformerConfig(
-            config('typescript-transformer.searching_path'),
-            config('typescript-transformer.transformers'),
-            config('typescript-transformer.default_file'),
-            config('typescript-transformer.output_path'),
-        ));
+        $this->app->bind(
+            TypeScriptTransformerConfig::class,
+            fn() => TypeScriptTransformerConfig::create()
+                ->searchingPath(config('typescript-transformer.searching_path'))
+                ->transformers(config('typescript-transformer.transformers'))
+                ->outputFile(config('typescript-transformer.output_file'))
+        );
     }
 }

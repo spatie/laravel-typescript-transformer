@@ -1,37 +1,37 @@
 <?php
 
-namespace Spatie\TypescriptTransformer\Commands;
+namespace Spatie\LaravelTypescriptTransformer\Commands;
 
-use Spatie\TypescriptTransformer\Actions\PersistTypesCollectionAction;
-use Spatie\TypescriptTransformer\Actions\ResolveTypesCollectionAction;
+use Illuminate\Console\ConfirmableTrait;
 use Exception;
 use Illuminate\Console\Command;
-use Spatie\TypescriptTransformer\Type;
+use Spatie\TypescriptTransformer\TypescriptTransformer;
 
 class MapOptionsToTypescriptCommand extends Command
 {
-    protected $signature = 'options:map-to-typescript';
+    use ConfirmableTrait;
 
-    protected $description = 'Map enums/states to typescript';
+    protected $signature = 'typescript:transform';
+
+    protected $description = 'Map PHP structures to Typescript';
 
     public function handle(
-        ResolveTypesCollectionAction $resolveTypesCollectionAction,
-        PersistTypesCollectionAction $persistTypesCollectionAction
+        TypescriptTransformer $transformer
     ): void {
+        $this->confirmToProceed();
+
         try {
-            $typesCollection = $resolveTypesCollectionAction->execute();
+            $collection = $transformer->transform();
         } catch (Exception $exception) {
             $this->error($exception->getMessage());
 
             return;
         }
 
-        $persistTypesCollectionAction->execute($typesCollection);
+        $this->info("Transformed {$collection->count()} PHP types to Typescript");
 
-        foreach ($typesCollection->get() as $file => $types) {
-            $typesString = join(', ', array_map(fn (Type $type) => $type->name, $types));
-
-            $this->info("Written {$file} with types: {$typesString}");
+        foreach ($collection->getTypes() as $class => $type) {
+            $this->info("{$class} -> {$type->getTypescriptName()}");
         }
     }
 }

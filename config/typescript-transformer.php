@@ -1,13 +1,12 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
-    | Mappers
+    | Searching path
     |--------------------------------------------------------------------------
     |
-    | The path where typescript transformer will look for data structures
+    | The path where typescript transformer will look for PHP classes
     | to transform, this will be the `app` path by default.
     |
     */
@@ -19,38 +18,25 @@ return [
     | Transformers
     |--------------------------------------------------------------------------
     |
-    | In these classes you transform your data structures(e.g. enums) to
-    | options that can be used in typescript types.
+    | In these classes you transform your PHP classes(e.g. enums) to
+    | their Typescript counterparts.
     |
     */
 
     'transformers' => [
-        Spatie\TypescriptTransformer\Transformers\EnumTransformer::class,
-        Spatie\TypescriptTransformer\Transformers\StateTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer::class,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Default file
+    | Output file
     |--------------------------------------------------------------------------
     |
-    | When transforming PHP classes an output file can be given for the class
-    | but when left empty the type for the class will be written to this
+    | Typescript transformer will write it's Typescript structures to this
     | file.
     |
     */
 
-    'default_file' => 'types/generated.d.ts',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Output path
-    |--------------------------------------------------------------------------
-    |
-    | When writing typescript files they will be written to the following
-    | directory, by default this is the `resources/js` directory
-    |
-    */
-
-    'output_path' => resource_path('js'),
+    'output_file' => resource_path('types/generated.d.ts'),
 ];

@@ -1,57 +1,67 @@
 {
-    "name": "spatie/typescript-transformer",
-    "description": "Transform your PHP structures to Typescript types",
-    "keywords": [
+    "name" : "spatie/laravel-typescript-transformer",
+    "description" : "Transform your PHP structures to Typescript types",
+    "keywords" : [
         "spatie",
         "typescript-transformer"
     ],
-    "homepage": "https://github.com/spatie/typescript-transformer",
-    "license": "MIT",
-    "authors": [
+    "homepage" : "https://github.com/spatie/typescript-transformer",
+    "license" : "MIT",
+    "authors" : [
         {
-            "name": "Ruben Van Assche",
-            "email": "ruben@spatie.be",
-            "homepage": "https://spatie.be",
-            "role": "Developer"
+            "name" : "Ruben Van Assche",
+            "email" : "ruben@spatie.be",
+            "homepage" : "https://spatie.be",
+            "role" : "Developer"
         }
     ],
-    "require": {
-        "php": "^7.4",
-        "hanneskod/classtools": "^1.2",
-        "illuminate/console": "^7.0",
-        "spatie/enum": "^2.3",
-        "spatie/laravel-model-states": "^1.6"
+    "require" : {
+        "php" : "^7.4",
+        "phpdocumentor/reflection" : " ~4.0",
+        "roave/better-reflection" : "^4.3",
+        "spatie/typescript-transformer" : "dev-master"
     },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.16",
-        "orchestra/testbench": "^5.0",
-        "phpunit/phpunit": "^9.0"
+    "require-dev" : {
+        "friendsofphp/php-cs-fixer" : "^2.16",
+        "orchestra/testbench" : "^5.0",
+        "phpunit/phpunit" : "^9.0",
+        "spatie/temporary-directory" : "^1.2",
+        "spatie/phpunit-snapshot-assertions": "^4.2",
+        "spatie/data-transfer-object" : "^2.0",
+        "spatie/enum" : "^2.3",
+        "spatie/laravel-model-states" : "^1.6"
     },
-    "autoload": {
-        "psr-4": {
-            "Spatie\\TypescriptTransformer\\": "src"
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/spatie/typescript-transformer.git"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Spatie\\LaravelTypescriptTransformer\\" : "src"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Spatie\\TypescriptTransformer\\Tests\\": "tests"
+    "autoload-dev" : {
+        "psr-4" : {
+            "Spatie\\LaravelTypescriptTransformer\\Tests\\" : "tests"
         }
     },
-    "scripts": {
-        "test": "vendor/bin/phpunit",
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
-        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    "scripts" : {
+        "test" : "vendor/bin/phpunit",
+        "test-coverage" : "vendor/bin/phpunit --coverage-html coverage",
+        "format" : "vendor/bin/php-cs-fixer fix --allow-risky=yes"
     },
-    "config": {
-        "sort-packages": true
+    "config" : {
+        "sort-packages" : true
     },
-    "extra": {
-        "laravel": {
-            "providers": [
+    "extra" : {
+        "laravel" : {
+            "providers" : [
                 "Spatie\\TypescriptTransformer\\TypescriptTransformerServiceProvider"
             ]
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "minimum-stability" : "dev",
+    "prefer-stable" : true
 }
