@@ -17,8 +17,6 @@
     ],
     "require" : {
         "php" : "^7.4",
-        "phpdocumentor/reflection" : " ~4.0",
-        "roave/better-reflection" : "^4.3",
         "spatie/typescript-transformer" : "dev-master"
     },
     "require-dev" : {
@@ -28,7 +26,7 @@
         "spatie/temporary-directory" : "^1.2",
         "spatie/phpunit-snapshot-assertions": "^4.2",
         "spatie/data-transfer-object" : "^2.0",
-        "spatie/enum" : "^2.3",
+        "spatie/enum" : "v3.x-dev",
         "spatie/laravel-model-states" : "^1.6"
     },
     "repositories": [

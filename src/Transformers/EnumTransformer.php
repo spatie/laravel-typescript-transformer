@@ -29,8 +29,8 @@ class EnumTransformer implements Transformer
         $enum = $class->getName();
 
         $options = array_map(
-            fn (Enum $enum) => "'{$enum->getValue()}'",
-            $enum::getAll()
+            fn(string $enum) => "'{$enum}'",
+            $enum::toArray()
         );
 
         return implode(' | ', $options);
