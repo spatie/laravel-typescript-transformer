@@ -21,11 +21,11 @@ class MapOptionsToTypescriptCommand extends Command
     ): void {
         $this->confirmToProceed();
 
-        if($inputPath = $this->resolveInputPath()){
+        if ($inputPath = $this->resolveInputPath()) {
             $config->searchingPath($inputPath);
         }
 
-        if($inputPath = $this->resolveOutputPath()){
+        if ($inputPath = $this->resolveOutputPath()) {
             $config->outputFile($inputPath);
         }
 

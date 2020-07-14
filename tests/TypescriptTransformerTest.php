@@ -3,10 +3,8 @@
 namespace Spatie\LaravelTypescriptTransformer\Tests;
 
 use Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer;
-use Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
-use Spatie\TypescriptTransformer\TypescriptTransformer;
 use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
 
 class TypescriptTransformerTest extends TestCase
