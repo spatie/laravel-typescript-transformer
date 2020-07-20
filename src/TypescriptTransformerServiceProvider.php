@@ -32,6 +32,7 @@ class TypescriptTransformerServiceProvider extends ServiceProvider
             TypeScriptTransformerConfig::class,
             fn () => TypeScriptTransformerConfig::create()
                 ->searchingPath(config('typescript-transformer.searching_path'))
+                ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
                 ->outputFile(config('typescript-transformer.output_file'))
         );

@@ -18,6 +18,21 @@ return [
     | Transformers
     |--------------------------------------------------------------------------
     |
+    | In these classes you define which classes will be collected and fed to
+    | transformers. By default we include a AnnotationCollector which will
+    | search for @typescript annotated classes to transform.
+    |
+    */
+
+    'collectors' => [
+        Spatie\TypescriptTransformer\Collectors\AnnotationCollector::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transformers
+    |--------------------------------------------------------------------------
+    |
     | In these classes you transform your PHP classes(e.g. enums) to
     | their Typescript counterparts.
     |
