@@ -12,7 +12,7 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
     {
         $laravelCollections = array_filter(
             $classProperty->types,
-            fn(string $type) => $this->isLaravelCollection($type)
+            fn (string $type) => $this->isLaravelCollection($type)
         );
 
         return ! empty($laravelCollections)
@@ -24,7 +24,7 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
     {
         $classProperty->types = array_values(array_filter(
             $classProperty->types,
-            fn(string $type) => ! $this->isLaravelCollection($type)
+            fn (string $type) => ! $this->isLaravelCollection($type)
         ));
 
         if (! in_array('array', $classProperty->types) && empty($allowedArrayTypes)) {

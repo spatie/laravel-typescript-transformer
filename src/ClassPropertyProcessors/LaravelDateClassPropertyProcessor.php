@@ -20,7 +20,7 @@ class LaravelDateClassPropertyProcessor implements ClassPropertyProcessor
     private function replaceProperties(array $properties): array
     {
         $properties = array_map(
-            fn(string $property) => $this->isDate($property) ? 'string' : $property,
+            fn (string $property) => $this->isDate($property) ? 'string' : $property,
             $properties
         );
 
