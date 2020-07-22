@@ -30,7 +30,7 @@ class TypescriptTransformerTest extends TestCase
         $config = resolve(TypeScriptTransformerConfig::class);
 
         $this->assertEquals('fake-searching-path', $config->getSearchingPath());
-        $this->assertEquals([EnumTransformer::class], $config->getTransformers());
+        $this->assertEquals([new EnumTransformer()], $config->getTransformers());
         $this->assertEquals('index.d.ts', $config->getOutputFile());
     }
 
