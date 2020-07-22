@@ -25,8 +25,8 @@ class MapOptionsToTypescriptCommand extends Command
             $config->searchingPath($inputPath);
         }
 
-        if ($inputPath = $this->resolveOutputPath()) {
-            $config->outputFile($inputPath);
+        if ($outputFile = $this->resolveOutputFile()) {
+            $config->outputFile($outputFile);
         }
 
         $transformer = new TypescriptTransformer($config);
@@ -61,16 +61,12 @@ class MapOptionsToTypescriptCommand extends Command
         return app_path($path);
     }
 
-    private function resolveOutputPath(): ?string
+    private function resolveOutputFile(): ?string
     {
         $path = $this->argument('output');
 
         if ($path === null) {
             return null;
-        }
-
-        if (file_exists($path)) {
-            return $path;
         }
 
         return resource_path($path);

@@ -2,18 +2,28 @@
 
 namespace Spatie\LaravelTypescriptTransformer\Tests\Actions;
 
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+use DateTime;
+use DateTimeImmutable;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
-use Spatie\LaravelTypescriptTransformer\Actions\ResolvePropertyTypesAction;
+use ReflectionProperty;
+use Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors\LaravelCollectionClassPropertyProcessor;
+use Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors\LaravelDateClassPropertyProcessor;
 use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
+use Spatie\TypescriptTransformer\Actions\ResolvePropertyTypesAction;
+use Spatie\TypescriptTransformer\ClassPropertyProcessors\ApplyNeverClassPropertyProcessor;
+use Spatie\TypescriptTransformer\ClassPropertyProcessors\CleanupClassPropertyProcessor;
 use Spatie\TypescriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypescriptTransformer\Tests\FakeClasses\Integration\Enum;
+use Spatie\TypescriptTransformer\ValueObjects\ClassProperty;
 
 class ResolvePropertyTypesActionTest extends TestCase
 {
-    private ResolvePropertyTypesAction $action;
-
     private MissingSymbolsCollection $missingSymbols;
+
+    private ResolvePropertyTypesAction $action;
 
     public function setUp(): void
     {
@@ -21,7 +31,12 @@ class ResolvePropertyTypesActionTest extends TestCase
 
         $this->missingSymbols = new MissingSymbolsCollection();
 
-        $this->action = new ResolvePropertyTypesAction($this->missingSymbols);
+        $this->action = new ResolvePropertyTypesAction($this->missingSymbols, [
+            new CleanupClassPropertyProcessor(),
+            new LaravelCollectionClassPropertyProcessor(),
+            new LaravelDateClassPropertyProcessor(),
+            new ApplyNeverClassPropertyProcessor(),
+        ]);
     }
 
     /**
@@ -34,7 +49,18 @@ class ResolvePropertyTypesActionTest extends TestCase
         bool $nullable,
         array $expected
     ) {
-        $types = $this->action->execute($allowed, $arrayAllowed, $nullable);
+        $classProperty = ClassProperty::create(
+            new class extends ReflectionProperty {
+                public function __construct()
+                {
+
+                }
+            },
+            $nullable ? array_merge($allowed, ['null']) : $allowed,
+            $arrayAllowed
+        );
+
+        $types = $this->action->execute($classProperty);
 
         $this->assertEquals($expected, $types);
     }
@@ -47,13 +73,13 @@ class ResolvePropertyTypesActionTest extends TestCase
             [['integer'], [], false, ['number']],
             [['boolean'], [], false, ['boolean']],
             [['double'], [], false, ['number']],
-            [['null'], [], false, ['null']],
+            [['null'], [], false, ['never']],
             [['object'], [], false, ['object']],
             [['array'], [], false, ['Array<never>']],
 
             // Objects
-            [[Enum::class], [], false, ['{%'.Enum::class.'%}']],
-            [[], [Enum::class], false, ['Array<{%'.Enum::class.'%}>']],
+            [[Enum::class], [], false, ['{%' . Enum::class . '%}']],
+            [[], [Enum::class], false, ['Array<{%' . Enum::class . '%}>']],
 
             // Arrays
             [[], ['string'], false, ['Array<string>']],
@@ -62,15 +88,15 @@ class ResolvePropertyTypesActionTest extends TestCase
             [[], ['string', 'integer'], false, ['Array<string | number>']],
 
             // Mixed
-            [['string', 'integer', Enum::class], [], false, ['string', 'number', '{%'.Enum::class.'%}']],
-            [['string', 'integer', Enum::class], [], true, ['string', 'number', '{%'.Enum::class.'%}', 'null']],
-            [[], ['string', 'integer', Enum::class], false, ['Array<string | number | {%'.Enum::class.'%}>']],
+            [['string', 'integer', Enum::class], [], false, ['string', 'number', '{%' . Enum::class . '%}']],
+            [['string', 'integer', Enum::class], [], true, ['string', 'number', '{%' . Enum::class . '%}', 'null']],
+            [[], ['string', 'integer', Enum::class], false, ['Array<string | number | {%' . Enum::class . '%}>']],
 
             // Nullable
             [['string', 'null'], [], false, ['string', 'null']],
             [['string', 'null'], [], true, ['string', 'null']],
             [['string'], [], true, ['string', 'null']],
-            [[], ['string'], true, ['Array<string>', 'null']],
+            [[], ['string'], true, ['null', 'Array<string>']],
             [[], ['string', 'null'], false, ['Array<string | null>']],
 
             // Empty
@@ -89,7 +115,18 @@ class ResolvePropertyTypesActionTest extends TestCase
         bool $nullable,
         array $expected
     ) {
-        $types = $this->action->execute($allowed, $arrayAllowed, $nullable);
+        $classProperty = ClassProperty::create(
+            new class extends ReflectionProperty {
+                public function __construct()
+                {
+
+                }
+            },
+            $nullable ? array_merge($allowed, ['null']) : $allowed,
+            $arrayAllowed
+        );
+
+        $types = $this->action->execute($classProperty);
 
         $this->assertEquals($expected, $types);
     }
@@ -109,8 +146,19 @@ class ResolvePropertyTypesActionTest extends TestCase
             [[Collection::class, 'array'], ['string'], false, ['Array<string>']],
 
             // Nullable Laravel collections
-            [[Collection::class], [], true, ['Array<never>', 'null']],
-            [[Collection::class], ['null', 'string'], true, ['Array<null | string>', 'null']],
+            [[Collection::class], [], true, ['null', 'Array<never>']],
+            [[Collection::class], ['null', 'string'], true, ['null', 'Array<null | string>']],
+
+            // Dates
+            [[Carbon::class], [], false, ['string']],
+            [[CarbonImmutable::class], [], false, ['string']],
+            [[DateTime::class], [], false, ['string']],
+            [[DateTimeImmutable::class], [], false, ['string']],
+
+            // Funky dates
+            [[Carbon::class, 'string'], [], false, ['string']],
+            [[], [Carbon::class], false, ['Array<string>']],
+            [[Collection::class], [Carbon::class], false, ['Array<string>']],
         ];
     }
 }
