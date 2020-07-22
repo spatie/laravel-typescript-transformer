@@ -41,7 +41,7 @@ class MapOptionsToTypescriptCommand extends Command
 
         $this->info("Transformed {$collection->count()} PHP types to Typescript");
 
-        foreach ($collection->getTypes() as $class => $type) {
+        foreach ($collection as $class => $type) {
             $this->info("{$class} -> {$type->getTypescriptName()}");
         }
     }
