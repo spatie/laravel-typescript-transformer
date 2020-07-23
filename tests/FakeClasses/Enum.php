@@ -12,4 +12,12 @@ use Spatie\Enum\Enum as BaseEnum;
  */
 class Enum extends BaseEnum
 {
+    protected static function labels(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'published' => 'Published',
+            'archived' => 'Archived',
+        ];
+    }
 }

@@ -30,7 +30,7 @@ class EnumTransformer implements Transformer
 
         $options = array_map(
             fn (string $enum) => "'{$enum}'",
-            $enum::toArray()
+            array_keys($enum::toArray())
         );
 
         return implode(' | ', $options);
