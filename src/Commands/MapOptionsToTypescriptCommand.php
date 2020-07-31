@@ -12,7 +12,9 @@ class MapOptionsToTypescriptCommand extends Command
 {
     use ConfirmableTrait;
 
-    protected $signature = 'typescript:transform {input?} {output?}';
+    protected $signature = 'typescript:transform
+                            {--class= : Specify a class to transform}
+                            {--output= : Use another file to output}';
 
     protected $description = 'Map PHP structures to Typescript';
 
@@ -48,7 +50,7 @@ class MapOptionsToTypescriptCommand extends Command
 
     private function resolveInputPath(): ?string
     {
-        $path = $this->argument('input');
+        $path = $this->option('class');
 
         if ($path === null) {
             return null;
@@ -63,7 +65,7 @@ class MapOptionsToTypescriptCommand extends Command
 
     private function resolveOutputFile(): ?string
     {
-        $path = $this->argument('output');
+        $path = $this->option('output');
 
         if ($path === null) {
             return null;

@@ -27,7 +27,7 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
             fn (string $type) => ! $this->isLaravelCollection($type)
         ));
 
-        if (! in_array('array', $classProperty->types) && empty($allowedArrayTypes)) {
+        if (! in_array('array', $classProperty->types) && empty($classProperty->arrayTypes)) {
             $classProperty->types[] = 'array';
         }
 

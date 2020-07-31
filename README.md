@@ -57,7 +57,7 @@ composer require spatie/laravel-typescript-transformer
 
 You can publish the config file with:
 ```bash
-php artisan vendor:publish --provider="Spatie\Skeleton\SkeletonServiceProvider" --tag="config"
+php artisan vendor:publish --provider="Spatie\LaravelTypescriptTransformer\TypescriptTransformerServiceProvider" --tag="config"
 ```
 
 This is the contents of the published config file:
@@ -81,6 +81,21 @@ return [
     | Transformers
     |--------------------------------------------------------------------------
     |
+    | In these classes you define which classes will be collected and fed to
+    | transformers. By default we include a AnnotationCollector which will
+    | search for @typescript annotated classes to transform.
+    |
+    */
+
+    'collectors' => [
+        Spatie\TypescriptTransformer\Collectors\AnnotationCollector::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transformers
+    |--------------------------------------------------------------------------
+    |
     | In these classes you transform your PHP classes(e.g. enums) to
     | their Typescript counterparts.
     |
@@ -89,38 +104,56 @@ return [
     'transformers' => [
         Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer::class,
         Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer::class,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Default file
+    | Output file
     |--------------------------------------------------------------------------
     |
-    | When transforming PHP classes an output file can be declared for the class
-    | in the annotations. When left empty, the type for the class 
-    | will be written to this file.
+    | Typescript transformer will write it's Typescript structures to this
+    | file.
     |
     */
 
-    'default_file' => 'types/generated.d.ts',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Output path
-    |--------------------------------------------------------------------------
-    |
-    | In the end typescript files will be written to the following
-    | directory, by default this is the `resources/js` directory
-    |
-    */
-
-    'output_path' => resource_path('js'),
+    'output_file' => resource_path('types/generated.d.ts'),
 ];
 ```
 
 ## Usage
 
+Please, first read the documentation of the [typescript-transformer](https://github.com/spatie/typescript-transformer/blob/master/README.md) package. It contains all the information how the package works and how to create transformers, collectors and property processors.
 
+When you've configured the package with the config file, you can run following command:
+
+```bash
+php artisan typescript:transform
+```
+
+It is also possible to only transform one class:
+
+```bash
+php artisan typescript:transform --class=app/Enums/RoleEnum.php
+```
+
+Or you can define another output file than the default one:
+
+```bash
+php artisan typescript:transform --output=types.d.ts
+```
+
+This file will be stored in the resources path.
+
+## Transformers
+
+By default, the `typescript-transformer` package delivers some default Transformers, this Laravel package adds some extra default transformers you can use:
+
+- `EnumTransformer` convert enums from the `spatie/enum` package
+- `StateTransformer` convert states from the `spatie/enum` package
+- `DtoTransformer` an extended DTO transformer that also will recognize Laravel collections and Carbon objects
+
+When using the DtoTransformer` in your config
 
 ## Testing
 

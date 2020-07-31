@@ -51,7 +51,7 @@ class TypescriptTransformerTest extends TestCase
         config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
-        $this->artisan('typescript:transform '. __DIR__ . '/FakeClasses/Enum.php ')->assertExitCode(0);
+        $this->artisan('typescript:transform --class='. __DIR__ . '/FakeClasses/Enum.php ')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('index.d.ts'));
     }
@@ -65,7 +65,7 @@ class TypescriptTransformerTest extends TestCase
         $this->app->useAppPath(__DIR__);
         $this->app->setBasePath($this->temporaryDirectory->path('js'));
 
-        $this->artisan('typescript:transform FakeClasses/Enum.php')->assertExitCode(0);
+        $this->artisan('typescript:transform --class=FakeClasses/Enum.php')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('index.d.ts'));
     }
@@ -79,7 +79,7 @@ class TypescriptTransformerTest extends TestCase
         $this->app->useAppPath(__DIR__);
         $this->app->setBasePath($this->temporaryDirectory->path());
 
-        $this->artisan('typescript:transform FakeClasses/Enum.php other-index.d.ts')->assertExitCode(0);
+        $this->artisan('typescript:transform --class=FakeClasses/Enum.php --output=other-index.d.ts')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('resources/other-index.d.ts'));
     }
