@@ -46,7 +46,7 @@ class MapOptionsToTypescriptCommand extends Command
 
         $this->table(
             ['PHP class', 'Typescript entity'],
-            collect($collection)->map(fn(Type $type, string $class) => [
+            collect($collection)->map(fn (Type $type, string $class) => [
                 $class, $type->getTypescriptName(),
             ])
         );
