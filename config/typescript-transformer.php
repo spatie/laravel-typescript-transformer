@@ -15,11 +15,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Transformers
+    | Collectors
     |--------------------------------------------------------------------------
     |
     | In these classes you define which classes will be collected and fed to
-    | transformers. By default we include a AnnotationCollector which will
+    | transformers. By default, we include an AnnotationCollector which will
     | search for @typescript annotated classes to transform.
     |
     */
@@ -33,7 +33,7 @@ return [
     | Transformers
     |--------------------------------------------------------------------------
     |
-    | In these classes you transform your PHP classes(e.g. enums) to
+    | In these classes, you transform your PHP classes(e.g., enums) to
     | their Typescript counterparts.
     |
     */

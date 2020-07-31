@@ -78,11 +78,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Transformers
+    | Collectors
     |--------------------------------------------------------------------------
     |
     | In these classes you define which classes will be collected and fed to
-    | transformers. By default we include a AnnotationCollector which will
+    | transformers. By default, we include an AnnotationCollector which will
     | search for @typescript annotated classes to transform.
     |
     */
@@ -96,7 +96,7 @@ return [
     | Transformers
     |--------------------------------------------------------------------------
     |
-    | In these classes you transform your PHP classes(e.g. enums) to
+    | In these classes, you transform your PHP classes(e.g., enums) to
     | their Typescript counterparts.
     |
     */
@@ -123,9 +123,9 @@ return [
 
 ## Usage
 
-Please, first read the documentation of the [typescript-transformer](https://github.com/spatie/typescript-transformer/blob/master/README.md) package. It contains all the information how the package works and how to create transformers, collectors and property processors.
+Please, first read the documentation of the [typescript-transformer](https://github.com/spatie/typescript-transformer/blob/master/README.md) package. It contains all the information on how the package works and how to create transformers, collectors, and property processors.
 
-When you've configured the package with the config file, you can run following command:
+When you've configured the package with the config file, you can run the following command:
 
 ```bash
 php artisan typescript:transform
@@ -143,17 +143,26 @@ Or you can define another output file than the default one:
 php artisan typescript:transform --output=types.d.ts
 ```
 
-This file will be stored in the resources path.
+This file will be stored in the resource's path.
 
 ## Transformers
 
-By default, the `typescript-transformer` package delivers some default Transformers, this Laravel package adds some extra default transformers you can use:
+By default, the `typescript-transformer` package delivers some default Transformers, and this Laravel package adds some extra default transformers you can use:
 
 - `EnumTransformer` convert enums from the `spatie/enum` package
 - `StateTransformer` convert states from the `spatie/enum` package
 - `DtoTransformer` an extended DTO transformer that also will recognize Laravel collections and Carbon objects
 
 When using the `DtoTransformer` in your config, be assured to use the transformer of the `laravel-typescript-transformer` package, since the one in the `typescript-transformer` package has no support for Laravel.
+
+## Class property processors
+
+In addition to some extra transformers specific for Laravel we've also added some extra class property processors specific for Laravel:
+
+- `LaravelCollectionClassPropertyProcessor` will replace Laravel Collections as arrays
+- `LaravelDateClassPropertyProcessor` will replace date objects(`DateTime` and `Carbon`) with a string
+
+When using the `DtoTransformer` these processors will automatically be applied.
 
 ## Testing
 
