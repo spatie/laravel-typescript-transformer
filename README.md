@@ -153,7 +153,7 @@ By default, the `typescript-transformer` package delivers some default Transform
 - `StateTransformer` convert states from the `spatie/enum` package
 - `DtoTransformer` an extended DTO transformer that also will recognize Laravel collections and Carbon objects
 
-When using the DtoTransformer` in your config
+When using the `DtoTransformer` in your config, be assured to use the transformer of the `laravel-typescript-transformer` package, since the one in the `typescript-transformer` package has no support for Laravel.
 
 ## Testing
 
