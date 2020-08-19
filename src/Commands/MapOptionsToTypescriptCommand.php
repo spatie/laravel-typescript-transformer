@@ -5,7 +5,7 @@ namespace Spatie\LaravelTypescriptTransformer\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Spatie\TypescriptTransformer\Structures\Type;
+use Spatie\TypescriptTransformer\Structures\TransformedType;
 use Spatie\TypescriptTransformer\TypescriptTransformer;
 use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
 
@@ -46,7 +46,7 @@ class MapOptionsToTypescriptCommand extends Command
 
         $this->table(
             ['PHP class', 'Typescript entity'],
-            collect($collection)->map(fn (Type $type, string $class) => [
+            collect($collection)->map(fn (TransformedType $type, string $class) => [
                 $class, $type->getTypescriptName(),
             ])
         );

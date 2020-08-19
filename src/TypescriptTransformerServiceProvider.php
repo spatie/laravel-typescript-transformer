@@ -34,6 +34,7 @@ class TypescriptTransformerServiceProvider extends ServiceProvider
                 ->searchingPath(config('typescript-transformer.searching_path'))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
+                ->classPropertyReplacements(config('typescript-transformer.class_property_replacements'))
                 ->outputFile(config('typescript-transformer.output_file'))
         );
     }

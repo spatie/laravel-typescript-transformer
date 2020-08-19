@@ -2,7 +2,7 @@
 
 namespace Spatie\LaravelTypescriptTransformer\Tests;
 
-use Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer;
+use Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
@@ -24,13 +24,13 @@ class TypescriptTransformerTest extends TestCase
     public function it_will_register_the_config_correctly()
     {
         config()->set('typescript-transformer.searching_path', 'fake-searching-path');
-        config()->set('typescript-transformer.transformers', [EnumTransformer::class]);
+        config()->set('typescript-transformer.transformers', [SpatieEnumTransformer::class]);
         config()->set('typescript-transformer.output_file', 'index.d.ts');
 
         $config = resolve(TypeScriptTransformerConfig::class);
 
         $this->assertEquals('fake-searching-path', $config->getSearchingPath());
-        $this->assertEquals([new EnumTransformer()], $config->getTransformers());
+        $this->assertEquals([new SpatieEnumTransformer()], $config->getTransformers());
         $this->assertEquals('index.d.ts', $config->getOutputFile());
     }
 

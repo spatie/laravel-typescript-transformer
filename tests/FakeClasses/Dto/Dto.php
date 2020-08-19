@@ -9,16 +9,16 @@ use Spatie\TypescriptTransformer\Tests\FakeClasses\Integration\OtherDtoCollectio
 
 class Dto extends DataTransferObject
 {
-    /** @var array|\Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
+    /** @var \Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
     public array $other_dto_array;
 
     public OtherDtoCollection $other_dto_collection;
 
     public Collection $non_typed_laravel_collection;
 
-    /** @var array|\Illuminate\Support\Collection|\Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
+    /** @var \Illuminate\Support\Collection|\Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
     public Collection $other_dto_laravel_collection;
 
-    /** @var array|\Illuminate\Database\Eloquent\Collection|\Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
+    /** @var \Illuminate\Database\Eloquent\Collection|\Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto[] */
     public EloquentCollection $other_dto_laravel_eloquent_collection;
 }
