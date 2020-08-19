@@ -7,17 +7,17 @@ use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\ChildState;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Enum;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\State;
 use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
-use Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer;
+use Spatie\LaravelTypescriptTransformer\Transformers\SpatieStateTransformer;
 
-class StateTransformerTest extends TestCase
+class SpatieStateTransformerTest extends TestCase
 {
-    private StateTransformer $transformer;
+    private SpatieStateTransformer $transformer;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->transformer = new StateTransformer();
+        $this->transformer = new SpatieStateTransformer();
     }
 
     /** @test */

@@ -6,17 +6,17 @@ use ReflectionClass;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Enum;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\State;
 use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
-use Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer;
+use Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer;
 
-class EnumTransformerTest extends TestCase
+class SpatieEnumTransformerTest extends TestCase
 {
-    private EnumTransformer $transformer;
+    private SpatieEnumTransformer $transformer;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->transformer = new EnumTransformer();
+        $this->transformer = new SpatieEnumTransformer();
     }
 
     /** @test */

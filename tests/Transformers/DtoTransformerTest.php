@@ -10,6 +10,7 @@ use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TypescriptTransformer\Tests\FakeClasses\Integration\OtherDtoCollection;
+use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
 
 class DtoTransformerTest extends TestCase
 {
@@ -21,19 +22,9 @@ class DtoTransformerTest extends TestCase
     {
         parent::setUp();
 
-        $this->transformer = new DtoTransformer();
-    }
-
-    /** @test */
-    public function it_will_only_convert_dtos()
-    {
-        $this->assertTrue($this->transformer->canTransform(
-            new ReflectionClass(Dto::class)
-        ));
-
-        $this->assertFalse($this->transformer->canTransform(
-            new ReflectionClass(DtoCollection::class)
-        ));
+        $this->transformer = new DtoTransformer(
+            resolve(TypeScriptTransformerConfig::class)
+        );
     }
 
     /** @test */

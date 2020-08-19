@@ -102,8 +102,8 @@ return [
     */
 
     'transformers' => [
-        Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer::class,
-        Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\SpatieStateTransformer::class,
         Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer::class,
     ],
 

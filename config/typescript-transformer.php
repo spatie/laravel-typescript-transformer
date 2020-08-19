@@ -1,5 +1,8 @@
 <?php
 
+use Carbon\Carbon;
+use Carbon\CarbonImmutable;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -39,9 +42,27 @@ return [
     */
 
     'transformers' => [
-        Spatie\LaravelTypescriptTransformer\Transformers\EnumTransformer::class,
-        Spatie\LaravelTypescriptTransformer\Transformers\StateTransformer::class,
-        Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer::class,
+        Spatie\LaravelTypescriptTransformer\Transformers\SpatieStateTransformer::class,
+        Spatie\TypescriptTransformer\Transformers\DtoTransformer::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Class property replacements
+    |--------------------------------------------------------------------------
+    |
+    | In your DTO's you sometimes have objects that should always be replaced
+    | by typescript representations. For example, you can replace a Datetime
+    | always with a string. These replacements can be defined here.
+    |
+    */
+
+    'class_property_replacements' => [
+        DateTime::class => 'string',
+        DateTimeImmutable::class => 'string',
+        Carbon::class => 'string',
+        CarbonImmutable::class => 'string',
     ],
 
     /*

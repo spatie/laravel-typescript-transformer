@@ -4,10 +4,11 @@ namespace Spatie\LaravelTypescriptTransformer\Transformers;
 
 use ReflectionClass;
 use Spatie\ModelStates\State;
+use Spatie\TypescriptTransformer\Structures\TransformedType;
 use Spatie\TypescriptTransformer\Structures\Type;
 use Spatie\TypescriptTransformer\Transformers\Transformer;
 
-class StateTransformer implements Transformer
+class SpatieStateTransformer implements Transformer
 {
     public function canTransform(ReflectionClass $class): bool
     {
@@ -20,9 +21,9 @@ class StateTransformer implements Transformer
         return $parent->getName() === State::class;
     }
 
-    public function transform(ReflectionClass $class, string $name): Type
+    public function transform(ReflectionClass $class, string $name): TransformedType
     {
-        return Type::create(
+        return TransformedType::create(
             $class,
             $name,
             "export type {$name} = {$this->resolveOptions($class)};"

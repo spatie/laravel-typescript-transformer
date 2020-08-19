@@ -3,40 +3,129 @@
 namespace Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
+use phpDocumentor\Reflection\Type;
+use phpDocumentor\Reflection\Types\Array_;
+use phpDocumentor\Reflection\Types\Compound;
+use phpDocumentor\Reflection\Types\Expression;
+use phpDocumentor\Reflection\Types\Nullable;
+use phpDocumentor\Reflection\Types\Object_;
+use PhpParser\Node\Expr;
+use ReflectionProperty;
+use Spatie\DataTransferObject\Arr;
 use Spatie\TypescriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
-use Spatie\TypescriptTransformer\ValueObjects\ClassProperty;
 
 class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
 {
-    public function process(ClassProperty $classProperty): ClassProperty
+    public function process(Type $type, ReflectionProperty $reflection): Type
     {
-        $laravelCollections = array_filter(
-            $classProperty->types,
-            fn (string $type) => $this->isLaravelCollection($type)
-        );
-
-        return ! empty($laravelCollections)
-            ? $this->removeLaravelCollections($classProperty)
-            : $classProperty;
-    }
-
-    private function removeLaravelCollections(ClassProperty $classProperty): ClassProperty
-    {
-        $classProperty->types = array_values(array_filter(
-            $classProperty->types,
-            fn (string $type) => ! $this->isLaravelCollection($type)
-        ));
-
-        if (! in_array('array', $classProperty->types) && empty($classProperty->arrayTypes)) {
-            $classProperty->types[] = 'array';
+        if (! $this->hasLaravelCollection($reflection)) {
+            return $type;
         }
 
-        return $classProperty;
+        return $this->replaceLaravelCollection($type);
     }
 
-    private function isLaravelCollection(string $type): bool
+    private function hasLaravelCollection(ReflectionProperty $reflection): bool
     {
-        return is_subclass_of($type, Collection::class)
-            || ltrim($type, '\\') === ltrim(Collection::class, '\\');
+        $type = $reflection->getType();
+
+        if ($type === null) {
+            return false;
+        }
+
+        return $this->isLaravelCollection($type->getName());
+    }
+
+    private function replaceLaravelCollection(Type $type): Type
+    {
+        if ($type instanceof Array_) {
+            return $type;
+        }
+
+        if ($this->isLaravelCollectionObject($type)) {
+            return new Array_();
+        }
+
+        if ($type instanceof Nullable) {
+            return $this->replaceLaravelCollectionInNullable($type);
+        }
+
+        if ($type instanceof Compound) {
+            return $this->replaceLaravelCollectionInCompound($type);
+        }
+
+        return new Compound([$type, new Array_()]);
+    }
+
+    private function replaceLaravelCollectionInCompound(Compound $compound): Compound
+    {
+        $types = iterator_to_array($compound->getIterator());
+
+        $arraysInType = array_filter(
+            $types,
+            function (Type $type) {
+                if ($type instanceof Nullable) {
+                    return $type->getActualType() instanceof Array_;
+                }
+
+                return $type instanceof Array_;
+            }
+        );
+
+        $types = array_filter(
+            $types,
+            function (Type $type) {
+                if ($type instanceof Nullable) {
+                    return ! $this->isLaravelCollectionObject($type->getActualType());
+                }
+
+                return ! $this->isLaravelCollectionObject($type);
+            }
+        );
+
+        return empty($arraysInType)
+            ? new Compound(array_merge($types, [new Array_()]))
+            : new Compound($types);
+    }
+
+    private function replaceLaravelCollectionInNullable(Nullable $nullable): Nullable
+    {
+        $actualType = $nullable->getActualType();
+
+        if($this->isLaravelCollectionObject($actualType)){
+            return new Nullable(new Array_());
+        }
+
+        if ($actualType instanceof Compound) {
+            return new Nullable($this->replaceLaravelCollectionInCompound($actualType));
+        }
+
+        if ($actualType instanceof Array_) {
+            return $nullable;
+        }
+
+        return new Nullable(
+            new Compound([$actualType, new Array_()])
+        );
+    }
+
+    private function isLaravelCollection(string $class): bool
+    {
+        return class_exists($class) && in_array(Enumerable::class, class_implements($class));
+    }
+
+    private function isLaravelCollectionObject(Type $type): bool
+    {
+        if (! $type instanceof Object_) {
+            return false;
+        }
+
+        return $this->isLaravelCollection((string) $type->getFqsen());
+    }
+
+    private function nullifyCollection(Type $type, ReflectionProperty $reflectionProperty): Type
+    {
+
     }
 }
