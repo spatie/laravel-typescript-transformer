@@ -4,7 +4,6 @@ namespace Spatie\LaravelTypescriptTransformer\Tests\Transformers;
 
 use ReflectionClass;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\Dto;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\DtoCollection;
 use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto;
 use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer;

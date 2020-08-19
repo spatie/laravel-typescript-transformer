@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
 use Spatie\TypescriptTransformer\Structures\TransformedType;
-use Spatie\TypescriptTransformer\Structures\Type;
 use Spatie\TypescriptTransformer\TypescriptTransformer;
 use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
 

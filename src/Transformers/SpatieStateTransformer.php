@@ -5,7 +5,6 @@ namespace Spatie\LaravelTypescriptTransformer\Transformers;
 use ReflectionClass;
 use Spatie\ModelStates\State;
 use Spatie\TypescriptTransformer\Structures\TransformedType;
-use Spatie\TypescriptTransformer\Structures\Type;
 use Spatie\TypescriptTransformer\Transformers\Transformer;
 
 class SpatieStateTransformer implements Transformer

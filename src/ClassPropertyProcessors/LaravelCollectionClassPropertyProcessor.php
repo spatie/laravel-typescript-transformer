@@ -2,17 +2,13 @@
 
 namespace Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Compound;
-use phpDocumentor\Reflection\Types\Expression;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
-use PhpParser\Node\Expr;
 use ReflectionProperty;
-use Spatie\DataTransferObject\Arr;
 use Spatie\TypescriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
 
 class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
@@ -93,7 +89,7 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
     {
         $actualType = $nullable->getActualType();
 
-        if($this->isLaravelCollectionObject($actualType)){
+        if ($this->isLaravelCollectionObject($actualType)) {
             return new Nullable(new Array_());
         }
 
@@ -126,6 +122,5 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
 
     private function nullifyCollection(Type $type, ReflectionProperty $reflectionProperty): Type
     {
-
     }
 }
