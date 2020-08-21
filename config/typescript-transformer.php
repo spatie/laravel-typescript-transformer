@@ -52,7 +52,7 @@ return [
     | Class property replacements
     |--------------------------------------------------------------------------
     |
-    | In your DTO's you sometimes have objects that should always be replaced
+    | In your DTO's you sometimes have properties that should always be replaced
     | by typescript representations. For example, you can replace a Datetime
     | always with a string. These replacements can be defined here.
     |
