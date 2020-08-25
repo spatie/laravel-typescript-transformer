@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : "^7.4",
-        "spatie/typescript-transformer" : "dev-master#deb8e032641e37a75af7a88fee9ad618eecb679e"
+        "spatie/typescript-transformer" : "dev-master#fa2a1fbc76a288612578c840b4b9d09e3cb32e0f"
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer" : "^2.16",
