@@ -1,9 +1,9 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests;
+namespace Spatie\LaravelTypeScriptTransformer\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
-use Spatie\LaravelTypescriptTransformer\TypescriptTransformerServiceProvider;
+use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -15,7 +15,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            TypescriptTransformerServiceProvider::class,
+            TypeScriptTransformerServiceProvider::class,
         ];
     }
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\Transformers;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\Transformers;
 
 use ReflectionClass;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\Dto;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto\OtherDto;
-use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
-use Spatie\LaravelTypescriptTransformer\Transformers\DtoTransformer;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Dto\Dto;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Dto\OtherDto;
+use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
+use Spatie\LaravelTypeScriptTransformer\Transformers\DtoTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
-use Spatie\TypescriptTransformer\Tests\FakeClasses\Integration\OtherDtoCollection;
-use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Tests\FakeClasses\Integration\OtherDtoCollection;
+use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class DtoTransformerTest extends TestCase
 {

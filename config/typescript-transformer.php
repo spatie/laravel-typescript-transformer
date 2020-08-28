@@ -9,7 +9,7 @@ return [
     | Searching path
     |--------------------------------------------------------------------------
     |
-    | The path where typescript transformer will look for PHP classes
+    | The path where typescript-transformer will look for PHP classes
     | to transform, this will be the `app` path by default.
     |
     */
@@ -28,7 +28,7 @@ return [
     */
 
     'collectors' => [
-        Spatie\TypescriptTransformer\Collectors\AnnotationCollector::class,
+        Spatie\TypeScriptTransformer\Collectors\AnnotationCollector::class,
     ],
 
     /*
@@ -37,14 +37,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | In these classes, you transform your PHP classes(e.g., enums) to
-    | their Typescript counterparts.
+    | their TypeScript counterparts.
     |
     */
 
     'transformers' => [
-        Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer::class,
-        Spatie\LaravelTypescriptTransformer\Transformers\SpatieStateTransformer::class,
-        Spatie\TypescriptTransformer\Transformers\DtoTransformer::class,
+        Spatie\LaravelTypeScriptTransformer\Transformers\SpatieEnumTransformer::class,
+        Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer::class,
+        Spatie\TypeScriptTransformer\Transformers\DtoTransformer::class,
     ],
 
     /*
@@ -53,7 +53,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | In your DTO's you sometimes have properties that should always be replaced
-    | by typescript representations. For example, you can replace a Datetime
+    | by TypeScript representations. For example, you can replace a Datetime
     | always with a string. These replacements can be defined here.
     |
     */
@@ -70,7 +70,7 @@ return [
     | Output file
     |--------------------------------------------------------------------------
     |
-    | Typescript transformer will write it's Typescript structures to this
+    | TypeScript transformer will write it's TypeScript structures to this
     | file.
     |
     */

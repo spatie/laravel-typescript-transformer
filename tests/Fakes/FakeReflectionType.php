@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\Fakes;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\Fakes;
 
 use ReflectionType;
 

@@ -1,6 +1,6 @@
 {
     "name" : "spatie/laravel-typescript-transformer",
-    "description" : "Transform your PHP structures to Typescript types",
+    "description" : "Transform your PHP structures to TypeScript types",
     "keywords" : [
         "spatie",
         "typescript-transformer"
@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : "^7.4",
-        "spatie/typescript-transformer" : "dev-master#fa2a1fbc76a288612578c840b4b9d09e3cb32e0f"
+        "spatie/typescript-transformer" : "dev-master#6df6573"
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer" : "^2.16",
@@ -39,12 +39,12 @@
     ],
     "autoload" : {
         "psr-4" : {
-            "Spatie\\LaravelTypescriptTransformer\\" : "src"
+            "Spatie\\LaravelTypeScriptTransformer\\" : "src"
         }
     },
     "autoload-dev" : {
         "psr-4" : {
-            "Spatie\\LaravelTypescriptTransformer\\Tests\\" : "tests"
+            "Spatie\\LaravelTypeScriptTransformer\\Tests\\" : "tests"
         }
     },
     "scripts" : {
@@ -59,7 +59,7 @@
     "extra" : {
         "laravel" : {
             "providers" : [
-                "Spatie\\LaravelTypescriptTransformer\\TypescriptTransformerServiceProvider"
+                "Spatie\\LaravelTypeScriptTransformer\\TypeScriptTransformerServiceProvider"
             ]
         }
     },

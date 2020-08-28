@@ -1,13 +1,13 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\ClassPropertyProcessors;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\ClassPropertyProcessors;
 
 use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\TypeResolver;
-use Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors\LaravelCollectionClassPropertyProcessor;
-use Spatie\LaravelTypescriptTransformer\Tests\Fakes\FakeReflectionProperty;
-use Spatie\LaravelTypescriptTransformer\Tests\Fakes\FakeReflectionType;
-use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
+use Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors\LaravelCollectionClassPropertyProcessor;
+use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionProperty;
+use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionType;
+use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
 
 class LaravelCollectionClassPropertyProcessorTest extends TestCase
 {

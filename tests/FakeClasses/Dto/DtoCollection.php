@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Dto;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Dto;
 
 use Spatie\DataTransferObject\DataTransferObjectCollection;
 

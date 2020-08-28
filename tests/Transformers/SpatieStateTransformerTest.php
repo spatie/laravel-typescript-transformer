@@ -1,13 +1,13 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\Transformers;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\Transformers;
 
 use ReflectionClass;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\ChildState;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\Enum;
-use Spatie\LaravelTypescriptTransformer\Tests\FakeClasses\State;
-use Spatie\LaravelTypescriptTransformer\Tests\TestCase;
-use Spatie\LaravelTypescriptTransformer\Transformers\SpatieStateTransformer;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ChildState;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Enum;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\State;
+use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
+use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer;
 
 class SpatieStateTransformerTest extends TestCase
 {

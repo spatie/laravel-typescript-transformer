@@ -1,11 +1,11 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Transformers;
+namespace Spatie\LaravelTypeScriptTransformer\Transformers;
 
 use ReflectionClass;
 use Spatie\ModelStates\State;
-use Spatie\TypescriptTransformer\Structures\TransformedType;
-use Spatie\TypescriptTransformer\Transformers\Transformer;
+use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Transformers\Transformer;
 
 class SpatieStateTransformer implements Transformer
 {

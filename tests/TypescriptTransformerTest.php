@@ -1,13 +1,13 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests;
+namespace Spatie\LaravelTypeScriptTransformer\Tests;
 
-use Spatie\LaravelTypescriptTransformer\Transformers\SpatieEnumTransformer;
+use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieEnumTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
-use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class TypescriptTransformerTest extends TestCase
+class TypeScriptTransformerTest extends TestCase
 {
     use MatchesSnapshots;
 

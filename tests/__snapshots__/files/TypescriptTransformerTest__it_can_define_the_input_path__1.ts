@@ -1,3 +1,3 @@
-namespace Spatie.LaravelTypescriptTransformer.Tests.FakeClasses {
+namespace Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses {
 export type Enum = 'draft' | 'published' | 'archived';
 }

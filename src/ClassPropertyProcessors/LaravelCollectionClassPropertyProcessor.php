@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\ClassPropertyProcessors;
+namespace Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors;
 
 use Illuminate\Support\Enumerable;
 use phpDocumentor\Reflection\Type;
@@ -9,7 +9,7 @@ use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
 use ReflectionProperty;
-use Spatie\TypescriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
+use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
 
 class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
 {

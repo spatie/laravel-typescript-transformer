@@ -1,18 +1,18 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer;
+namespace Spatie\LaravelTypeScriptTransformer;
 
 use Illuminate\Support\ServiceProvider;
-use Spatie\LaravelTypescriptTransformer\Commands\MapOptionsToTypescriptCommand;
-use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
+use Spatie\LaravelTypeScriptTransformer\Commands\MapOptionsToTypeScriptCommand;
+use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class TypescriptTransformerServiceProvider extends ServiceProvider
+class TypeScriptTransformerServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                MapOptionsToTypescriptCommand::class,
+                MapOptionsToTypeScriptCommand::class,
             ]);
         }
 

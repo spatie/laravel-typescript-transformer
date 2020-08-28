@@ -1,11 +1,11 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Transformers;
+namespace Spatie\LaravelTypeScriptTransformer\Transformers;
 
 use ReflectionClass;
 use Spatie\Enum\Enum;
-use Spatie\TypescriptTransformer\Structures\TransformedType;
-use Spatie\TypescriptTransformer\Transformers\Transformer;
+use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Transformers\Transformer;
 
 class SpatieEnumTransformer implements Transformer
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\FakeClasses;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses;
 
 use Spatie\Enum\Enum as BaseEnum;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Tests\FakeClasses;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses;
 
 class OtherChildState extends State
 {

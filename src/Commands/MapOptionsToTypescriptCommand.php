@@ -1,15 +1,15 @@
 <?php
 
-namespace Spatie\LaravelTypescriptTransformer\Commands;
+namespace Spatie\LaravelTypeScriptTransformer\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Spatie\TypescriptTransformer\Structures\TransformedType;
-use Spatie\TypescriptTransformer\TypescriptTransformer;
-use Spatie\TypescriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\TypeScriptTransformer;
+use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class MapOptionsToTypescriptCommand extends Command
+class MapOptionsToTypeScriptCommand extends Command
 {
     use ConfirmableTrait;
 
@@ -17,7 +17,7 @@ class MapOptionsToTypescriptCommand extends Command
                             {--class= : Specify a class to transform}
                             {--output= : Use another file to output}';
 
-    protected $description = 'Map PHP structures to Typescript';
+    protected $description = 'Map PHP structures to TypeScript';
 
     public function handle(
         TypeScriptTransformerConfig $config
@@ -32,7 +32,7 @@ class MapOptionsToTypescriptCommand extends Command
             $config->outputFile($outputFile);
         }
 
-        $transformer = new TypescriptTransformer($config);
+        $transformer = new TypeScriptTransformer($config);
 
         try {
             $collection = $transformer->transform();
@@ -42,12 +42,12 @@ class MapOptionsToTypescriptCommand extends Command
             return;
         }
 
-        $this->info("Transformed {$collection->count()} PHP types to Typescript");
+        $this->info("Transformed {$collection->count()} PHP types to TypeScript");
 
         $this->table(
-            ['PHP class', 'Typescript entity'],
+            ['PHP class', 'TypeScript entity'],
             collect($collection)->map(fn (TransformedType $type, string $class) => [
-                $class, $type->getTypescriptName(),
+                $class, $type->getTypeScriptName(),
             ])
         );
     }
