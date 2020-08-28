@@ -9,7 +9,7 @@ use Spatie\TypeScriptTransformer\Structures\TransformedType;
 use Spatie\TypeScriptTransformer\TypeScriptTransformer;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class MapOptionsToTypeScriptCommand extends Command
+class TypeScriptTransformCommand extends Command
 {
     use ConfirmableTrait;
 
@@ -42,14 +42,14 @@ class MapOptionsToTypeScriptCommand extends Command
             return;
         }
 
-        $this->info("Transformed {$collection->count()} PHP types to TypeScript");
-
         $this->table(
             ['PHP class', 'TypeScript entity'],
             collect($collection)->map(fn (TransformedType $type, string $class) => [
                 $class, $type->getTypeScriptName(),
             ])
         );
+
+        $this->info("Transformed {$collection->count()} PHP types to TypeScript");
     }
 
     private function resolveInputPath(): ?string

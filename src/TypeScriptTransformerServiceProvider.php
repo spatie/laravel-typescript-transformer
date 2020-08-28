@@ -3,7 +3,7 @@
 namespace Spatie\LaravelTypeScriptTransformer;
 
 use Illuminate\Support\ServiceProvider;
-use Spatie\LaravelTypeScriptTransformer\Commands\MapOptionsToTypeScriptCommand;
+use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class TypeScriptTransformerServiceProvider extends ServiceProvider
@@ -12,7 +12,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                MapOptionsToTypeScriptCommand::class,
+                TypeScriptTransformCommand::class,
             ]);
         }
 
