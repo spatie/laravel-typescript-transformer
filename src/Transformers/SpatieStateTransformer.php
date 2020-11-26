@@ -34,9 +34,14 @@ class SpatieStateTransformer implements Transformer
         /** @var \Spatie\ModelStates\State $state */
         $state = $class->getName();
 
+        $states = array_filter(
+            $state::all()->toArray(),
+            fn(string $stateClass) => $stateClass !== $state
+        );
+
         $options = array_map(
-            fn (string $stateClass) => "'{$stateClass::getMorphClass()}'",
-            $state::all()->toArray()
+            fn(string $stateClass) => "'{$stateClass::getMorphClass()}'",
+            $states
         );
 
         return implode(' | ', $options);

@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 1.1.1- 2020-11-26
+
+- Add support for PHP 8
+
 ## 1.1.0 - 2020-11-26
 
 - Moved `SpatieEnumTransformer` to the `typescript-transformer` package
