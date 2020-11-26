@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Tests\Transformers;
 
+use DateTime;
 use ReflectionClass;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ChildState;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Enum;
@@ -32,7 +33,7 @@ class SpatieStateTransformerTest extends TestCase
         ));
 
         $this->assertFalse($this->transformer->canTransform(
-            new ReflectionClass(Enum::class)
+            new ReflectionClass(DateTime::class)
         ));
     }
 
