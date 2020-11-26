@@ -1,6 +1,6 @@
 name: run-tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   test:
@@ -8,15 +8,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
-        php: [7.4, 8.0]
-        laravel: [8.*]
-        dependency-version: [prefer-lowest, prefer-stable]
+        os: [ ubuntu-latest ]
+        php: [ 7.4, 8.0 ]
+        laravel: [ 8.* ]
+        dependency-version: [ prefer-lowest, prefer-stable ]
         include:
           - laravel: 8.*
             testbench: 6.*
           - laravel: 7.*
             testbench: 5.*
+          - laravel: 7.*
             php: 7.4
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
