@@ -5,7 +5,6 @@ namespace Spatie\LaravelTypeScriptTransformer\Tests\Transformers;
 use DateTime;
 use ReflectionClass;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ChildState;
-use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\Enum;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\State;
 use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer;
