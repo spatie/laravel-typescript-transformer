@@ -18,10 +18,11 @@
     "require" : {
         "php" : "^7.4|^8.0",
         "spatie/typescript-transformer" : "^1.1",
-        "illuminate/console" : "^7.29|^8.12"
+        "illuminate/console" : "^8.12"
     },
     "require-dev" : {
         "orchestra/testbench" : "^5.0|^6.0",
+        "mockery/mockery" : "^1.4",
         "phpunit/phpunit" : "^9.0",
         "spatie/enum" : "^3.0",
         "spatie/temporary-directory" : "^1.2",
