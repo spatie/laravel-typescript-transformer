@@ -1,0 +1,5 @@
+export enum Enum {
+  ADMIN = 10,
+  USER = 20,
+  STRING_USER = "foobar",
+}

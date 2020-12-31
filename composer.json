@@ -17,20 +17,21 @@
     ],
     "require" : {
         "php" : "^7.4|^8.0",
+        "ext-json": "*",
         "spatie/typescript-transformer" : "^1.1",
         "illuminate/console" : "^7.0|^8.12"
     },
     "require-dev" : {
-        "orchestra/testbench" : "^5.0|^6.0",
-        "mockery/mockery" : "^1.4",
-        "phpunit/phpunit" : "^9.0",
-        "spatie/enum" : "^3.0",
-        "spatie/temporary-directory" : "^1.2",
+        "bensampo/laravel-enum": "^3.2",
+        "mockery/mockery": "^1.4",
+        "orchestra/testbench": "^5.0|^6.0",
+        "phpunit/phpunit": "^9.0",
+        "spatie/data-transfer-object": "^2.0",
+        "spatie/enum": "^3.0",
+        "spatie/laravel-model-states": "^1.6|^2.0",
         "spatie/phpunit-snapshot-assertions": "^4.2",
-        "spatie/data-transfer-object" : "^2.0",
-        "spatie/laravel-model-states" : "^1.6|^2.0",
+        "spatie/temporary-directory": "^1.2",
         "vimeo/psalm": "^4.2"
-
     },
     "repositories": [
         {
