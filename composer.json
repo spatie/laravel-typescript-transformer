@@ -22,7 +22,7 @@
         "illuminate/console" : "^7.0|^8.12"
     },
     "require-dev" : {
-        "bensampo/laravel-enum": "^3.2",
+        "bensampo/laravel-enum": "^2.0|^3.0",
         "mockery/mockery": "^1.4",
         "orchestra/testbench": "^5.0|^6.0",
         "phpunit/phpunit": "^9.0",
