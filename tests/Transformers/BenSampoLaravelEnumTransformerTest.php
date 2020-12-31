@@ -50,6 +50,4 @@ class BenSampoLaravelEnumTransformerTest extends TestCase
         $this->assertMatchesSnapshot($type->transformed);
         $this->assertTrue($type->missingSymbols->isEmpty());
     }
-
-
 }

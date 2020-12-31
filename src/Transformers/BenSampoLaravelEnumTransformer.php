@@ -30,7 +30,7 @@ class BenSampoLaravelEnumTransformer implements Transformer
         $enum = $class->getName();
 
         $options = array_map(
-            fn($key) => "  {$key} = ".json_encode($enum::getValue($key)).",",
+            fn ($key) => "  {$key} = " . json_encode($enum::getValue($key)) . ",",
             $enum::getKeys()
         );
 
