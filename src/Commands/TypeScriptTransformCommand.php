@@ -49,7 +49,7 @@ class TypeScriptTransformCommand extends Command
 
         $this->table(
             ['PHP class', 'TypeScript entity'],
-            collect($collection)->map(fn(TransformedType $type, string $class) => [
+            collect($collection)->map(fn (TransformedType $type, string $class) => [
                 $class, $type->getTypeScriptName(),
             ])
         );

@@ -4,10 +4,10 @@ namespace Spatie\LaravelTypeScriptTransformer\Tests\TypeProcessors;
 
 use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\TypeResolver;
-use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
 use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionProperty;
 use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionType;
 use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
+use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
 
 class LaravelCollectionTypeProcessorTest extends TestCase
 {
