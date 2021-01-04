@@ -1,17 +1,17 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\Tests\ClassPropertyProcessors;
+namespace Spatie\LaravelTypeScriptTransformer\Tests\TypeProcessors;
 
 use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\TypeResolver;
-use Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors\LaravelCollectionClassPropertyProcessor;
+use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
 use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionProperty;
 use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionType;
 use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
 
-class LaravelCollectionClassPropertyProcessorTest extends TestCase
+class LaravelCollectionTypeProcessorTest extends TestCase
 {
-    private LaravelCollectionClassPropertyProcessor $processor;
+    private LaravelCollectionTypeProcessor $processor;
 
     private TypeResolver $typeResolver;
 
@@ -19,7 +19,7 @@ class LaravelCollectionClassPropertyProcessorTest extends TestCase
     {
         parent::setUp();
 
-        $this->processor = new LaravelCollectionClassPropertyProcessor();
+        $this->processor = new LaravelCollectionTypeProcessor();
 
         $this->typeResolver = new TypeResolver();
     }
@@ -31,7 +31,25 @@ class LaravelCollectionClassPropertyProcessorTest extends TestCase
      * @param string $initialType
      * @param string $outputType
      */
-    public function it_will_process_correctly(string $initialType, string $outputType)
+    public function it_will_process_a_reflection_property_correctly(string $initialType, string $outputType)
+    {
+        $type = $this->processor->process(
+            $this->typeResolver->resolve($initialType),
+            FakeReflectionProperty::create()
+                ->withType(FakeReflectionType::create()->withType(Collection::class))
+        );
+
+        $this->assertEquals($outputType, (string) $type);
+    }
+
+    /**
+     * @test
+     * @dataProvider cases
+     *
+     * @param string $initialType
+     * @param string $outputType
+     */
+    public function it_will_process_a_reflection_parameter_correctly(string $initialType, string $outputType)
     {
         $type = $this->processor->process(
             $this->typeResolver->resolve($initialType),

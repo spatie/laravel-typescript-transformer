@@ -15,7 +15,8 @@ class TypeScriptTransformCommand extends Command
 
     protected $signature = 'typescript:transform
                             {--class= : Specify a class to transform}
-                            {--output= : Use another file to output}';
+                            {--output= : Use another file to output}
+                            {--format : Format the TypeScript}';
 
     protected $description = 'Map PHP structures to TypeScript';
 
@@ -32,6 +33,10 @@ class TypeScriptTransformCommand extends Command
             $config->outputFile($outputFile);
         }
 
+        if ($this->option('format')) {
+            $config->enableFormatting(true);
+        }
+
         $transformer = new TypeScriptTransformer($config);
 
         try {
@@ -44,7 +49,7 @@ class TypeScriptTransformCommand extends Command
 
         $this->table(
             ['PHP class', 'TypeScript entity'],
-            collect($collection)->map(fn (TransformedType $type, string $class) => [
+            collect($collection)->map(fn(TransformedType $type, string $class) => [
                 $class, $type->getTypeScriptName(),
             ])
         );

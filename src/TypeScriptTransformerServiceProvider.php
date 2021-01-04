@@ -34,8 +34,9 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
                 ->searchingPath(config('typescript-transformer.searching_path'))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
-                ->classPropertyReplacements(config('typescript-transformer.class_property_replacements'))
+                ->defaultTypeReplacements(config('typescript-transformer.default_type_replacements'))
                 ->outputFile(config('typescript-transformer.output_file'))
+                ->enableFormatting(config('typescript-transformer.enable_formatting'))
         );
     }
 }

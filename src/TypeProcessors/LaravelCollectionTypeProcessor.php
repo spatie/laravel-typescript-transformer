@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors;
+namespace Spatie\LaravelTypeScriptTransformer\TypeProcessors;
 
 use Illuminate\Support\Enumerable;
 use phpDocumentor\Reflection\Type;
@@ -8,12 +8,15 @@ use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
+use ReflectionMethod;
+use ReflectionParameter;
 use ReflectionProperty;
 use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
+use Spatie\TypeScriptTransformer\TypeProcessors\TypeProcessor;
 
-class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
+class LaravelCollectionTypeProcessor implements TypeProcessor
 {
-    public function process(Type $type, ReflectionProperty $reflection): Type
+    public function process(Type $type, ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): Type
     {
         if (! $this->hasLaravelCollection($reflection)) {
             return $type;
@@ -22,9 +25,17 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
         return $this->replaceLaravelCollection($type);
     }
 
-    private function hasLaravelCollection(ReflectionProperty $reflection): bool
+    private function hasLaravelCollection(ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): bool
     {
-        $type = $reflection->getType();
+        $type = null;
+
+        if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionParameter) {
+            $type = $reflection->getType();
+        }
+
+        if ($reflection instanceof ReflectionMethod) {
+            $type = $reflection->getReturnType();
+        }
 
         if ($type === null) {
             return false;
@@ -118,9 +129,5 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
         }
 
         return $this->isLaravelCollection((string) $type->getFqsen());
-    }
-
-    private function nullifyCollection(Type $type, ReflectionProperty $reflectionProperty): Type
-    {
     }
 }

@@ -2,23 +2,21 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Transformers;
 
-use Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors\LaravelCollectionClassPropertyProcessor;
-use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ApplyNeverClassPropertyProcessor;
-use Spatie\TypeScriptTransformer\ClassPropertyProcessors\DtoCollectionClassPropertyProcessor;
-use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ReplaceDefaultTypesClassPropertyProcessor;
+use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
 use Spatie\TypeScriptTransformer\Transformers\DtoTransformer as BaseDtoTransformer;
+use Spatie\TypeScriptTransformer\TypeProcessors\DtoCollectionTypeProcessor;
+use Spatie\TypeScriptTransformer\TypeProcessors\ReplaceDefaultsTypeProcessor;
 
 class DtoTransformer extends BaseDtoTransformer
 {
-    protected function getClassPropertyProcessors(): array
+    protected function typeProcessors(): array
     {
         return [
-            new ReplaceDefaultTypesClassPropertyProcessor(
-                $this->config->getClassPropertyReplacements()
+            new ReplaceDefaultsTypeProcessor(
+                $this->config->getDefaultTypeReplacements()
             ),
-            new LaravelCollectionClassPropertyProcessor(),
-            new DtoCollectionClassPropertyProcessor(),
-            new ApplyNeverClassPropertyProcessor(),
+            new LaravelCollectionTypeProcessor(),
+            new DtoCollectionTypeProcessor(),
         ];
     }
 }
