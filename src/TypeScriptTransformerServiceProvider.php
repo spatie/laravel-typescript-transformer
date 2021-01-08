@@ -35,6 +35,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
                 ->classPropertyReplacements(config('typescript-transformer.class_property_replacements'))
+                ->writer(config('typescript-transformer.writer'))
                 ->outputFile(config('typescript-transformer.output_file'))
         );
     }
