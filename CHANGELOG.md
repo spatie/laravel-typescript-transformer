@@ -2,7 +2,11 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
-## 1.1.1- 2020-11-26
+## 1.1.2 - 2021-01-15
+
+- Add support for configuring the writers (#7)
+
+## 1.1.1 - 2020-11-26
 
 - Add support for PHP 8
 
