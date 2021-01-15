@@ -67,6 +67,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Writer
+    |--------------------------------------------------------------------------
+    |
+    | In this class you can customise the output format of the file produced
+    | by TypeScript Transformer.
+    |
+    */
+
+    'writer' => Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Output file
     |--------------------------------------------------------------------------
     |
