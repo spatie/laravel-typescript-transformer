@@ -8,6 +8,7 @@ use Illuminate\Console\ConfirmableTrait;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
 use Spatie\TypeScriptTransformer\TypeScriptTransformer;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class TypeScriptTransformCommand extends Command
 {
@@ -42,12 +43,14 @@ class TypeScriptTransformCommand extends Command
             return;
         }
 
-        $this->table(
-            ['PHP class', 'TypeScript entity'],
-            collect($collection)->map(fn (TransformedType $type, string $class) => [
-                $class, $type->getTypeScriptName(),
-            ])
-        );
+        if ($this->verbosity > OutputInterface::VERBOSITY_NORMAL) {
+            $this->table(
+                ['PHP class', 'TypeScript entity'],
+                collect($collection)->map(fn (TransformedType $type, string $class) => [
+                    $class, $type->getTypeScriptName(),
+                ])
+            );
+        }
 
         $this->info("Transformed {$collection->count()} PHP types to TypeScript");
     }
