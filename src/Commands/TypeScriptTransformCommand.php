@@ -45,7 +45,7 @@ class TypeScriptTransformCommand extends Command
 
         if ($this->verbosity > OutputInterface::VERBOSITY_NORMAL) {
             $this->table(
-                ['PHP class', 'TypeScript entity'],
+                ['PHP class', 'TypeScript type'],
                 collect($collection)->map(fn (TransformedType $type, string $class) => [
                     $class, $type->getTypeScriptName(),
                 ])
