@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : "^8.0",
-        "spatie/typescript-transformer" : "v2.x-dev",
+        "spatie/typescript-transformer" : "2.x-dev",
         "illuminate/console" : "^7.0|^8.12"
     },
     "require-dev" : {
@@ -34,8 +34,8 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/spatie/typescript-transformer.git"
+            "type": "path",
+            "url": "../typescript-transformer"
         }
     ],
     "autoload" : {

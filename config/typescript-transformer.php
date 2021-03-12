@@ -5,11 +5,13 @@ use Carbon\CarbonImmutable;
 
 return [
     /*
-     * The path where typescript-transformer will look for PHP classes
+     * The paths where typescript-transformer will look for PHP classes
      * to transform, this will be the `app` path by default.
      */
 
-    'searching_path' => app_path(),
+    'searching_paths' => [
+        app_path()
+    ],
 
     /*
      * Collectors will search for classes in your `searching_path` and choose the correct

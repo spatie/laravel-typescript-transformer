@@ -23,21 +23,31 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_will_register_the_config_correctly()
     {
-        config()->set('typescript-transformer.searching_path', 'fake-searching-path');
+        config()->set('typescript-transformer.searching_paths', 'fake-searching-path');
         config()->set('typescript-transformer.transformers', [SpatieStateTransformer::class]);
         config()->set('typescript-transformer.output_file', 'index.d.ts');
 
         $config = resolve(TypeScriptTransformerConfig::class);
 
-        $this->assertEquals('fake-searching-path', $config->getSearchingPath());
+        $this->assertEquals(['fake-searching-path'], $config->getSearchingPaths());
         $this->assertEquals([new SpatieStateTransformer()], $config->getTransformers());
         $this->assertEquals('index.d.ts', $config->getOutputFile());
     }
 
     /** @test */
+    public function it_will_crash_if_an_older_version_of_searching_paths_was_defined()
+    {
+        config()->set('typescript-transformer.searching_path', 'fake-searching-path');
+        config()->set('typescript-transformer.transformers', [SpatieStateTransformer::class]);
+        config()->set('typescript-transformer.output_file', 'index.d.ts');
+
+        $this->artisan('typescript:transform')->assertExitCode(1);
+    }
+
+    /** @test */
     public function it_can_transform_to_typescript()
     {
-        config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
         $this->artisan('typescript:transform')->assertExitCode(0);
@@ -48,10 +58,10 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_can_define_the_input_path()
     {
-        config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
-        $this->artisan('typescript:transform --class='. __DIR__ . '/FakeClasses/Enum.php ')->assertExitCode(0);
+        $this->artisan('typescript:transform --path='. __DIR__ . '/FakeClasses')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('index.d.ts'));
     }
@@ -59,13 +69,13 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_can_define_a_relative_input_path()
     {
-        config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
         $this->app->useAppPath(__DIR__);
         $this->app->setBasePath($this->temporaryDirectory->path('js'));
 
-        $this->artisan('typescript:transform --class=FakeClasses/Enum.php')->assertExitCode(0);
+        $this->artisan('typescript:transform --path=FakeClasses')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('index.d.ts'));
     }
@@ -73,13 +83,13 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_can_define_the_relative_output_path()
     {
-        config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
         $this->app->useAppPath(__DIR__);
         $this->app->setBasePath($this->temporaryDirectory->path());
 
-        $this->artisan('typescript:transform --class=FakeClasses/Enum.php --output=other-index.d.ts')->assertExitCode(0);
+        $this->artisan('typescript:transform --path=FakeClasses --output=other-index.d.ts')->assertExitCode(0);
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('resources/other-index.d.ts'));
     }
@@ -87,7 +97,7 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_can_transform_to_typescript_and_format()
     {
-        config()->set('typescript-transformer.searching_path', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
         $this->artisan('typescript:transform --format')->assertExitCode(0);

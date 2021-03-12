@@ -14,7 +14,7 @@ class TypeScriptTransformCommand extends Command
     use ConfirmableTrait;
 
     protected $signature = 'typescript:transform
-                            {--class= : Specify a class to transform}
+                            {--path= : Specify a path with classes to transform}
                             {--output= : Use another file to output}
                             {--format : Format the TypeScript}';
 
@@ -22,7 +22,7 @@ class TypeScriptTransformCommand extends Command
 
     public function handle(
         TypeScriptTransformerConfig $config
-    ): void {
+    ): int {
         $this->confirmToProceed();
 
         if ($inputPath = $this->resolveInputPath()) {
@@ -40,11 +40,13 @@ class TypeScriptTransformCommand extends Command
         $transformer = new TypeScriptTransformer($config);
 
         try {
+            $this->ensureConfiguredCorrectly();
+
             $collection = $transformer->transform();
         } catch (Exception $exception) {
             $this->error($exception->getMessage());
 
-            return;
+            return 1;
         }
 
         $this->table(
@@ -55,11 +57,13 @@ class TypeScriptTransformCommand extends Command
         );
 
         $this->info("Transformed {$collection->count()} PHP types to TypeScript");
+
+        return 0;
     }
 
     private function resolveInputPath(): ?string
     {
-        $path = $this->option('class');
+        $path = $this->option('path');
 
         if ($path === null) {
             return null;
@@ -81,5 +85,12 @@ class TypeScriptTransformCommand extends Command
         }
 
         return resource_path($path);
+    }
+
+    private function ensureConfiguredCorrectly()
+    {
+        if (config()->has('typescript-transformer.searching_path')) {
+            throw new Exception('In v2 of laravel-typescript-transformer the `searching_path` key within the typescript-transformer.php config file is renamed to `searching_paths`');
+        }
     }
 }

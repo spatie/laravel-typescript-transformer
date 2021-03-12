@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
@@ -30,8 +31,8 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
 
         $this->app->bind(
             TypeScriptTransformerConfig::class,
-            fn () => TypeScriptTransformerConfig::create()
-                ->searchingPath(config('typescript-transformer.searching_path'))
+            fn() => TypeScriptTransformerConfig::create()
+                ->searchingPath(...Arr::wrap(config('typescript-transformer.searching_paths')))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
                 ->defaultTypeReplacements(config('typescript-transformer.default_type_replacements'))
