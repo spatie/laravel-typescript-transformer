@@ -3,11 +3,10 @@
 namespace Spatie\LaravelTypeScriptTransformer\Tests\Fakes;
 
 use ReflectionProperty;
-use ReflectionType;
 
 class FakeReflectionProperty extends ReflectionProperty
 {
-    private null|FakeReflectionType|FakeReflectionUnionType $type = null;
+    private null | FakeReflectionType | FakeReflectionUnionType $type = null;
 
     private ?string $docComment = null;
 
@@ -20,7 +19,7 @@ class FakeReflectionProperty extends ReflectionProperty
     {
     }
 
-    public function withType(FakeReflectionType|FakeReflectionUnionType $type): self
+    public function withType(FakeReflectionType | FakeReflectionUnionType $type): self
     {
         $this->type = $type;
 
@@ -34,7 +33,7 @@ class FakeReflectionProperty extends ReflectionProperty
         return $this;
     }
 
-    public function getType(): null|FakeReflectionType|FakeReflectionUnionType
+    public function getType(): null | FakeReflectionType | FakeReflectionUnionType
     {
         return $this->type;
     }

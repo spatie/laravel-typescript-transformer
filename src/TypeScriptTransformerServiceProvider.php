@@ -32,7 +32,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
 
         $this->app->bind(
             TypeScriptTransformerConfig::class,
-            fn() => TypeScriptTransformerConfig::create()
+            fn () => TypeScriptTransformerConfig::create()
                 ->searchingPath(...Arr::wrap(config('typescript-transformer.searching_paths')))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))

@@ -11,12 +11,11 @@ use phpDocumentor\Reflection\Types\Object_;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionProperty;
-use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
 use Spatie\TypeScriptTransformer\TypeProcessors\TypeProcessor;
 
 class LaravelCollectionTypeProcessor implements TypeProcessor
 {
-    public function process(Type $type, ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): Type
+    public function process(Type $type, ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): Type
     {
         if (! $this->hasLaravelCollection($reflection)) {
             return $type;
@@ -25,7 +24,7 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         return $this->replaceLaravelCollection($type);
     }
 
-    private function hasLaravelCollection(ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): bool
+    private function hasLaravelCollection(ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): bool
     {
         $type = null;
 
