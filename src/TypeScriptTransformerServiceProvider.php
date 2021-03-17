@@ -6,6 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
 
 class TypeScriptTransformerServiceProvider extends ServiceProvider
 {
@@ -37,7 +38,8 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
                 ->transformers(config('typescript-transformer.transformers'))
                 ->defaultTypeReplacements(config('typescript-transformer.default_type_replacements'))
                 ->outputFile(config('typescript-transformer.output_file'))
-                ->enableFormatting(config('typescript-transformer.enable_formatting'))
+                ->writer(config('typescript-transformer.writer', TypeDefinitionWriter::class))
+                ->formatter(config('typescript-transformer.formatter'))
         );
     }
 }

@@ -93,15 +93,4 @@ class TypescriptTransformerTest extends TestCase
 
         $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('resources/other-index.d.ts'));
     }
-
-    /** @test */
-    public function it_can_transform_to_typescript_and_format()
-    {
-        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
-        config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
-
-        $this->artisan('typescript:transform --format')->assertExitCode(0);
-
-        $this->assertMatchesFileSnapshot($this->temporaryDirectory->path('index.d.ts'));
-    }
 }

@@ -5,6 +5,7 @@ namespace Spatie\LaravelTypeScriptTransformer\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
+use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
 use Spatie\TypeScriptTransformer\TypeScriptTransformer;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
@@ -16,7 +17,7 @@ class TypeScriptTransformCommand extends Command
     protected $signature = 'typescript:transform
                             {--path= : Specify a path with classes to transform}
                             {--output= : Use another file to output}
-                            {--format : Format the TypeScript}';
+                            {--format : Use Prettier to format the output}';
 
     protected $description = 'Map PHP structures to TypeScript';
 
@@ -34,7 +35,7 @@ class TypeScriptTransformCommand extends Command
         }
 
         if ($this->option('format')) {
-            $config->enableFormatting(true);
+            $config->formatter(PrettierFormatter::class);
         }
 
         $transformer = new TypeScriptTransformer($config);
