@@ -17,6 +17,7 @@ return [
      */
 
     'collectors' => [
+        Spatie\TypeScriptTransformer\Collectors\AttributeCollector::class,
         Spatie\TypeScriptTransformer\Collectors\AnnotationCollector::class,
     ],
 
