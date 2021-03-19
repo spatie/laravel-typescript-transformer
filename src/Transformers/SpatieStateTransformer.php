@@ -9,7 +9,20 @@ use Spatie\TypeScriptTransformer\Transformers\Transformer;
 
 class SpatieStateTransformer implements Transformer
 {
-    public function canTransform(ReflectionClass $class): bool
+    public function transform(ReflectionClass $class, string $name): ?TransformedType
+    {
+        if(! $this->isTransformable($class)){
+            return null;
+        }
+
+        return TransformedType::create(
+            $class,
+            $name,
+            "export type {$name} = {$this->resolveOptions($class)};"
+        );
+    }
+
+    private function isTransformable(ReflectionClass $class): bool
     {
         $parent = $class->getParentClass();
 
@@ -18,15 +31,6 @@ class SpatieStateTransformer implements Transformer
         }
 
         return $parent->getName() === State::class;
-    }
-
-    public function transform(ReflectionClass $class, string $name): TransformedType
-    {
-        return TransformedType::create(
-            $class,
-            $name,
-            "export type {$name} = {$this->resolveOptions($class)};"
-        );
     }
 
     private function resolveOptions(ReflectionClass $class): string
