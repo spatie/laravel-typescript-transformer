@@ -30,14 +30,7 @@
         "spatie/data-transfer-object" : "^2.0",
         "spatie/laravel-model-states" : "^1.6|^2.0",
         "vimeo/psalm": "^4.2"
-
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../typescript-transformer"
-        }
-    ],
     "autoload" : {
         "psr-4" : {
             "Spatie\\LaravelTypeScriptTransformer\\" : "src"
