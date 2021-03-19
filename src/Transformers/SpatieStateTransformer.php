@@ -11,7 +11,7 @@ class SpatieStateTransformer implements Transformer
 {
     public function transform(ReflectionClass $class, string $name): ?TransformedType
     {
-        if(! $this->isTransformable($class)){
+        if (! $this->isTransformable($class)) {
             return null;
         }
 
