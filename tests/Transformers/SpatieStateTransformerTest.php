@@ -47,7 +47,7 @@ class SpatieStateTransformerTest extends TestCase
             'FakeState'
         );
 
-        $this->assertEquals("export type FakeState = 'child' | 'other_child';", $type->transformed);
+        $this->assertEquals("'child' | 'other_child'", $type->transformed);
         $this->assertTrue($type->missingSymbols->isEmpty());
         $this->assertFalse($type->isInline);
     }

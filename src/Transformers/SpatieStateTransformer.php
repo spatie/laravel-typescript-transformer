@@ -18,7 +18,7 @@ class SpatieStateTransformer implements Transformer
         return TransformedType::create(
             $class,
             $name,
-            "export type {$name} = {$this->resolveOptions($class)};"
+            $this->resolveOptions($class),
         );
     }
 
@@ -40,11 +40,11 @@ class SpatieStateTransformer implements Transformer
 
         $states = array_filter(
             $state::all()->toArray(),
-            fn (string $stateClass) => $stateClass !== $state
+            fn(string $stateClass) => $stateClass !== $state
         );
 
         $options = array_map(
-            fn (string $stateClass) => "'{$stateClass::getMorphClass()}'",
+            fn(string $stateClass) => "'{$stateClass::getMorphClass()}'",
             $states
         );
 
