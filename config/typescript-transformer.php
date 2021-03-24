@@ -6,7 +6,7 @@ return [
      * to transform, this will be the `app` path by default.
      */
 
-    'searching_paths' => [
+    'auto_discover_types' => [
         app_path()
     ],
 

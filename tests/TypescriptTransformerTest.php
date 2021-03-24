@@ -23,13 +23,13 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_will_register_the_config_correctly()
     {
-        config()->set('typescript-transformer.searching_paths', 'fake-searching-path');
+        config()->set('typescript-transformer.auto_discover_types', 'fake-searching-path');
         config()->set('typescript-transformer.transformers', [SpatieStateTransformer::class]);
         config()->set('typescript-transformer.output_file', 'index.d.ts');
 
         $config = resolve(TypeScriptTransformerConfig::class);
 
-        $this->assertEquals(['fake-searching-path'], $config->getSearchingPaths());
+        $this->assertEquals(['fake-searching-path'], $config->getAutoDiscoverTypesPaths());
         $this->assertEquals([new SpatieStateTransformer()], $config->getTransformers());
         $this->assertEquals('index.d.ts', $config->getOutputFile());
     }
@@ -47,7 +47,7 @@ class TypescriptTransformerTest extends TestCase
     /** @test */
     public function it_can_transform_to_typescript()
     {
-        config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
+        config()->set('typescript-transformer.auto_discover_types', __DIR__ . '/FakeClasses');
         config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
         $this->artisan('typescript:transform')->assertExitCode(0);

@@ -27,7 +27,7 @@ class TypeScriptTransformCommand extends Command
         $this->confirmToProceed();
 
         if ($inputPath = $this->resolveInputPath()) {
-            $config->searchingPath($inputPath);
+            $config->autoDiscoverTypes($inputPath);
         }
 
         if ($outputFile = $this->resolveOutputFile()) {
@@ -91,7 +91,7 @@ class TypeScriptTransformCommand extends Command
     private function ensureConfiguredCorrectly()
     {
         if (config()->has('typescript-transformer.searching_path')) {
-            throw new Exception('In v2 of laravel-typescript-transformer the `searching_path` key within the typescript-transformer.php config file is renamed to `searching_paths`');
+            throw new Exception('In v2 of laravel-typescript-transformer the `searching_path` key within the typescript-transformer.php config file is renamed to `auto_discover_types`');
         }
     }
 }
