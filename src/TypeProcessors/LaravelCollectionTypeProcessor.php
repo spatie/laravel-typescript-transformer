@@ -25,30 +25,6 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
             return $type;
         }
 
-        return $this->replaceLaravelCollection($type);
-    }
-
-    private function hasLaravelCollection(ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): bool
-    {
-        $type = null;
-
-        if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionParameter) {
-            $type = $reflection->getType();
-        }
-
-        if ($reflection instanceof ReflectionMethod) {
-            $type = $reflection->getReturnType();
-        }
-
-        if ($type === null) {
-            return false;
-        }
-
-        return $this->isLaravelCollection($type->getName());
-    }
-
-    private function replaceLaravelCollection(Type $type): Type
-    {
         if ($type instanceof Array_) {
             return $type;
         }
@@ -66,6 +42,25 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         }
 
         return new Compound([$type, new Array_()]);
+    }
+
+    private function hasLaravelCollection(ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): bool
+    {
+        $type = null;
+
+        if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionParameter) {
+            $type = $reflection->getType();
+        }
+
+        if ($reflection instanceof ReflectionMethod) {
+            $type = $reflection->getReturnType();
+        }
+
+        if ($type === null) {
+            return false;
+        }
+
+        return is_a($type->getName(), Enumerable::class, true);
     }
 
     private function replaceLaravelCollectionInCompound(Compound $compound): Compound
@@ -120,17 +115,12 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         );
     }
 
-    private function isLaravelCollection(string $class): bool
-    {
-        return class_exists($class) && in_array(Enumerable::class, class_implements($class));
-    }
-
     private function isLaravelCollectionObject(Type $type): bool
     {
         if (! $type instanceof Object_) {
             return false;
         }
 
-        return $this->isLaravelCollection((string) $type->getFqsen());
+        return is_a((string) $type->getFqsen(), Enumerable::class, true);
     }
 }
