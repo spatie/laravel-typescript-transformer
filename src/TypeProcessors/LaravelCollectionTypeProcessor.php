@@ -44,7 +44,7 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         return new Compound([$type, new Array_()]);
     }
 
-    private function hasLaravelCollection(ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): bool
+    private function hasLaravelCollection(ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): bool
     {
         $type = null;
 
