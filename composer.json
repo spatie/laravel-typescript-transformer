@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : "^8.0",
-        "spatie/typescript-transformer" : "2.x-dev",
+        "spatie/typescript-transformer" : "^2.0",
         "illuminate/console" : "^7.0|^8.12"
     },
     "require-dev" : {
@@ -31,12 +31,6 @@
         "spatie/laravel-model-states" : "^1.6|^2.0",
         "vimeo/psalm": "^4.2"
     },
-    "repositories" : [
-        {
-            "type": "path",
-            "url": "../typescript-transformer"
-        }
-    ],
     "autoload" : {
         "psr-4" : {
             "Spatie\\LaravelTypeScriptTransformer\\" : "src"
