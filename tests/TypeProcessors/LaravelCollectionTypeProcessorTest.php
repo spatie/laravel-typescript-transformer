@@ -8,6 +8,7 @@ use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionProperty;
 use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionType;
 use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
+use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 
 class LaravelCollectionTypeProcessorTest extends TestCase
 {
@@ -36,25 +37,8 @@ class LaravelCollectionTypeProcessorTest extends TestCase
         $type = $this->processor->process(
             $this->typeResolver->resolve($initialType),
             FakeReflectionProperty::create()
-                ->withType(FakeReflectionType::create()->withType(Collection::class))
-        );
-
-        $this->assertEquals($outputType, (string) $type);
-    }
-
-    /**
-     * @test
-     * @dataProvider cases
-     *
-     * @param string $initialType
-     * @param string $outputType
-     */
-    public function it_will_process_a_reflection_parameter_correctly(string $initialType, string $outputType)
-    {
-        $type = $this->processor->process(
-            $this->typeResolver->resolve($initialType),
-            FakeReflectionProperty::create()
-                ->withType(FakeReflectionType::create()->withType(Collection::class))
+                ->withType(FakeReflectionType::create()->withType(Collection::class)),
+            new MissingSymbolsCollection()
         );
 
         $this->assertEquals($outputType, (string) $type);
@@ -64,16 +48,14 @@ class LaravelCollectionTypeProcessorTest extends TestCase
     {
         return [
             ['int[]', 'int[]'],
-            ['int', 'int|array'],
-            ['?int', '?int|array'],
-
+            ['?int[]', '?int[]'],
+            ['int[]|null', 'int[]|null'],
             ['array', 'array'],
-            ['array|int', 'array|int'],
             ['?array', '?array'],
-
+            ['array|null', 'array|null'],
             [Collection::class, 'array'],
-            [Collection::class.'|int', 'int|array'],
-            ['?'.Collection::class, '?array'],
+            [Collection::class.'|int[]', 'int[]'],
+            [Collection::class.'|int[]|null', 'int[]|null'],
         ];
     }
 }
