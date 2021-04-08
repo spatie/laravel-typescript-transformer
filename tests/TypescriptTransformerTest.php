@@ -6,6 +6,7 @@ use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer;
 use Spatie\Snapshots\MatchesSnapshots;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
 
 class TypescriptTransformerTest extends TestCase
 {
@@ -26,12 +27,14 @@ class TypescriptTransformerTest extends TestCase
         config()->set('typescript-transformer.auto_discover_types', 'fake-searching-path');
         config()->set('typescript-transformer.transformers', [SpatieStateTransformer::class]);
         config()->set('typescript-transformer.output_file', 'index.d.ts');
+        config()->set('typescript-transformer.writer', ModuleWriter::class);
 
         $config = resolve(TypeScriptTransformerConfig::class);
 
         $this->assertEquals(['fake-searching-path'], $config->getAutoDiscoverTypesPaths());
         $this->assertEquals([new SpatieStateTransformer()], $config->getTransformers());
         $this->assertEquals('index.d.ts', $config->getOutputFile());
+        $this->assertInstanceOf(ModuleWriter::class, $config->getWriter());
     }
 
     /** @test */

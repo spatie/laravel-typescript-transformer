@@ -13,7 +13,11 @@ All notable changes to `typescript-transformer` will be documented in this file
 - Updated the DtoTransformer to be a lot more flexible for your own projects
 - Added support for PHP 8 union types
 
-## 1.1.1- 2020-11-26
+## 1.1.2 - 2021-01-15
+
+- Add support for configuring the writers (#7)
+
+## 1.1.1 - 2020-11-26
 
 - Add support for PHP 8
 
