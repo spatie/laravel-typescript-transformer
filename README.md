@@ -57,7 +57,7 @@ export type User = {
 }
 ```
 
-Want to know more? You can find the documentation [here](https://docs.spatie.be/typescript-transformer/v1/introduction/).
+Want to know more? You can find the documentation [here](https://docs.spatie.be/typescript-transformer/v2/introduction/).
 
 ## Testing
 

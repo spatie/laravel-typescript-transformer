@@ -2,11 +2,15 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Tests\Fakes;
 
-use ReflectionType;
+use ReflectionNamedType;
 
-class FakeReflectionType extends ReflectionType
+class FakeReflectionType extends ReflectionNamedType
 {
-    private string $type;
+    private ?string $type = null;
+
+    private bool $isBuiltIn = true;
+
+    private bool $allowsNull = false;
 
     public static function create(): self
     {
@@ -24,8 +28,37 @@ class FakeReflectionType extends ReflectionType
         return $this;
     }
 
+    public function withIsBuiltIn(bool $isBuiltIn = true): self
+    {
+        $this->isBuiltIn = $isBuiltIn;
+
+        return $this;
+    }
+
+    public function withAllowsNull(bool $allowsNull = true): self
+    {
+        $this->allowsNull = $allowsNull;
+
+        return $this;
+    }
+
     public function getName(): ?string
     {
         return $this->type;
+    }
+
+    public function isBuiltin()
+    {
+        return $this->isBuiltIn;
+    }
+
+    public function allowsNull()
+    {
+        return $this->allowsNull;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

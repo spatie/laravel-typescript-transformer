@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\ClassPropertyProcessors;
+namespace Spatie\LaravelTypeScriptTransformer\TypeProcessors;
 
 use Illuminate\Support\Enumerable;
 use phpDocumentor\Reflection\Type;
@@ -8,33 +8,23 @@ use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
+use ReflectionMethod;
+use ReflectionParameter;
 use ReflectionProperty;
-use Spatie\TypeScriptTransformer\ClassPropertyProcessors\ClassPropertyProcessor;
+use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
+use Spatie\TypeScriptTransformer\TypeProcessors\TypeProcessor;
 
-class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
+class LaravelCollectionTypeProcessor implements TypeProcessor
 {
-    public function process(Type $type, ReflectionProperty $reflection): Type
-    {
+    public function process(
+        Type $type,
+        ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection,
+        MissingSymbolsCollection $missingSymbolsCollection
+    ): Type {
         if (! $this->hasLaravelCollection($reflection)) {
             return $type;
         }
 
-        return $this->replaceLaravelCollection($type);
-    }
-
-    private function hasLaravelCollection(ReflectionProperty $reflection): bool
-    {
-        $type = $reflection->getType();
-
-        if ($type === null) {
-            return false;
-        }
-
-        return $this->isLaravelCollection($type->getName());
-    }
-
-    private function replaceLaravelCollection(Type $type): Type
-    {
         if ($type instanceof Array_) {
             return $type;
         }
@@ -52,6 +42,25 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
         }
 
         return new Compound([$type, new Array_()]);
+    }
+
+    private function hasLaravelCollection(ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): bool
+    {
+        $type = null;
+
+        if ($reflection instanceof ReflectionProperty || $reflection instanceof ReflectionParameter) {
+            $type = $reflection->getType();
+        }
+
+        if ($reflection instanceof ReflectionMethod) {
+            $type = $reflection->getReturnType();
+        }
+
+        if ($type === null) {
+            return false;
+        }
+
+        return is_a($type->getName(), Enumerable::class, true);
     }
 
     private function replaceLaravelCollectionInCompound(Compound $compound): Compound
@@ -106,21 +115,12 @@ class LaravelCollectionClassPropertyProcessor implements ClassPropertyProcessor
         );
     }
 
-    private function isLaravelCollection(string $class): bool
-    {
-        return class_exists($class) && in_array(Enumerable::class, class_implements($class));
-    }
-
     private function isLaravelCollectionObject(Type $type): bool
     {
         if (! $type instanceof Object_) {
             return false;
         }
 
-        return $this->isLaravelCollection((string) $type->getFqsen());
-    }
-
-    private function nullifyCollection(Type $type, ReflectionProperty $reflectionProperty): Type
-    {
+        return is_a((string) $type->getFqsen(), Enumerable::class, true);
     }
 }

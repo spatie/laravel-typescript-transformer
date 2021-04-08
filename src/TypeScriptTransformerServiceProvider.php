@@ -2,9 +2,11 @@
 
 namespace Spatie\LaravelTypeScriptTransformer;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
 
 class TypeScriptTransformerServiceProvider extends ServiceProvider
 {
@@ -31,12 +33,14 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
         $this->app->bind(
             TypeScriptTransformerConfig::class,
             fn () => TypeScriptTransformerConfig::create()
-                ->searchingPath(config('typescript-transformer.searching_path'))
+                ->autoDiscoverTypes(...Arr::wrap(config('typescript-transformer.auto_discover_types')))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
-                ->classPropertyReplacements(config('typescript-transformer.class_property_replacements'))
+                ->defaultTypeReplacements(config('typescript-transformer.default_type_replacements'))
                 ->writer(config('typescript-transformer.writer'))
                 ->outputFile(config('typescript-transformer.output_file'))
+                ->writer(config('typescript-transformer.writer', TypeDefinitionWriter::class))
+                ->formatter(config('typescript-transformer.formatter'))
         );
     }
 }
