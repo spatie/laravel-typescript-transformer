@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer;
 
+use Barryvdh\LaravelIdeHelper\Console\ModelsCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
@@ -15,6 +16,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 TypeScriptTransformCommand::class,
+                ModelsCommand::class
             ]);
         }
 

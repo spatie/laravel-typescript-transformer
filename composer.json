@@ -15,21 +15,30 @@
             "role" : "Developer"
         }
     ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../typescript-transformer"
+        }
+    ],
     "require" : {
-        "php" : "^8.0",
-        "spatie/typescript-transformer" : "^2.0",
-        "illuminate/console" : "^7.0|^8.12"
+        "php": "^8.0",
+        "doctrine/dbal": "^3.1",
+        "illuminate/console": "^7.0|^8.12",
+        "illuminate/database": "^7.0|^8.12",
+        "spatie/typescript-transformer": "@dev"
     },
     "require-dev" : {
-        "orchestra/testbench" : "^5.0|^6.0",
-        "mockery/mockery" : "^1.4",
-        "phpunit/phpunit" : "^9.0",
-        "spatie/enum" : "^3.0",
-        "spatie/temporary-directory" : "^1.2",
-        "spatie/phpunit-snapshot-assertions": "^4.2",
-        "spatie/data-transfer-object" : "^2.0",
+        "barryvdh/laravel-ide-helper": "^2.10",
         "friendsofphp/php-cs-fixer": "^2.18",
-        "spatie/laravel-model-states" : "^1.6|^2.0",
+        "mockery/mockery": "^1.4",
+        "orchestra/testbench": "^5.0|^6.0",
+        "phpunit/phpunit": "^9.0",
+        "spatie/data-transfer-object": "^2.0",
+        "spatie/enum": "^3.0",
+        "spatie/laravel-model-states": "^1.6|^2.0",
+        "spatie/phpunit-snapshot-assertions": "^4.2",
+        "spatie/temporary-directory": "^1.2",
         "vimeo/psalm": "^4.2"
     },
     "autoload" : {
