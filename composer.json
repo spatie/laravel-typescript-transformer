@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : "^8.0",
-        "spatie/typescript-transformer" : "^2.1",
+        "spatie/typescript-transformer" : "^2.1.3",
         "illuminate/console" : "^8.69"
     },
     "require-dev" : {

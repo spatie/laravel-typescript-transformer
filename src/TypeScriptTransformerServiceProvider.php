@@ -32,7 +32,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
 
         $this->app->bind(
             TypeScriptTransformerConfig::class,
-            fn () => TypeScriptTransformerConfig::create()
+            fn() => TypeScriptTransformerConfig::create()
                 ->autoDiscoverTypes(...Arr::wrap(config('typescript-transformer.auto_discover_types')))
                 ->collectors(config('typescript-transformer.collectors'))
                 ->transformers(config('typescript-transformer.transformers'))
@@ -41,6 +41,7 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
                 ->outputFile(config('typescript-transformer.output_file'))
                 ->writer(config('typescript-transformer.writer', TypeDefinitionWriter::class))
                 ->formatter(config('typescript-transformer.formatter'))
+                ->transformToNativeEnums(config('typescript-transformer.transform_to_native_enums', false))
         );
     }
 }

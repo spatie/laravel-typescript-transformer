@@ -65,4 +65,11 @@ return [
      */
 
     'formatter' => null,
+
+    /*
+     * Enums can be transformed into types or native TypeScript enums, by default
+     * the package will transform them to types.
+     */
+
+    'transform_to_native_enums' => false,
 ];
