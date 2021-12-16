@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.1 - 2021-12-16
+
+- add support for transforming to native TypeScript enums
+
 ## 2.1.0 - 2021-12-16
 
 - add support for PHP 8.1
