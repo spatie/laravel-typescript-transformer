@@ -18,7 +18,7 @@
     "require" : {
         "php" : "^8.0",
         "spatie/typescript-transformer" : "^2.1",
-        "illuminate/console" : "^8.12"
+        "illuminate/console" : "^8.69"
     },
     "require-dev" : {
         "orchestra/testbench" : "^6.0",
