@@ -9,8 +9,10 @@ use phpDocumentor\Reflection\Types\Compound;
 use phpDocumentor\Reflection\Types\Nullable;
 use phpDocumentor\Reflection\Types\Object_;
 use ReflectionMethod;
+use ReflectionNamedType;
 use ReflectionParameter;
 use ReflectionProperty;
+use ReflectionUnionType;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypeScriptTransformer\TypeProcessors\TypeProcessor;
 
@@ -18,7 +20,7 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
 {
     public function process(
         Type $type,
-        ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection,
+        ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection,
         MissingSymbolsCollection $missingSymbolsCollection
     ): Type {
         if (! $this->hasLaravelCollection($reflection)) {
@@ -44,7 +46,7 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         return new Compound([$type, new Array_()]);
     }
 
-    private function hasLaravelCollection(ReflectionProperty | ReflectionParameter | ReflectionMethod $reflection): bool
+    private function hasLaravelCollection(ReflectionProperty|ReflectionParameter|ReflectionMethod $reflection): bool
     {
         $type = null;
 
@@ -60,7 +62,17 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
             return false;
         }
 
-        return is_a($type->getName(), Enumerable::class, true);
+        $typeNames = $type instanceof ReflectionUnionType
+            ? array_map(fn(ReflectionNamedType $type) => $type->getName(), $type->getTypes())
+            : [$type->getName()];
+
+        foreach ($typeNames as $typeName){
+            if(is_a($typeName, Enumerable::class, true)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function replaceLaravelCollectionInCompound(Compound $compound): Compound
