@@ -27,7 +27,6 @@ class FakeReflectionMethod extends ReflectionMethod
         return $this->methodName;
     }
 
-
     public function withType(FakeReflectionType $type): self
     {
         $this->type = $type;

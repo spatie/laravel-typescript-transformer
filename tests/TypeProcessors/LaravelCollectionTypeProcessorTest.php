@@ -6,12 +6,9 @@ use Illuminate\Support\Collection;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\TypeResolver;
 use ReflectionProperty;
-use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionProperty;
-use Spatie\LaravelTypeScriptTransformer\Tests\Fakes\FakeReflectionType;
 use Spatie\LaravelTypeScriptTransformer\Tests\TestCase;
 use Spatie\LaravelTypeScriptTransformer\TypeProcessors\LaravelCollectionTypeProcessor;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
-use Spatie\TypeScriptTransformer\TypeReflectors\PropertyTypeReflector;
 use Spatie\TypeScriptTransformer\TypeReflectors\TypeReflector;
 
 class LaravelCollectionTypeProcessorTest extends TestCase
@@ -32,7 +29,7 @@ class LaravelCollectionTypeProcessorTest extends TestCase
     /** @test */
     public function it_works_with_single_types()
     {
-        $class = new class{
+        $class = new class {
             /** @var int[] */
             public Collection $propertyA;
 
@@ -70,13 +67,12 @@ class LaravelCollectionTypeProcessorTest extends TestCase
         $this->assertEquals('array', (string) $this->processType($class, 'propertyG'));
         $this->assertEquals('int[]', (string) $this->processType($class, 'propertyH'));
         $this->assertEquals('int[]|null', (string) $this->processType($class, 'propertyI'));
-
     }
 
     /** @test */
     public function it_works_with_union_types()
     {
-        $class = new class{
+        $class = new class {
             /** @var \Illuminate\Support\Collection|int[] */
             public Collection|array $property;
         };

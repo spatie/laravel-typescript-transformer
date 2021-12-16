@@ -63,11 +63,11 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         }
 
         $typeNames = $type instanceof ReflectionUnionType
-            ? array_map(fn(ReflectionNamedType $type) => $type->getName(), $type->getTypes())
+            ? array_map(fn (ReflectionNamedType $type) => $type->getName(), $type->getTypes())
             : [$type->getName()];
 
-        foreach ($typeNames as $typeName){
-            if(is_a($typeName, Enumerable::class, true)){
+        foreach ($typeNames as $typeName) {
+            if (is_a($typeName, Enumerable::class, true)) {
                 return true;
             }
         }
