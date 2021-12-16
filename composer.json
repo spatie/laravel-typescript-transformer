@@ -17,19 +17,19 @@
     ],
     "require" : {
         "php" : "^8.0",
-        "spatie/typescript-transformer" : "^2.0",
+        "spatie/typescript-transformer" : "^2.1",
         "illuminate/console" : "^7.0|^8.12"
     },
     "require-dev" : {
         "orchestra/testbench" : "^5.0|^6.0",
         "mockery/mockery" : "^1.4",
         "phpunit/phpunit" : "^9.0",
-        "spatie/enum" : "^3.0",
         "spatie/temporary-directory" : "^1.2",
         "spatie/phpunit-snapshot-assertions": "^4.2",
         "spatie/data-transfer-object" : "^2.0",
         "friendsofphp/php-cs-fixer": "^2.18",
         "spatie/laravel-model-states" : "^1.6|^2.0",
+        "spatie/enum" : "^3.0",
         "vimeo/psalm": "^4.2"
     },
     "autoload" : {

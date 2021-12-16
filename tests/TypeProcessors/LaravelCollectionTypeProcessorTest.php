@@ -29,7 +29,6 @@ class LaravelCollectionTypeProcessorTest extends TestCase
         $this->typeResolver = new TypeResolver();
     }
 
-
     /** @test */
     public function it_works_with_single_types()
     {
