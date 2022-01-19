@@ -2,6 +2,18 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.2 - 2022-01-19
+
+## What's Changed
+
+- Laravel 9.x by @aidan-casey in https://github.com/spatie/laravel-typescript-transformer/pull/13
+
+## New Contributors
+
+- @aidan-casey made their first contribution in https://github.com/spatie/laravel-typescript-transformer/pull/13
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.1.1...2.1.2
+
 ## 2.1.1 - 2021-12-16
 
 - add support for transforming to native TypeScript enums
