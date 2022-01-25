@@ -15,6 +15,7 @@ class TypeScriptTransformCommand extends Command
     use ConfirmableTrait;
 
     protected $signature = 'typescript:transform
+                            {--force : Force the operation to run when in production}
                             {--path= : Specify a path with classes to transform}
                             {--output= : Use another file to output}
                             {--format : Use Prettier to format the output}';
