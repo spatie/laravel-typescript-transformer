@@ -2,6 +2,18 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.3 - 2022-01-25
+
+## What's Changed
+
+- Add force option to command by @erikgaal in https://github.com/spatie/laravel-typescript-transformer/pull/14
+
+## New Contributors
+
+- @erikgaal made their first contribution in https://github.com/spatie/laravel-typescript-transformer/pull/14
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.1.2...2.1.3
+
 ## 2.1.2 - 2022-01-19
 
 ## What's Changed
