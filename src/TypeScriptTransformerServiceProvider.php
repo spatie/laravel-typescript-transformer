@@ -3,7 +3,6 @@
 namespace Spatie\LaravelTypeScriptTransformer;
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\ServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
@@ -36,6 +35,4 @@ class TypeScriptTransformerServiceProvider extends PackageServiceProvider
                 ->transformToNativeEnums(config('typescript-transformer.transform_to_native_enums', false))
         );
     }
-
-
 }
