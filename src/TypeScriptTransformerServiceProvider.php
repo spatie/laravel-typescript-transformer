@@ -4,32 +4,24 @@ namespace Spatie\LaravelTypeScriptTransformer;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
 
-class TypeScriptTransformerServiceProvider extends ServiceProvider
+class TypeScriptTransformerServiceProvider extends PackageServiceProvider
 {
-    public function boot(): void
+    public function configurePackage(Package $package): void
     {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                TypeScriptTransformCommand::class,
-            ]);
-        }
-
-        $this->publishes([
-            __DIR__ . '/../config/typescript-transformer.php' => config_path('typescript-transformer.php'),
-        ]);
+        $package
+            ->name('laravel-typescript-transformer')
+            ->hasConfigFile()
+            ->hasCommand(TypeScriptTransformCommand::class);
     }
 
-    public function register(): void
+    public function packageRegistered(): void
     {
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/typescript-transformer.php',
-            'typescript-transformer'
-        );
-
         $this->app->bind(
             TypeScriptTransformerConfig::class,
             fn () => TypeScriptTransformerConfig::create()
@@ -44,4 +36,6 @@ class TypeScriptTransformerServiceProvider extends ServiceProvider
                 ->transformToNativeEnums(config('typescript-transformer.transform_to_native_enums', false))
         );
     }
+
+
 }
