@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.4 - 2022-08-22
+
+- use package service provider to fix publishing config
+
 ## 2.1.3 - 2022-01-25
 
 ## What's Changed
