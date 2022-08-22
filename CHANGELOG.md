@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.5 - 2022-08-22
+
+- do not fail when spatie/enum is not installed
+
 ## 2.1.4 - 2022-08-22
 
 - use package service provider to fix publishing config
