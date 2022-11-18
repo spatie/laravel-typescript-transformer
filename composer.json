@@ -31,7 +31,8 @@
         "friendsofphp/php-cs-fixer": "^3.0",
         "spatie/laravel-model-states" : "^1.6|^2.0",
         "spatie/enum" : "^3.0",
-        "vimeo/psalm": "^4.2"
+        "vimeo/psalm": "^4.2",
+        "nesbot/carbon" : "^2.63"
     },
     "autoload" : {
         "psr-4" : {
