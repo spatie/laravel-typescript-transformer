@@ -2,6 +2,11 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.6 - 2022-11-18
+
+- composer bump for typescript-transformer
+- add test suite for php 8.2
+
 ## 2.1.5 - 2022-08-22
 
 - do not fail when spatie/enum is not installed
