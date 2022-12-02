@@ -7,11 +7,6 @@ use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerServiceProvider;
 
 class TestCase extends Orchestra
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
-
     protected function getPackageProviders($app)
     {
         return [
