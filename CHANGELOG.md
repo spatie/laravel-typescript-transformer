@@ -2,6 +2,20 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.1.7 - 2023-01-24
+
+### What's Changed
+
+- Refactor tests to pest by @AyoobMH in https://github.com/spatie/laravel-typescript-transformer/pull/18
+- Add Laravel 10 support by @njoguamos in https://github.com/spatie/laravel-typescript-transformer/pull/20
+
+### New Contributors
+
+- @AyoobMH made their first contribution in https://github.com/spatie/laravel-typescript-transformer/pull/18
+- @njoguamos made their first contribution in https://github.com/spatie/laravel-typescript-transformer/pull/20
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.1.6...2.1.7
+
 ## 2.1.6 - 2022-11-18
 
 - composer bump for typescript-transformer
