@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.2.0 - 2023-03-24
+
+- Add a native enum transformer by default
+
 ## 2.1.7 - 2023-01-24
 
 ### What's Changed
