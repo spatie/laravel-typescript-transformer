@@ -18,7 +18,6 @@ return [
 
     'collectors' => [
         Spatie\TypeScriptTransformer\Collectors\DefaultCollector::class,
-        Spatie\TypeScriptTransformer\Collectors\EnumCollector::class,
     ],
 
     /*
