@@ -2,7 +2,6 @@
 
 use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
-use Spatie\TypeScriptTransformer\Collectors\EnumCollector;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
 
