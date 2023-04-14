@@ -16,7 +16,7 @@
         }
     ],
     "require" : {
-        "php": "^8.0",
+        "php": "^8.1",
         "illuminate/console": "^8.83|^9.30|^10.0",
         "spatie/laravel-package-tools": "^1.12",
         "spatie/typescript-transformer" : "^2.1.13"
