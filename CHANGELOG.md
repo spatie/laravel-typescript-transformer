@@ -2,6 +2,11 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.3.0 - 2023-04-14
+
+- Drop support for PHP 8.0
+- Enable collecting of enums by default
+
 ## 2.2.0 - 2023-03-24
 
 - Add a native enum transformer by default
