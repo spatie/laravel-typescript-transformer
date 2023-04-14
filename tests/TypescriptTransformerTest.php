@@ -2,6 +2,7 @@
 
 use Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
+use Spatie\TypeScriptTransformer\Collectors\EnumCollector;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
 
@@ -32,7 +33,7 @@ it('will crash if an older version of searching paths was defined', function () 
 });
 
 it('can transform to typescript', function () {
-    config()->set('typescript-transformer.auto_discover_types', __DIR__ . '/FakeClasses');
+    config()->set('typescript-transformer.auto_discover_types', __DIR__.'/FakeClasses');
     config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
     $this->artisan('typescript:transform')->assertExitCode(0);
@@ -41,16 +42,16 @@ it('can transform to typescript', function () {
 });
 
 it('can define the input path', function () {
-    config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
+    config()->set('typescript-transformer.searching_paths', __DIR__.'/FakeClasses');
     config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
-    $this->artisan('typescript:transform --path='. __DIR__ . '/FakeClasses')->assertExitCode(0);
+    $this->artisan('typescript:transform --path='.__DIR__.'/FakeClasses')->assertExitCode(0);
 
     expect($this->temporaryDirectory->path('index.d.ts'))->toMatchFileSnapshot();
 });
 
 it('can define a relative input path', function () {
-    config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
+    config()->set('typescript-transformer.searching_paths', __DIR__.'/FakeClasses');
     config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
     $this->app->useAppPath(__DIR__);
@@ -62,7 +63,7 @@ it('can define a relative input path', function () {
 });
 
 it('can define the relative output path', function () {
-    config()->set('typescript-transformer.searching_paths', __DIR__ . '/FakeClasses');
+    config()->set('typescript-transformer.searching_paths', __DIR__.'/FakeClasses');
     config()->set('typescript-transformer.output_file', $this->temporaryDirectory->path('index.d.ts'));
 
     $this->app->useAppPath(__DIR__);
