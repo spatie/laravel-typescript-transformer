@@ -13,7 +13,7 @@ return [
     /*
      * Collectors will search for classes in the `auto_discover_types` paths and choose the correct
      * transformer to transform them. By default, we include a DefaultCollector which will search
-     * for @typescript annotated and ![TypeScript] attributed classes to transform.
+     * for @typescript annotated and #[TypeScript] attributed classes to transform.
      */
 
     'collectors' => [
