@@ -2,6 +2,10 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.3.1 - 2023-10-12
+
+- Replace CarbonInterface with a string (#33)
+
 ## 2.3.0 - 2023-04-14
 
 - Drop support for PHP 8.0
