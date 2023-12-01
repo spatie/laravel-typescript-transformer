@@ -2,6 +2,11 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.3.2 - 2023-12-01
+
+- Use Laravel typescript transformer by default (#34)
+- Replace CarbonInterface with a string (#33)
+
 ## 2.3.1 - 2023-10-12
 
 - Replace CarbonInterface with a string (#33)
