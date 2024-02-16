@@ -2,6 +2,12 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.4.0 - 2024-02-16
+
+- Laravel 11 support
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.3.2...2.4.0
+
 ## 2.3.2 - 2023-12-01
 
 - Use Laravel typescript transformer by default (#34)
