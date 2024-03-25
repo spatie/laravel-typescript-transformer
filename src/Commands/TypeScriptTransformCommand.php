@@ -41,15 +41,9 @@ class TypeScriptTransformCommand extends Command
 
         $transformer = new TypeScriptTransformer($config);
 
-        try {
-            $this->ensureConfiguredCorrectly();
+        $this->ensureConfiguredCorrectly();
 
-            $collection = $transformer->transform();
-        } catch (Exception $exception) {
-            $this->error($exception->getMessage());
-
-            return 1;
-        }
+        $collection = $transformer->transform();
 
         $this->table(
             ['PHP class', 'TypeScript entity'],
