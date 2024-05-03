@@ -2,6 +2,15 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.4.1 - 2024-05-03
+
+### What's Changed
+
+* Let artisan handle the exceptions by @Tofandel in https://github.com/spatie/laravel-typescript-transformer/pull/41
+* 
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.4.0...2.4.1
+
 ## 2.4.0 - 2024-02-16
 
 - Laravel 11 support
