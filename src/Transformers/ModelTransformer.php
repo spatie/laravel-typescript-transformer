@@ -1,74 +1,72 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\Transformers;
+namespace App\Transformers;
 
+use ReflectionClass;
 use Spatie\TypeScriptTransformer\Structures\TransformedType;
+use Spatie\TypeScriptTransformer\Transformers\Transformer;
 
-use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use ReflectionClass;
 
-/**
- * A Transformer that generates Typescript definitions for a Model by inspecting the DB Schema
- */
 class ModelTransformer implements Transformer
 {
     public function transform(ReflectionClass $class, string $name): ?TransformedType
     {
-        if (!is_subclass_of($class->name, Model::class)) {
+        if (! is_subclass_of($class->name, Model::class)) {
             return null;
         }
-
         /** @var Model $modelInstance */
         $modelInstance = $class->newInstanceWithoutConstructor();
 
         $table = $modelInstance->getTable();
-        $columns = Schema::getColumnListing($table);
-
         $hidden = $modelInstance->getHidden();
+        $casts = $modelInstance->getCasts();
 
-        $serializedColumns = array_diff($columns, $hidden);
+        $columns = Schema::getColumns($table);
+        $columnNames = array_map(fn ($col) => $col['name'], $columns);
 
-        $column_defs = collect(DB::select("
-            SELECT column_name, is_nullable, data_type
-            FROM information_schema.columns
-            WHERE table_name = '$table';
-        "));
+        $serializedColumnNames = array_diff($columnNames, $hidden);
 
-        $model_attrs = [];
-        foreach ($serializedColumns as $column) {
-            $def = $column_defs->firstWhere('column_name', $column);
-            $is_nullable = $def->is_nullable == 'YES';
-            $column_type = $this->mapToTypeScriptType($def->data_type);
-            $attr_type = "$column: $column_type";
+        $typescriptProperties = [];
 
-            if ($is_nullable) {
-                $attr_type .= ' | null';
+        foreach ($serializedColumnNames as $index => $propertyName) {
+            $column = $columns[$index];
+            $isNullable = $column['nullable'];
+            $typescriptType = $this->mapTypeNameToJsonType($column['type_name']);
+
+            if (array_key_exists($propertyName, $casts)) {
+                // TODO: Get the typescript type for the $cast.
             }
 
-            $model_attrs[] = $attr_type;
+            $typescriptPropertyDefinition = "$propertyName: $typescriptType";
+
+            if ($isNullable) {
+                $typescriptPropertyDefinition .= ' | null';
+            }
+
+            $typescriptProperties[] = $typescriptPropertyDefinition;
         }
 
         return TransformedType::create(
             $class,
             $name,
-            '{'.implode("\n", $model_attrs).'}',
+            "{\n".implode("\n", $typescriptProperties)."\n}",
         );
     }
 
-    /**
-     *  Map column types to TypeScript types
-     */
-    private function mapToTypeScriptType(string $data_type): string
+    private function mapTypeNameToJsonType(string $columnType): string
     {
-        return match ($data_type) {
-            'string', 'text', 'varchar', 'character varying' => 'string',
-            'integer', 'bigint', 'int8' => 'number',
-            'float', 'double', 'decimal' => 'number',
+        // Map Laravel column types to TypeScript types
+        return match ($columnType) {
+            // Strings
+            'string', 'text', 'varchar', 'character varying', 'date', 'datetime', 'timestamp', 'timestamp without time zone' => 'string',
+            // Numbers
+            'integer', 'bigint', 'int4', 'int8', 'float', 'double', 'decimal' => 'number',
+            // Booleans
             'boolean', 'bool' => 'boolean',
-            'date', 'datetime', 'timestamp', 'timestamp without time zone' => 'Date',
-            default => dd($columnType), // Fallback for other types
+            // Unknown
+            default => 'unknown', // Fallback for other types
         };
     }
 }
