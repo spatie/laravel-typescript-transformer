@@ -13,11 +13,12 @@ return [
     /*
      * Collectors will search for classes in the `auto_discover_types` paths and choose the correct
      * transformer to transform them. By default, we include a DefaultCollector which will search
-     * for @typescript annotated and ![TypeScript] attributed classes to transform.
+     * for @typescript annotated and #[TypeScript] attributed classes to transform.
      */
 
     'collectors' => [
         Spatie\TypeScriptTransformer\Collectors\DefaultCollector::class,
+        Spatie\TypeScriptTransformer\Collectors\EnumCollector::class,
     ],
 
     /*
@@ -27,8 +28,9 @@ return [
 
     'transformers' => [
         Spatie\LaravelTypeScriptTransformer\Transformers\SpatieStateTransformer::class,
+        Spatie\TypeScriptTransformer\Transformers\EnumTransformer::class,
         Spatie\TypeScriptTransformer\Transformers\SpatieEnumTransformer::class,
-        Spatie\TypeScriptTransformer\Transformers\DtoTransformer::class,
+        Spatie\LaravelTypeScriptTransformer\Transformers\DtoTransformer::class,
     ],
 
     /*
@@ -40,6 +42,7 @@ return [
     'default_type_replacements' => [
         DateTime::class => 'string',
         DateTimeImmutable::class => 'string',
+        Carbon\CarbonInterface::class => 'string',
         Carbon\CarbonImmutable::class => 'string',
         Carbon\Carbon::class => 'string',
     ],

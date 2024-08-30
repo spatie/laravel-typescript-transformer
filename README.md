@@ -54,7 +54,7 @@ This will be transformed to:
 
 ```ts
 export type User = {
-    int: number;
+    id: number;
     name: string;
     address: string | null;
 }
