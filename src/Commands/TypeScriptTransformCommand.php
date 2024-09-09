@@ -39,7 +39,9 @@ class TypeScriptTransformCommand extends Command
             $config->formatter(PrettierFormatter::class);
         }
 
-        $transformer = new TypeScriptTransformer($config);
+        $transformer = app()->make(TypeScriptTransformer::class, [
+            'config' => $config,
+        ]);
 
         try {
             $this->ensureConfiguredCorrectly();
