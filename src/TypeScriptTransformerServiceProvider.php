@@ -33,6 +33,7 @@ class TypeScriptTransformerServiceProvider extends PackageServiceProvider
                 ->writer(config('typescript-transformer.writer', TypeDefinitionWriter::class))
                 ->formatter(config('typescript-transformer.formatter'))
                 ->transformToNativeEnums(config('typescript-transformer.transform_to_native_enums', false))
+                ->nullToOptional(config('typescript-transformer.transform_null_to_optional', false))
         );
     }
 }

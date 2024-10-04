@@ -7,7 +7,7 @@ return [
      */
 
     'auto_discover_types' => [
-        app_path()
+        app_path(),
     ],
 
     /*
@@ -75,4 +75,12 @@ return [
      */
 
     'transform_to_native_enums' => false,
+
+    /*
+     * By default, this package will convert PHP nullable properties to TypeScript
+     * types using a `null` type union. Setting `transform_null_to_optional` will
+     * make them optional instead.
+     */
+
+    'transform_null_to_optional' => false,
 ];
