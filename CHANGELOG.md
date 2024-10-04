@@ -2,6 +2,15 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.5.0 - 2024-10-04
+
+### What's Changed
+
+* Use service container to resolve TypescriptTransformer by @rasmuscnielsen in https://github.com/spatie/laravel-typescript-transformer/pull/47
+* feat: support `nullToOptional` by @innocenzi in https://github.com/spatie/laravel-typescript-transformer/pull/46
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.4.1...2.5.0
+
 ## 2.4.1 - 2024-05-03
 
 ### What's Changed
