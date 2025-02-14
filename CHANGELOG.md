@@ -2,6 +2,12 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.5.1 - 2025-02-14
+
+Allow Laravel 12
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.5.0...2.5.1
+
 ## 2.5.0 - 2024-10-04
 
 ### What's Changed
