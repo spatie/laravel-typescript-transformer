@@ -15,6 +15,7 @@ use ReflectionProperty;
 use ReflectionUnionType;
 use Spatie\TypeScriptTransformer\Structures\MissingSymbolsCollection;
 use Spatie\TypeScriptTransformer\TypeProcessors\TypeProcessor;
+use Spatie\TypeScriptTransformer\Types\TypeScriptType;
 
 class LaravelCollectionTypeProcessor implements TypeProcessor
 {
@@ -28,6 +29,10 @@ class LaravelCollectionTypeProcessor implements TypeProcessor
         }
 
         if ($type instanceof Array_) {
+            return $type;
+        }
+
+        if ($type instanceof TypeScriptType) {
             return $type;
         }
 
