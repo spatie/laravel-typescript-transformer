@@ -1,10 +1,20 @@
-# Transform PHP types to TypeScript
+<div align="left">
+    <a href="https://spatie.be/open-source?utm_source=github&utm_medium=banner&utm_campaign=laravel-typescript-transformer">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://spatie.be/packages/header/laravel-typescript-transformer/html/dark.webp?1744124203">
+        <img alt="Logo for laravel-typescript-transformer" src=" https://spatie.be/packages/header/laravel-typescript-transformer/html/light.webp?1744124203" height="190">
+      </picture>
+    </a>
+
+<h1>Transform PHP types to TypeScript</h1>
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-typescript-transformer.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-typescript-transformer)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/spatie/laravel-typescript-transformer/run-tests?label=tests)](https://github.com/spatie/laravel-typescript-transformer/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Styling](https://github.com/spatie/laravel-typescript-transformer/workflows/Check%20&%20fix%20styling/badge.svg)](https://github.com/spatie/laravel-typescript-transformer/actions?query=workflow%3A%22Check+%26+fix+styling%22)
 [![Psalm](https://github.com/spatie/laravel-typescript-transformer/workflows/Psalm/badge.svg)](https://github.com/spatie/laravel-typescript-transformer/actions?query=workflow%3APsalm)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-typescript-transformer.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-typescript-transformer)
+    
+</div>
 
 Always wanted type safety within PHP and TypeScript without duplicating a lot of code? Then you will like this package! Let's say you have an enum:
 
