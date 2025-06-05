@@ -2,7 +2,7 @@
     <a href="https://spatie.be/open-source?utm_source=github&utm_medium=banner&utm_campaign=laravel-typescript-transformer">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="https://spatie.be/packages/header/laravel-typescript-transformer/html/dark.webp?1744124203">
-        <img alt="Logo for laravel-typescript-transformer" src="https://spatie.be/packages/header/laravel-typescript-transformer/html/light.webp?1744124203" height="190">
+        <img alt="Logo for laravel-typescript-transformer" src="https://spatie.be/packages/header/laravel-typescript-transformer/html/light.webp?1744124203">
       </picture>
     </a>
 
