@@ -69,6 +69,30 @@ export type User = {
 
 Want to know more? You can find the documentation [here](https://docs.spatie.be/typescript-transformer/v2/introduction/).
 
+## GitHub Actions Integration
+
+The `--check-only` flag for the `typescript:transform` artisan command verifies whether your TypeScript files are up to date, without making any changes to them. Use this in your GitHub Actions workflow to ensure that your TypeScript files are always in sync with your PHP code.
+
+```yaml
+name: Check TypeScript Files
+on: [push, pull_request] # Use any trigger you prefer
+
+jobs:
+  check-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2' # Specify your PHP version
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Check TypeScript files
+        run: php artisan typescript:transform --check-only
+```
+
 ## Testing
 
 ``` bash
