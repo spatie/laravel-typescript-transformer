@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\TypeProviders;
+namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
 use Illuminate\Process\Exceptions\ProcessFailedException;
 use Illuminate\Process\Exceptions\ProcessTimedOutException;
@@ -14,12 +14,12 @@ use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\TypeScriptTransformer\Support\Console\Logger;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
-use Spatie\TypeScriptTransformer\TypeProviders\LoggingTypesProvider;
-use Spatie\TypeScriptTransformer\TypeProviders\TypesProvider;
-use Spatie\TypeScriptTransformer\TypeProviders\WatchingTypesProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-abstract class LaravelRouteTypesProvider implements TypesProvider, WatchingTypesProvider, LoggingTypesProvider
+abstract class LaravelRouteTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider
 {
     protected ?string $routeCollectionHash = null;
 

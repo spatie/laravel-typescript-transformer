@@ -2,7 +2,10 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\LaravelData\Transformers;
 
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Spatie\LaravelData\Contracts\BaseData;
+use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\Support\DataConfig;
 use Spatie\TypeScriptTransformer\Actions\TranspilePhpStanTypeToTypeScriptNodeAction;
 use Spatie\TypeScriptTransformer\Actions\TranspilePhpTypeNodeToTypeScriptNodeAction;
@@ -43,9 +46,9 @@ class DataClassTransformer extends ClassTransformer
             new FixArrayLikeStructuresClassPropertyProcessor(
                 replaceArrays: true,
                 arrayLikeClassesToReplace: [
-                    \Illuminate\Support\Collection::class,
-                    \Illuminate\Database\Eloquent\Collection::class,
-                    \Spatie\LaravelData\DataCollection::class,
+                    Collection::class,
+                    EloquentCollection::class,
+                    DataCollection::class,
                     ...$this->customDataCollections,
                 ]
             ),

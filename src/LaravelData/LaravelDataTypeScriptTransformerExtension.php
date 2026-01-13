@@ -24,6 +24,6 @@ class LaravelDataTypeScriptTransformerExtension implements TypeScriptTransformer
             customDataCollections: $this->customDataCollections,
         ));
 
-        $factory->typesProvider(LaravelDataTypesProvider::class);
+        $factory->provider(LaravelDataTransformedProvider::class);
     }
 }

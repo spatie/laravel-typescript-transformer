@@ -1,11 +1,11 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\TypeProviders;
+namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
-use Spatie\TypeScriptTransformer\TypeProviders\TypesProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeVariable;
@@ -14,7 +14,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class SpatieLaravelTypesProvider implements TypesProvider
+class SpatieLaravelTransformedProvider implements TransformedProvider
 {
     public function provide(TypeScriptTransformerConfig $config, TransformedCollection $types): void
     {

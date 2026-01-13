@@ -1,6 +1,6 @@
 <?php
 
-namespace Spatie\LaravelTypeScriptTransformer\TypeProviders;
+namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
@@ -30,7 +30,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 
-class LaravelNamedRouteTypesProvider extends LaravelRouteTypesProvider
+class LaravelNamedRouteTransformedProvider extends LaravelRouteTransformedProvider
 {
     /**
      * @param array<string> $location

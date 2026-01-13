@@ -2,8 +2,10 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Spatie\LaravelTypeScriptTransformer\Support\ConsoleLogger;
+use Spatie\TypeScriptTransformer\Enums\RunnerMode;
 use Spatie\TypeScriptTransformer\Runners\Runner;
 use Spatie\TypeScriptTransformer\Support\Console\MultiLogger;
 use Spatie\TypeScriptTransformer\Support\Console\RayLogger;
@@ -24,7 +26,7 @@ class TransformTypeScriptCommand extends Command
         }
 
         $runner = new Runner(
-            fn (bool $watch) => 'artisan typescript:transform --worker '. ($watch ? '--watch ' : '')
+            fn (bool $watch) => 'artisan typescript:transform --worker '.($watch ? '--watch ' : ''),
         );
 
         return $runner->run(
@@ -33,9 +35,12 @@ class TransformTypeScriptCommand extends Command
                 new ConsoleLogger($this),
             ]),
             config: app(TypeScriptTransformerConfig::class),
-            watch: $this->option('watch'),
-            isWorker: $this->option('worker'),
-            forceDirectWorker: false,
+            mode: match ([$this->option('watch'), $this->option('worker')]) {
+                [false, false] => RunnerMode::Direct,
+                [false, true] => throw new Exception('A worker only needs to be started in watch mode.'),
+                [true, false] => RunnerMode::Master,
+                [true, true] => RunnerMode::Worker,
+            }
         );
     }
 }

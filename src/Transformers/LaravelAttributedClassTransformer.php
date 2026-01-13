@@ -2,6 +2,8 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Transformers;
 
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Spatie\TypeScriptTransformer\ClassPropertyProcessors\FixArrayLikeStructuresClassPropertyProcessor;
 use Spatie\TypeScriptTransformer\Transformers\AttributedClassTransformer;
 
@@ -14,8 +16,8 @@ class LaravelAttributedClassTransformer extends AttributedClassTransformer
         foreach ($processors as $processor) {
             if ($processor instanceof FixArrayLikeStructuresClassPropertyProcessor) {
                 $processor->replaceArrayLikeClass(
-                    \Illuminate\Support\Collection::class,
-                    \Illuminate\Database\Eloquent\Collection::class,
+                    Collection::class,
+                    EloquentCollection::class,
                 );
             }
         }

@@ -9,14 +9,14 @@ use Spatie\LaravelData\PaginatedDataCollection;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
-use Spatie\TypeScriptTransformer\TypeProviders\TypesProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class LaravelDataTypesProvider implements TypesProvider
+class LaravelDataTransformedProvider implements TransformedProvider
 {
     public function provide(TypeScriptTransformerConfig $config, TransformedCollection $types): void
     {
