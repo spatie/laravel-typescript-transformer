@@ -37,9 +37,9 @@ class TransformTypeScriptCommand extends Command
             config: app(TypeScriptTransformerConfig::class),
             mode: match ([$this->option('watch'), $this->option('worker')]) {
                 [false, false] => RunnerMode::Direct,
-                [false, true] => throw new Exception('A worker only needs to be started in watch mode.'),
                 [true, false] => RunnerMode::Master,
                 [true, true] => RunnerMode::Worker,
+                default => throw new Exception('A worker only needs to be started in watch mode.'),
             }
         );
     }
