@@ -6,7 +6,6 @@ use Illuminate\Contracts\Pagination\CursorPaginator as CursorPaginatorInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator as LengthAwarePaginatorInterface;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
@@ -28,14 +27,14 @@ use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelTransformedProvider implements TransformedProvider
 {
-    public function provide(TypeScriptTransformerConfig $config, TransformedCollection $types): void
+    public function provide(TypeScriptTransformerConfig $config): array
     {
-        $types->add(
+        return [
             $this->lengthAwarePaginator(),
             $this->lengthAwarePaginatorInterface(),
             $this->cursorPaginator(),
             $this->cursorPaginatorInterface(),
-        );
+        ];
     }
 
     protected function lengthAwarePaginator(): Transformed

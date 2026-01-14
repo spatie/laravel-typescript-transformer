@@ -15,11 +15,15 @@ use Spatie\TypeScriptTransformer\Events\Watch\WatchEvent;
 use Spatie\TypeScriptTransformer\Support\Console\Logger;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\StandaloneWritingTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
+use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
+use Spatie\TypeScriptTransformer\Writers\FlatWriter;
+use Spatie\TypeScriptTransformer\Writers\Writer;
 
-abstract class LaravelRouteTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider
+abstract class LaravelRouteTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider, StandaloneWritingTransformedProvider
 {
     protected ?string $routeCollectionHash = null;
 
@@ -33,6 +37,7 @@ abstract class LaravelRouteTransformedProvider implements TransformedProvider, W
         protected ?string $defaultNamespace,
         protected bool $includeRouteClosures,
         protected array $filters,
+        protected string $path,
     ) {
     }
 
@@ -41,7 +46,7 @@ abstract class LaravelRouteTransformedProvider implements TransformedProvider, W
         return [];
     }
 
-    public function provide(TypeScriptTransformerConfig $config, TransformedCollection $types): void
+    public function provide(TypeScriptTransformerConfig $config): array
     {
         $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
             defaultNamespace: $this->defaultNamespace,
@@ -51,7 +56,7 @@ abstract class LaravelRouteTransformedProvider implements TransformedProvider, W
 
         $this->routeCollectionHash = md5(serialize($routeCollection));
 
-        $types->add(...$this->resolveTransformed($routeCollection));
+        return $this->resolveTransformed($routeCollection);
     }
 
     public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): int|WatchEventResult
@@ -110,6 +115,11 @@ abstract class LaravelRouteTransformedProvider implements TransformedProvider, W
     public function setLogger(Logger $logger): void
     {
         $this->logger = $logger;
+    }
+
+    public function getWriter(): Writer
+    {
+        return new FlatModuleWriter($this->path);
     }
 
     /** @return array<Transformed> */

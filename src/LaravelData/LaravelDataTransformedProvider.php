@@ -6,7 +6,6 @@ use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\PaginatedDataCollection;
-use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
@@ -18,12 +17,12 @@ use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelDataTransformedProvider implements TransformedProvider
 {
-    public function provide(TypeScriptTransformerConfig $config, TransformedCollection $types): void
+    public function provide(TypeScriptTransformerConfig $config): array
     {
-        $types->add(
+        return [
             $this->paginatedCollection(),
             $this->cursorPaginatedCollection(),
-        );
+        ];
     }
 
     protected function paginatedCollection(): Transformed

@@ -42,12 +42,14 @@ class LaravelRouteActionTransformedProvider extends LaravelRouteTransformedProvi
         protected ?string $defaultNamespace = null,
         protected array $location = ['App'],
         array $filters = [],
+        string $path = 'helpers/action.ts',
     ) {
         parent::__construct(
             resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
             defaultNamespace: $this->defaultNamespace,
             includeRouteClosures: false,
-            filters: $filters
+            filters: $filters,
+            path: $path,
         );
     }
 

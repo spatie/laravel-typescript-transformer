@@ -40,12 +40,14 @@ class LaravelNamedRouteTransformedProvider extends LaravelRouteTransformedProvid
         ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction = new ResolveLaravelRouteControllerCollectionsAction(),
         protected array $location = ['App'],
         array $filters = [],
+        string $path = 'helpers/route.ts',
     ) {
         parent::__construct(
             resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
             defaultNamespace: null,
             includeRouteClosures: true,
-            filters: $filters
+            filters: $filters,
+            path: $path,
         );
     }
 
