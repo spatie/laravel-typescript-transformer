@@ -12,7 +12,7 @@ use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\Data\WatchEventResult;
 use Spatie\TypeScriptTransformer\Events\Watch\SummarizedWatchEvent;
 use Spatie\TypeScriptTransformer\Events\Watch\WatchEvent;
-use Spatie\TypeScriptTransformer\Support\Console\Logger;
+use Spatie\TypeScriptTransformer\Support\Loggers\Logger;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\StandaloneWritingTransformedProvider;
@@ -20,7 +20,6 @@ use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
-use Spatie\TypeScriptTransformer\Writers\FlatWriter;
 use Spatie\TypeScriptTransformer\Writers\Writer;
 
 abstract class LaravelRouteTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider, StandaloneWritingTransformedProvider

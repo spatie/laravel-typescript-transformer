@@ -7,8 +7,8 @@ use Illuminate\Console\Command;
 use Spatie\LaravelTypeScriptTransformer\Support\ConsoleLogger;
 use Spatie\TypeScriptTransformer\Enums\RunnerMode;
 use Spatie\TypeScriptTransformer\Runners\Runner;
-use Spatie\TypeScriptTransformer\Support\Console\MultiLogger;
-use Spatie\TypeScriptTransformer\Support\Console\RayLogger;
+use Spatie\TypeScriptTransformer\Support\Loggers\MultiLogger;
+use Spatie\TypeScriptTransformer\Support\Loggers\RayLogger;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class TransformTypeScriptCommand extends Command
@@ -25,9 +25,7 @@ class TransformTypeScriptCommand extends Command
             return self::FAILURE;
         }
 
-        $runner = new Runner(
-            fn (bool $watch) => 'artisan typescript:transform --worker '.($watch ? '--watch ' : ''),
-        );
+        $runner = new Runner();
 
         return $runner->run(
             logger: new MultiLogger([
@@ -40,7 +38,8 @@ class TransformTypeScriptCommand extends Command
                 [true, false] => RunnerMode::Master,
                 [true, true] => RunnerMode::Worker,
                 default => throw new Exception('A worker only needs to be started in watch mode.'),
-            }
+            },
+            workerCommand: fn (bool $watch) => 'artisan typescript:transform --worker '.($watch ? '--watch ' : ''),
         );
     }
 }

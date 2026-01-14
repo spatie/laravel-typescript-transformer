@@ -9,48 +9,22 @@
 [![Psalm](https://github.com/spatie/laravel-typescript-transformer/workflows/Psalm/badge.svg)](https://github.com/spatie/laravel-typescript-transformer/actions?query=workflow%3APsalm)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-typescript-transformer.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-typescript-transformer)
 
-Always wanted type safety within PHP and TypeScript without duplicating a lot of code? Then you will like this package! Let's say you have an enum:
+A
+This package allows you to convert PHP classes to TypeScript.
+
+This class...
 
 ```php
-class Languages extends Enum
-{
-    const TYPESCRIPT = 'typescript';
-    const PHP = 'php';
-}
-```
-
-Wouldn't it be cool if you could have an automatically generated TypeScript definition like this:
-
-```ts
-export type Languages = 'typescript' | 'php';
-```
-
-This package will automatically generate such definitions for you, the only thing you have to do is adding this annotation:
-
-```php
-/** @typescript **/
-class Languages extends Enum
-{
-    const TYPESCRIPT = 'typescript';
-    const PHP = 'php';
-}
-```
-
-You can even take it a bit further and generate TypeScript from classes:
-
-```php
-/** @typescript */
+#[TypeScript]
 class User
 {
     public int $id;
-
     public string $name;
-
     public ?string $address;
 }
 ```
 
-This will be transformed to:
+... will be converted to this TypeScript type:
 
 ```ts
 export type User = {
@@ -60,7 +34,79 @@ export type User = {
 }
 ```
 
-Want to know more? You can find the documentation [here](https://docs.spatie.be/typescript-transformer/v2/introduction/).
+Here's another example.
+
+```php
+enum Languages: string
+{
+    case TYPESCRIPT = 'typescript';
+    case PHP = 'php';
+}
+```
+
+The `Languages` enum will be converted to:
+
+```tsx
+export type Languages = 'typescript' | 'php';
+```
+
+And that's just the beginning! TypeScript transformer can handle complex types, generics and even allows you to create TypeScript functions.
+
+## Installation
+
+You can install the package via composer:
+
+```bash
+composer require spatie/laravel-typescript-transformer
+```
+
+## Setting up TypeScript transformer
+
+
+When using Laravel, first install the specific `TypeScriptTransformerServiceProvider`:
+
+```bash
+php artisan typescript:install
+```
+
+This command will create a `TypeScriptTransformerServiceProvider` in your `app/Providers` directory. Which looks like
+this:
+
+```php
+class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServiceProvider
+{
+    protected function configure(TypeScriptTransformerConfigFactory $config): void
+    {
+        $config; // We'll come back to this in a minute
+    }
+}
+```
+
+And it will also register the service provider in your `bootstrap/providers.php` file (when running Laravel 11 or
+above). Or in your `config/app.php` file when running Laravel 10 or below.
+
+Now you can transform types as such:
+
+```bash
+php artisan typescript:transform
+```
+
+Since we haven't configured TypeScript transformer yet, this command won't do anything.
+
+In order to configure TypeScript Transformer, we recommand you to now continue reading the documentation on the framework-agnostic [typescript-transformer](https://github.com/spatie/typescript-transformer) package. 
+The docs will explain how to configure the package which is by modifying the `$config` object we saw earlier in the `TypeScriptTransformerServiceProvider`.
+
+After you're done reading the framework-agnostic docs, you can return here to read about Laravel-specific features this package provides.
+
+## Laravel-specific features
+
+TODO
+
+### Your routes in TypeScript
+
+### Watching changes and live updating TypeScript
+
+### Wayfinder support
 
 ## Testing
 

@@ -3,7 +3,7 @@
 namespace Spatie\LaravelTypeScriptTransformer\Support;
 
 use Illuminate\Console\Command;
-use Spatie\TypeScriptTransformer\Support\Console\ConsoleLogger as BaseConsoleLogger;
+use Spatie\TypeScriptTransformer\Support\Loggers\ArrayLogger as BaseConsoleLogger;
 
 class ConsoleLogger extends BaseConsoleLogger
 {
