@@ -24,7 +24,7 @@ class LaravelConsoleLogger extends BaseConsoleLogger
 
     public function warning(mixed $item, ?string $title = null): void
     {
-        $this->command->warning($this->formatTitle($title).$this->mixedToString($item));
+        $this->command->warn($this->formatTitle($title).$this->mixedToString($item));
     }
 
     public function debug(mixed $item, ?string $title = null): void
