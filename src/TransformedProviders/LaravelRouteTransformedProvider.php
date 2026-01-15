@@ -58,7 +58,7 @@ abstract class LaravelRouteTransformedProvider implements TransformedProvider, W
         return $this->resolveTransformed($routeCollection);
     }
 
-    public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): int|WatchEventResult
+    public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): ?WatchEventResult
     {
         if (! $watchEvent instanceof SummarizedWatchEvent) {
             return WatchEventResult::continue();

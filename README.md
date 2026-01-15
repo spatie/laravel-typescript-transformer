@@ -1,4 +1,3 @@
-
 [<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
 
 # Transform PHP types to TypeScript
@@ -50,7 +49,8 @@ The `Languages` enum will be converted to:
 export type Languages = 'typescript' | 'php';
 ```
 
-And that's just the beginning! TypeScript transformer can handle complex types, generics and even allows you to create TypeScript functions.
+And that's just the beginning! TypeScript transformer can handle complex types, generics and even allows you to create
+TypeScript functions.
 
 ## Installation
 
@@ -61,7 +61,6 @@ composer require spatie/laravel-typescript-transformer
 ```
 
 ## Setting up TypeScript transformer
-
 
 When using Laravel, first install the specific `TypeScriptTransformerServiceProvider`:
 
@@ -93,18 +92,63 @@ php artisan typescript:transform
 
 Since we haven't configured TypeScript transformer yet, this command won't do anything.
 
-In order to configure TypeScript Transformer, we recommand you to now continue reading the documentation on the framework-agnostic [typescript-transformer](https://github.com/spatie/typescript-transformer) package. 
-The docs will explain how to configure the package which is by modifying the `$config` object we saw earlier in the `TypeScriptTransformerServiceProvider`.
+In order to configure TypeScript Transformer, we recommand you to now continue reading the documentation on the
+framework-agnostic [typescript-transformer](https://github.com/spatie/typescript-transformer) package. The docs will
+explain how to configure the package which is by modifying the `$config` object we saw earlier in the
+`TypeScriptTransformerServiceProvider`.
 
-After you're done reading the framework-agnostic docs, you can return here to read about Laravel-specific features this package provides.
+After you're done reading the framework-agnostic docs, you can return here to read about Laravel-specific features this
+package provides.
+
+## Watching changes and live updating TypeScript
+
+It is possible to have TypeScript transformer watch your PHP files for changes and automatically update the generated 
+TypeScript files. You can do this by running:
+
+```bash
+php artisan typescript:transform --watch
+```
 
 ## Laravel-specific features
 
-TODO
+This package provides some extra features on top of the base TypeScript transformer package tailed for Laravel
+applications. Let's go through them.
 
 ### Your routes in TypeScript
 
-### Watching changes and live updating TypeScript
+Laravel provides a great way to define routes and then generate URLs to those routes in PHP using the `route()` and 
+`action()` helpers. While this all works in PHP, it can be a bit of a pain to do the same in TypeScript.
+
+TypeScript transformer can help you here by providing exact copies of these helpers in TypeScript.
+
+To add an action helper, add the following provider to your `TypeScriptTransformerServiceProvider`:
+
+```php
+use Spatie\LaravelTypeScriptTransformer\TransformedProviders\LaravelRouteActionTransformedProvider;
+
+protected function configure(TypeScriptTransformerConfigFactory $config): void
+{
+    $config->provider(new LaravelRouteActionTransformedProvider());
+}
+```
+
+The next time you run the `typescript:transform` command, a TypeScript function called `action` will be generated in 
+the `helpers/action.ts` file. 
+
+You can now use the `action` function in your TypeScript code like this:
+
+```ts
+import { action } from './helpers/action';
+
+// Resource controller
+const userUrl = action(['/App/Http/Controllers/UserController', 'show'], { user: 1 });
+
+// Invokable controller
+const refreshUrl = action('/App/Http/Controllers/RefreshUserController');
+```
+
+
+
 
 ### Wayfinder support
 
@@ -124,7 +168,8 @@ Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTI
 
 ## Security
 
-If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using the issue tracker.
+If you've found a bug regarding security please mail [security@spatie.be](mailto:security@spatie.be) instead of using
+the issue tracker.
 
 ## Credits
 
