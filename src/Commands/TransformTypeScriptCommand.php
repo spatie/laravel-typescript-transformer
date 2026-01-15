@@ -4,7 +4,7 @@ namespace Spatie\LaravelTypeScriptTransformer\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use Spatie\LaravelTypeScriptTransformer\Support\ConsoleLogger;
+use Spatie\LaravelTypeScriptTransformer\Support\LaravelConsoleLogger;
 use Spatie\TypeScriptTransformer\Enums\RunnerMode;
 use Spatie\TypeScriptTransformer\Runners\Runner;
 use Spatie\TypeScriptTransformer\Support\Loggers\MultiLogger;
@@ -30,7 +30,7 @@ class TransformTypeScriptCommand extends Command
         return $runner->run(
             logger: new MultiLogger([
                 new RayLogger(),
-                new ConsoleLogger($this),
+                new LaravelConsoleLogger($this),
             ]),
             config: app(TypeScriptTransformerConfig::class),
             mode: match ([$this->option('watch'), $this->option('worker')]) {

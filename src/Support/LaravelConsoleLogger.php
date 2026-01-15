@@ -5,7 +5,7 @@ namespace Spatie\LaravelTypeScriptTransformer\Support;
 use Illuminate\Console\Command;
 use Spatie\TypeScriptTransformer\Support\Loggers\ArrayLogger as BaseConsoleLogger;
 
-class ConsoleLogger extends BaseConsoleLogger
+class LaravelConsoleLogger extends BaseConsoleLogger
 {
     public function __construct(
         protected Command $command
@@ -22,9 +22,9 @@ class ConsoleLogger extends BaseConsoleLogger
         $this->command->info($this->formatTitle($title).$this->mixedToString($item));
     }
 
-    public function warn(mixed $item, ?string $title = null): void
+    public function warning(mixed $item, ?string $title = null): void
     {
-        $this->command->warn($this->formatTitle($title).$this->mixedToString($item));
+        $this->command->warning($this->formatTitle($title).$this->mixedToString($item));
     }
 
     public function debug(mixed $item, ?string $title = null): void
