@@ -18,13 +18,12 @@
     "require" : {
         "php": "^8.1",
         "illuminate/contracts": "^11.0|^12.0",
-        "spatie/typescript-transformer" : "dev-main"
+        "spatie/typescript-transformer": "dev-main"
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer": "^3.0",
         "nunomaduro/larastan": "^3.0",
-        "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "^3.0|^4.2",
+        "pestphp/pest": "^3.0|^4.1",
         "pestphp/pest-plugin-arch": "^3.0|^4.0",
         "pestphp/pest-plugin-laravel": "^3.0|^4.0",
         "phpstan/extension-installer": "^1.1",

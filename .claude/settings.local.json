@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./vendor/bin/pest:*)"
+      "Bash(./vendor/bin/pest:*)",
+      "Bash(composer show:*)"
     ]
   }
 }
