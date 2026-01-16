@@ -32,4 +32,24 @@ abstract class LaravelRouteReference implements Reference
     {
         return new static('function');
     }
+
+    public static function baseUrl(): static
+    {
+        return new static('baseUrl');
+    }
+
+    public static function routes(): static
+    {
+        return new static('routes');
+    }
+
+    public static function routeParameters(): static
+    {
+        return new static('routeParameters');
+    }
+
+    public static function routeArgs(): static
+    {
+        return new static('routeArgs');
+    }
 }

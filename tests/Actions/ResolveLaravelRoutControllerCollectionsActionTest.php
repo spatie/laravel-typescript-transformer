@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Routing\Router;
+use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ClosureActionNameResolver;
+use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
+use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Exceptions\DuplicateActionNameException;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\ControllerRouteFilter;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\NamedRouteFilter;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
@@ -17,11 +21,14 @@ use Symfony\Component\HttpKernel\Controller\ErrorController;
 it('can resolve all possible routes', function (Closure $route, Closure $expectations) {
     $router = app(Router::class);
 
-    $router->setRoutes(new \Illuminate\Routing\RouteCollection()); // Laravel registers a storage.local route by default, which we want to ignore in this test.
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
 
     $route($router);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(null, true);
+    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new DefaultActionNameResolver(),
+        true
+    );
 
     $expectations($routes);
 })->with(function () {
@@ -41,7 +48,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->controllers)->toHaveCount(1);
             expect($routes->closures)->toBeEmpty();
 
-            $actions = $routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController']->actions;
+            $actions = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController']->actions;
 
             expect($actions)->toHaveCount(1);
             expect($actions['update'])->toBeInstanceOf(RouteControllerAction::class);
@@ -58,7 +65,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->controllers)->toHaveCount(1);
             expect($routes->closures)->toBeEmpty();
 
-            $controller = $routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController'];
+            $controller = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController'];
 
             expect($controller)->toBeInstanceOf(RouteInvokableController::class);
             expect($controller->url)->toBe('invokable');
@@ -74,7 +81,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->controllers)->toHaveCount(1);
             expect($routes->closures)->toBeEmpty();
 
-            $controller = $routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController'];
+            $controller = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController'];
 
             expect($controller)->toBeInstanceOf(RouteController::class);
             expect($controller->actions)->toHaveCount(7);
@@ -184,9 +191,9 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($routes->closures['Closure(simple)']->name)->toBe('simple');
 
-            expect($routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController']->name)->toBe('invokable');
+            expect($routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController']->name)->toBe('invokable');
 
-            $resourceController = $routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController'];
+            $resourceController = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController'];
 
             expect($resourceController->actions['index']->name)->toBe('resource.index');
             expect($resourceController->actions['show']->name)->toBe('resource.show');
@@ -199,17 +206,76 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
     ];
 });
 
-it('can omit certain parts of a specified namespace', function () {
-    app(Router::class)->get('error', ErrorController::class);
-    app(Router::class)->get('invokable', InvokableController::class);
+it('can strip namespace prefixes using StrippedActionNameResolver', function () {
+    $router = app(Router::class);
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute('Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses', true);
+    $router->get('error', ErrorController::class);
+    $router->get('invokable', InvokableController::class);
+
+    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new StrippedActionNameResolver([
+            'Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses' => null,
+        ]),
+        true
+    );
 
     expect($routes->controllers)->toHaveCount(2)->toHaveKeys([
-        '.Symfony.Component.HttpKernel.Controller.ErrorController',
+        '/Symfony/Component/HttpKernel/Controller/ErrorController',
         'InvokableController',
     ]);
 });
+
+it('can replace namespace prefixes with custom values using StrippedActionNameResolver', function () {
+    $router = app(Router::class);
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
+
+    $router->get('invokable', InvokableController::class);
+    $router->get('resource', [ResourceController::class, 'index']);
+
+    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new StrippedActionNameResolver([
+            'Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses' => 'Test',
+        ]),
+        true
+    );
+
+    expect($routes->controllers)->toHaveCount(2)->toHaveKeys([
+        'Test/InvokableController',
+        'Test/ResourceController',
+    ]);
+});
+
+it('can use a closure to resolve action names using ClosureActionNameResolver', function () {
+    $router = app(Router::class);
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
+
+    $router->get('invokable', InvokableController::class);
+    $router->get('resource', [ResourceController::class, 'index']);
+
+    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new ClosureActionNameResolver(fn (string $class) => class_basename($class)),
+        true
+    );
+
+    expect($routes->controllers)->toHaveCount(2)->toHaveKeys([
+        'InvokableController',
+        'ResourceController',
+    ]);
+});
+
+it('throws DuplicateActionNameException when multiple controllers resolve to the same name', function () {
+    $router = app(Router::class);
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
+
+    $router->get('invokable', InvokableController::class);
+    $router->get('error', ErrorController::class);
+
+    app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new ClosureActionNameResolver(fn (string $class) => 'SameName'),
+        true
+    );
+})->throws(DuplicateActionNameException::class);
 
 it('can filter out certain routes', function (
     RouteFilter $filter,
@@ -217,13 +283,17 @@ it('can filter out certain routes', function (
 ) {
     $router = app(Router::class);
 
-    $router->setRoutes(new \Illuminate\Routing\RouteCollection()); // Laravel registers a storage.local route by default, which we want to ignore in this test.
+    $router->setRoutes(new \Illuminate\Routing\RouteCollection());
 
     $router->get('simple', fn () => 'simple')->name('simple');
     $router->get('invokable', InvokableController::class)->name('invokable');
     $router->resource('resource', ResourceController::class);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(null, true, [$filter]);
+    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+        new DefaultActionNameResolver(),
+        true,
+        [$filter]
+    );
 
     $expectations($routes);
 })->with(function () {
@@ -241,10 +311,10 @@ it('can filter out certain routes', function (
             expect($routes->controllers)
                 ->toHaveCount(2)
                 ->toHaveKeys([
-                    '.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController',
-                    '.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController',
+                    'Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController',
+                    'Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController',
                 ]);
-            expect($routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController']->actions)
+            expect($routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController']->actions)
                 ->toHaveCount(5)
                 ->toHaveKeys([
                     'show',
@@ -266,14 +336,14 @@ it('can filter out certain routes', function (
         new ControllerRouteFilter(ResourceController::class),
         function (RouteCollection $routes) {
             expect($routes->closures)->toHaveCount(1);
-            expect($routes->controllers)->toHaveCount(1)->toHaveKey('.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController');
+            expect($routes->controllers)->toHaveCount(1)->toHaveKey('Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController');
         },
     ];
     yield 'multiple controllers' => [
         new ControllerRouteFilter(ResourceController::class),
         function (RouteCollection $routes) {
             expect($routes->closures)->toHaveCount(1);
-            expect($routes->controllers)->toHaveCount(1)->toHaveKey('.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController');
+            expect($routes->controllers)->toHaveCount(1)->toHaveKey('Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController');
         },
     ];
     yield 'controller wildcard' => [
@@ -290,10 +360,10 @@ it('can filter out certain routes', function (
             expect($routes->controllers)
                 ->toHaveCount(2)
                 ->toHaveKeys([
-                    '.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController',
-                    '.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.InvokableController',
+                    'Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController',
+                    'Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController',
                 ]);
-            expect($routes->controllers['.Spatie.LaravelTypeScriptTransformer.Tests.FakeClasses.ResourceController']->actions)
+            expect($routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController']->actions)
                 ->toHaveCount(5)
                 ->toHaveKeys([
                     'show',

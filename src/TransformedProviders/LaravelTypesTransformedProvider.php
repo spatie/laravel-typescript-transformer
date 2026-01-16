@@ -25,7 +25,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
-class LaravelTransformedProvider implements TransformedProvider
+class LaravelTypesTransformedProvider implements TransformedProvider
 {
     public function provide(TypeScriptTransformerConfig $config): array
     {

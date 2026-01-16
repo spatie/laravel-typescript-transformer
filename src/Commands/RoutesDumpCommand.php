@@ -7,7 +7,7 @@ use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCol
 
 class RoutesDumpCommand extends Command
 {
-    public $signature = 'typescript:dump-routes {defaultNamespace} {filters} {--include-route-closures}';
+    public $signature = 'typescript:dump-routes {actionNameResolver} {filters} {--include-route-closures}';
 
     public $description = 'Transforms Laravel route definitions to TypeScript Transformer usable format.';
 
@@ -16,11 +16,7 @@ class RoutesDumpCommand extends Command
     public function handle(
         ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRouteControllerCollectionsAction
     ): int {
-        $defaultNamespace = $this->argument('defaultNamespace');
-
-        if ($defaultNamespace === 'null') {
-            $defaultNamespace = null;
-        }
+        $actionNameResolver = unserialize($this->argument('actionNameResolver'));
 
         $filters = $this->argument('filters');
 
@@ -29,7 +25,7 @@ class RoutesDumpCommand extends Command
         }
 
         $routeCollection = $resolveLaravelRouteControllerCollectionsAction->execute(
-            defaultNamespace: $defaultNamespace,
+            actionNameResolver: $actionNameResolver,
             includeRouteClosures: $this->option('include-route-closures'),
             filters: $filters === null ? [] : unserialize($filters)
         );

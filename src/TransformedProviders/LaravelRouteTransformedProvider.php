@@ -2,125 +2,231 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
-use Illuminate\Process\Exceptions\ProcessFailedException;
-use Illuminate\Process\Exceptions\ProcessTimedOutException;
-use Illuminate\Support\Facades\Process;
+use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
-use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
-use Spatie\TypeScriptTransformer\Data\WatchEventResult;
-use Spatie\TypeScriptTransformer\Events\SummarizedWatchEvent;
-use Spatie\TypeScriptTransformer\Events\WatchEvent;
-use Spatie\TypeScriptTransformer\Support\Loggers\Logger;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteInvokableController;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
-use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
-use Spatie\TypeScriptTransformer\TransformedProviders\StandaloneWritingTransformedProvider;
-use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
-use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
-use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
-use Spatie\TypeScriptTransformer\Writers\Writer;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptConditional;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptFunctionDefinition;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeVariable;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIndexedAccess;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptJsonObject;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptLiteral;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNever;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNumber;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptOperator;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptParameter;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptTuple;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
 
-abstract class LaravelRouteTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider, StandaloneWritingTransformedProvider
+class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedProvider
 {
-    protected ?string $routeCollectionHash = null;
-
-    protected Logger $logger;
-
     /**
      * @param array<RouteFilter> $filters
+     * @param array<string>|null $routeDirectories
      */
     public function __construct(
-        protected ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction,
-        protected ?string $defaultNamespace,
-        protected bool $includeRouteClosures,
-        protected array $filters,
-        protected string $path,
+        ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction = new ResolveLaravelRouteControllerCollectionsAction(),
+        array $filters = [],
+        string $path = 'helpers/route.ts',
+        ?array $routeDirectories = null,
+        protected bool $absoluteUrlsByDefault = true,
     ) {
+        parent::__construct(
+            resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
+            actionNameResolver: new DefaultActionNameResolver(),
+            includeRouteClosures: true,
+            filters: $filters,
+            path: $path,
+            routeDirectories: $routeDirectories
+        );
     }
 
-    public function directoriesToWatch(): array
+    /** @return Transformed[] */
+    protected function resolveTransformed(RouteCollection $routeCollection): array
     {
-        return [];
-    }
+        $routesObject = $this->routeCollectionToTypedObject($routeCollection);
 
-    public function provide(TypeScriptTransformerConfig $config): array
-    {
-        $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
-            defaultNamespace: $this->defaultNamespace,
-            includeRouteClosures: $this->includeRouteClosures,
-            filters: $this->filters,
+        $transformedRoutes = new Transformed(
+            TypeScriptVariableDeclaration::const(
+                'routes',
+                new TypeScriptJsonObject($routesObject)
+            ),
+            LaravelNamedRouteReference::routes(),
+            [],
+            false,
         );
 
-        $this->routeCollectionHash = md5(serialize($routeCollection));
+        $transformedRouteParameters = new Transformed(
+            new TypeScriptAlias(
+                new TypeScriptIdentifier('RouteParameters'),
+                $this->parseRouteCollection($routeCollection),
+            ),
+            LaravelNamedRouteReference::routeParameters(),
+            [],
+            false,
+        );
 
-        return $this->resolveTransformed($routeCollection);
+        $transformedRouteFunction = new Transformed(
+            new TypeScriptFunctionDefinition(
+                new TypeScriptGeneric(
+                    new TypeScriptIdentifier('route'),
+                    [
+                        new TypeScriptGenericTypeVariable(
+                            new TypeScriptIdentifier('T'),
+                            extends: TypeScriptOperator::keyof(new TypeScriptIdentifier('RouteParameters'))
+                        ),
+                    ]
+                ),
+                [
+                    new TypeScriptParameter('name', new TypeScriptIdentifier('T')),
+                    new TypeScriptParameter(
+                        'parameters',
+                        new TypeScriptConditional(
+                            TypeScriptOperator::extends(
+                                new TypeScriptTuple([
+                                    new TypeScriptIndexedAccess(
+                                        new TypeScriptIdentifier('RouteParameters'),
+                                        [new TypeScriptIdentifier('T')]
+                                    )
+                                ]),
+                                new TypeScriptTuple([new TypeScriptNever()])
+                            ),
+                            new TypeScriptGeneric(
+                                new TypeScriptIdentifier('Record'),
+                                [new TypeScriptString(), new TypeScriptNever()]
+                            ),
+                            new TypeScriptIndexedAccess(
+                                new TypeScriptIdentifier('RouteParameters'),
+                                [new TypeScriptIdentifier('T')]
+                            )
+                        ),
+                        isOptional: true
+                    ),
+                    new TypeScriptParameter('absolute', new TypeScriptIdentifier('boolean'), defaultValue: new TypeScriptLiteral($this->absoluteUrlsByDefault)),
+                ],
+                new TypeScriptString(),
+                new TypeScriptRaw(
+                    <<<'TS'
+let url: string = '/' + routes[name];
+
+if (parameters) {
+    for (const [key, value] of Object.entries(parameters)) {
+        url = url.replace(`{${key}}`, String(value));
+    }
+}
+
+if (absolute) {
+    url = window.location.origin + url;
+}
+
+return url;
+TS
+                )
+            ),
+            LaravelNamedRouteReference::function(),
+            [],
+            true,
+        );
+
+        return [
+            $transformedRoutes,
+            $transformedRouteParameters,
+            $transformedRouteFunction,
+        ];
     }
 
-    public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): ?WatchEventResult
+    protected function parseRouteCollection(RouteCollection $collection): TypeScriptNode
     {
-        if (! $watchEvent instanceof SummarizedWatchEvent) {
-            return WatchEventResult::continue();
+        $mappingFunction = fn (RouteControllerAction|RouteInvokableController|RouteClosure $entity) => new TypeScriptProperty(
+            $entity->name,
+            $this->parseRouteParameterCollection($entity->parameters),
+        );
+
+        $properties = collect(array_merge($collection->controllers, $collection->closures))
+            ->flatMap(function (RouteController|RouteInvokableController|RouteClosure $entity) use ($mappingFunction) {
+                $singleRoute = $entity instanceof RouteInvokableController || $entity instanceof RouteClosure;
+
+                if ($singleRoute && $entity->name) {
+                    return [$mappingFunction($entity)];
+                }
+
+                if ($entity instanceof RouteController) {
+                    return collect($entity->actions)
+                        ->filter(fn (RouteControllerAction $action) => $action->name !== null)
+                        ->values()
+                        ->map($mappingFunction);
+                }
+
+                return [];
+            })
+            ->all();
+
+        return new TypeScriptObject($properties);
+    }
+
+    protected function parseRouteParameterCollection(RouteParameterCollection $collection): TypeScriptNode
+    {
+        if (empty($collection->parameters)) {
+            return new TypeScriptNever();
         }
 
-        $commandParts = [
-            'php',
-            'artisan',
-            'typescript:dump-routes',
-            $this->defaultNamespace ?? 'null',
-            $this->filters ? serialize($this->filters) : 'null',
-            $this->includeRouteClosures ? '--include-route-closures' : '',
+        return new TypeScriptObject(array_map(function (RouteParameter $parameter) {
+            return $this->parseRouteParameter($parameter);
+        }, $collection->parameters));
+    }
+
+    protected function parseRouteParameter(RouteParameter $parameter): TypeScriptProperty
+    {
+        return new TypeScriptProperty(
+            $parameter->name,
+            new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
+            isOptional: $parameter->optional,
+        );
+    }
+
+    /** @return array<string, string> */
+    protected function routeCollectionToTypedObject(RouteCollection $collection): array
+    {
+        $mappingFunction = fn (RouteInvokableController|RouteControllerAction|RouteClosure $entity) => [
+            $entity->name => $entity->url,
         ];
 
-        try {
-            $serialized = Process::timeout(2)
-                ->run($commandParts)
-                ->throw()
-                ->output();
-        } catch (ProcessTimedOutException) {
-            $this->logger->error('The nested command to dump the routes collection timed out.');
+        return collect(array_merge($collection->controllers, $collection->closures))
+            ->flatMap(function (RouteController|RouteInvokableController|RouteClosure $entity) use ($mappingFunction) {
+                $singleRoute = $entity instanceof RouteInvokableController || $entity instanceof RouteClosure;
 
-            return WatchEventResult::continue();
-        } catch (ProcessFailedException) {
-            $this->logger->error('The nested command to dump the routes collection failed.');
+                if ($singleRoute && $entity->name) {
+                    return $mappingFunction($entity);
+                }
 
-            return WatchEventResult::continue();
-        }
+                if ($entity instanceof RouteController) {
+                    return collect($entity->actions)
+                        ->filter(fn (RouteControllerAction $action) => $action->name !== null)
+                        ->values()
+                        ->flatMap($mappingFunction)
+                        ->all();
+                }
 
-        if ($this->routeCollectionHash && $this->routeCollectionHash === md5($serialized)) {
-            return WatchEventResult::continue();
-        }
-
-        try {
-            $routesCollection = unserialize($serialized);
-        } catch (\Throwable $e) {
-            $this->logger->error('Could not unserialize the routes collection from the nested command.');
-
-            return WatchEventResult::continue();
-        }
-
-        $transformedEntities = $this->resolveTransformed($routesCollection);
-
-        foreach ($transformedEntities as $transformed) {
-            $transformedCollection->remove($transformed->reference);
-        }
-
-        $transformedCollection->add(...$transformedEntities);
-
-        return WatchEventResult::continue();
+                return [];
+            })
+            ->all();
     }
-
-    public function setLogger(Logger $logger): void
-    {
-        $this->logger = $logger;
-    }
-
-    public function getWriter(): Writer
-    {
-        return new FlatModuleWriter($this->path);
-    }
-
-    /** @return array<Transformed> */
-    abstract protected function resolveTransformed(RouteCollection $routeCollection): array;
 }
