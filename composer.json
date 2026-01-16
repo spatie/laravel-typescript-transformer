@@ -22,18 +22,16 @@
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer": "^3.0",
-        "laravel/pint": "^1.0",
         "nunomaduro/collision": "^8.0",
         "nunomaduro/larastan": "^3.0",
-        "orchestra/testbench": "^10.0",
+        "orchestra/testbench": "^9.0|^10.0",
         "pestphp/pest": "^3.0|^4.0",
-        "pestphp/pest-plugin-arch": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest-plugin-arch": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan" : "^2.0",
-        "spatie/laravel-ray": "^1.26",
         "spatie/pest-plugin-snapshots": "^2.1",
         "spatie/ray": "^1.41",
         "spatie/laravel-data": "^4.0"
@@ -53,7 +51,6 @@
         "baseline": "vendor/bin/phpstan analyse --generate-baseline",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
     },
     "config" : {
         "sort-packages" : true,
