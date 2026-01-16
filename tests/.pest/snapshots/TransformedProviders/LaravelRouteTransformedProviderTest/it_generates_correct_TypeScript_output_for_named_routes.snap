@@ -1,0 +1,66 @@
+const routes = {
+    "invokable": "invokable",
+    "resource.index": "resource",
+    "resource.create": "resource/create",
+    "resource.store": "resource",
+    "resource.show": "resource/{resource}",
+    "resource.edit": "resource/{resource}/edit",
+    "resource.update": "resource/{resource}",
+    "resource.destroy": "resource/{resource}",
+    "home": "/",
+    "pricing": "pricing",
+    "blog": "blog",
+    "blog.show": "blog/{slug}",
+    "projects.show": "{project}/errors",
+    "occurrences.show": "errors/{error}/{errorOccurrence}",
+    "users.show": "users/{id}"
+}
+type RouteParameters = {
+invokable: never
+'resource.index': never
+'resource.create': never
+'resource.store': never
+'resource.show': {
+resource: string | number
+}
+'resource.edit': {
+resource: string | number
+}
+'resource.update': {
+resource: string | number
+}
+'resource.destroy': {
+resource: string | number
+}
+home: never
+pricing: never
+blog: never
+'blog.show': {
+slug: string | number
+}
+'projects.show': {
+project: string | number
+}
+'occurrences.show': {
+error: string | number
+errorOccurrence: string | number
+}
+'users.show': {
+id?: string | number
+}
+};
+export function route<T extends keyof RouteParameters>(name: T, parameters?: [RouteParameters[T]] extends [never] ? Record<string, never> : RouteParameters[T], absolute: boolean = true): string {
+            let url: string = '/' + routes[name];
+
+if (parameters) {
+    for (const [key, value] of Object.entries(parameters)) {
+        url = url.replace(`{${key}}`, String(value));
+    }
+}
+
+if (absolute) {
+    url = window.location.origin + url;
+}
+
+return url;
+        }

@@ -2,38 +2,29 @@
 
 namespace Spatie\LaravelTypeScriptTransformer;
 
-use Illuminate\Support\Arr;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Spatie\LaravelTypeScriptTransformer\Commands\TypeScriptTransformCommand;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
-use Spatie\TypeScriptTransformer\Writers\TypeDefinitionWriter;
+use Spatie\LaravelTypeScriptTransformer\Commands\InstallTypeScriptTransformerCommand;
+use Spatie\LaravelTypeScriptTransformer\Commands\RoutesDumpCommand;
+use Spatie\LaravelTypeScriptTransformer\Commands\TransformTypeScriptCommand;
 
 class TypeScriptTransformerServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('laravel-typescript-transformer')
-            ->hasConfigFile()
-            ->hasCommand(TypeScriptTransformCommand::class);
+            ->name('typescript-transformer')
+            ->hasCommand(TransformTypeScriptCommand::class)
+            ->hasCommand(RoutesDumpCommand::class)
+            ->hasCommand(InstallTypeScriptTransformerCommand::class);
     }
 
-    public function packageRegistered(): void
+    public function bootingPackage(): void
     {
-        $this->app->bind(
-            TypeScriptTransformerConfig::class,
-            fn () => TypeScriptTransformerConfig::create()
-                ->autoDiscoverTypes(...Arr::wrap(config('typescript-transformer.auto_discover_types')))
-                ->collectors(config('typescript-transformer.collectors'))
-                ->transformers(config('typescript-transformer.transformers'))
-                ->defaultTypeReplacements(config('typescript-transformer.default_type_replacements'))
-                ->writer(config('typescript-transformer.writer'))
-                ->outputFile(config('typescript-transformer.output_file'))
-                ->writer(config('typescript-transformer.writer', TypeDefinitionWriter::class))
-                ->formatter(config('typescript-transformer.formatter'))
-                ->transformToNativeEnums(config('typescript-transformer.transform_to_native_enums', false))
-                ->nullToOptional(config('typescript-transformer.transform_null_to_optional', false))
-        );
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../../stubs/TypeScriptTransformerServiceProvider.stub' => app_path('Providers/TypeScriptTransformerServiceProvider.php'),
+            ], 'typescript-transformer-provider');
+        }
     }
 }
