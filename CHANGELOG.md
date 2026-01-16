@@ -2,6 +2,29 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.5.2 - 2025-04-25
+
+### What's Changed
+
+* fix: don't create a compound type when the type is already a TypeScript type by @Bloemendaal in https://github.com/spatie/laravel-typescript-transformer/pull/53
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.5.1...2.5.2
+
+## 2.5.1 - 2025-02-14
+
+Allow Laravel 12
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.5.0...2.5.1
+
+## 2.5.0 - 2024-10-04
+
+### What's Changed
+
+* Use service container to resolve TypescriptTransformer by @rasmuscnielsen in https://github.com/spatie/laravel-typescript-transformer/pull/47
+* feat: support `nullToOptional` by @innocenzi in https://github.com/spatie/laravel-typescript-transformer/pull/46
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/2.4.1...2.5.0
+
 ## 2.4.1 - 2024-05-03
 
 ### What's Changed
