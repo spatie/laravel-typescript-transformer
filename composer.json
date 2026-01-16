@@ -33,7 +33,6 @@
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan" : "^2.0",
         "spatie/pest-plugin-snapshots": "^2.1",
-        "spatie/ray": "^1.41",
         "spatie/laravel-data": "^4.0"
     },
     "autoload" : {
