@@ -105,7 +105,7 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
                                     new TypeScriptIndexedAccess(
                                         new TypeScriptIdentifier('RouteParameters'),
                                         [new TypeScriptIdentifier('T')]
-                                    )
+                                    ),
                                 ]),
                                 new TypeScriptTuple([new TypeScriptNever()])
                             ),
