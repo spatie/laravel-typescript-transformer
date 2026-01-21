@@ -91,7 +91,7 @@ php artisan typescript:transform
 
 Since we haven't configured TypeScript transformer yet, this command won't do anything.
 
-In order to configure TypeScript Transformer, we recommand you to now continue reading the documentation on the
+In order to configure TypeScript Transformer, we recommend you to now continue reading the documentation on the
 framework-agnostic [typescript-transformer](https://github.com/spatie/typescript-transformer) package. The docs will
 explain how to configure the package which is by modifying the `$config` object we saw earlier in the
 `TypeScriptTransformerServiceProvider`.
