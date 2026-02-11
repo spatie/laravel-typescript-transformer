@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(./vendor/bin/pest:*)",
-      "Bash(composer show:*)"
+      "Bash(composer show:*)",
+      "Bash(git -C /Users/ruben/Spatie/typescript-transformer show:*)",
+      "Bash(git -C /Users/ruben/Spatie/typescript-transformer diff *)",
+      "Bash(composer update:*)",
+      "Bash(vendor/bin/pest:*)",
+      "Bash(composer install:*)"
     ]
   }
 }

@@ -16,12 +16,12 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptConditional;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptFunctionDefinition;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptFunctionDeclaration;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeVariable;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeParameter;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIndexedAccess;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptJsonObject;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObjectLiteral;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptLiteral;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNever;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
@@ -67,7 +67,7 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
         $transformedRoutes = new Transformed(
             TypeScriptVariableDeclaration::const(
                 'routes',
-                new TypeScriptJsonObject($routesObject)
+                new TypeScriptObjectLiteral($routesObject)
             ),
             LaravelNamedRouteReference::routes(),
             [],
@@ -85,11 +85,11 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
         );
 
         $transformedRouteFunction = new Transformed(
-            new TypeScriptFunctionDefinition(
+            new TypeScriptFunctionDeclaration(
                 new TypeScriptGeneric(
                     new TypeScriptIdentifier('route'),
                     [
-                        new TypeScriptGenericTypeVariable(
+                        new TypeScriptGenericTypeParameter(
                             new TypeScriptIdentifier('T'),
                             extends: TypeScriptOperator::keyof(new TypeScriptIdentifier('RouteParameters'))
                         ),

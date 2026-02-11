@@ -50,7 +50,7 @@ id?: string | number
 }
 };
 export function route<T extends keyof RouteParameters>(name: T, parameters?: [RouteParameters[T]] extends [never] ? Record<string, never> : RouteParameters[T], absolute: boolean = true): string {
-            let url: string = '/' + routes[name];
+let url: string = '/' + routes[name];
 
 if (parameters) {
     for (const [key, value] of Object.entries(parameters)) {
@@ -63,4 +63,4 @@ if (absolute) {
 }
 
 return url;
-        }
+}
