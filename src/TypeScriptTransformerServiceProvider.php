@@ -23,7 +23,7 @@ class TypeScriptTransformerServiceProvider extends PackageServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../stubs/TypeScriptTransformerServiceProvider.stub' => app_path('Providers/TypeScriptTransformerServiceProvider.php'),
+                __DIR__.'/../../typescript-transformer/stubs/TypeScriptTransformerServiceProvider.stub' => app_path('Providers/TypeScriptTransformerServiceProvider.php'),
             ], 'typescript-transformer-provider');
         }
     }
