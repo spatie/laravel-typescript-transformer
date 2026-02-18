@@ -6,7 +6,7 @@ use Illuminate\Process\Exceptions\ProcessFailedException;
 use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\Process;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
@@ -31,7 +31,7 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
 
     /** @param array<RouteFilter> $filters */
     public function __construct(
-        protected ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction,
+        protected ResolveRouteCollectionAction $resolveRouteCollectionAction,
         protected ActionNameResolver $actionNameResolver,
         protected bool $includeRouteClosures,
         protected array $filters,
@@ -54,7 +54,7 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
 
     public function provide(): array
     {
-        $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
+        $routeCollection = $this->resolveRouteCollectionAction->execute(
             actionNameResolver: $this->actionNameResolver,
             includeRouteClosures: $this->includeRouteClosures,
             filters: $this->filters,

@@ -4,7 +4,7 @@ use Illuminate\Routing\Router;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ClosureActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\Exceptions\DuplicateActionNameException;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\ControllerRouteFilter;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\NamedRouteFilter;
@@ -23,7 +23,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
     $route($router);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    $routes = app(ResolveRouteCollectionAction::class)->execute(
         new DefaultActionNameResolver(),
         true
     );
@@ -176,8 +176,8 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->closures['Closure(simple/{id})']->url)->toBe('simple/{id}');
             expect($routes->closures['Closure(simple/{id})']->methods)->toBe(['GET', 'HEAD']);
             expect($routes->closures['Closure(simple/{id})']->parameters)->toHaveCount(1);
-            expect($routes->closures['Closure(simple/{id})']->parameters[0]->name)->toBe('id');
-            expect($routes->closures['Closure(simple/{id})']->parameters[0]->optional)->toBeFalse();
+            expect($routes->closures['Closure(simple/{id})']->parameters[0]['name'])->toBe('id');
+            expect($routes->closures['Closure(simple/{id})']->parameters[0]['optional'])->toBeFalse();
         },
     ];
     yield 'nullable parameter' => [
@@ -189,8 +189,8 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->closures['Closure(simple/{id?})']->url)->toBe('simple/{id}');
             expect($routes->closures['Closure(simple/{id?})']->methods)->toBe(['GET', 'HEAD']);
             expect($routes->closures['Closure(simple/{id?})']->parameters)->toHaveCount(1);
-            expect($routes->closures['Closure(simple/{id?})']->parameters[0]->name)->toBe('id');
-            expect($routes->closures['Closure(simple/{id?})']->parameters[0]->optional)->toBeTrue();
+            expect($routes->closures['Closure(simple/{id?})']->parameters[0]['name'])->toBe('id');
+            expect($routes->closures['Closure(simple/{id?})']->parameters[0]['optional'])->toBeTrue();
         },
     ];
     yield 'named routes' => [
@@ -228,7 +228,7 @@ it('can strip namespace prefixes using StrippedActionNameResolver', function () 
     $router->get('error', ErrorController::class);
     $router->get('invokable', InvokableController::class);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    $routes = app(ResolveRouteCollectionAction::class)->execute(
         new StrippedActionNameResolver([
             'Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses' => null,
         ]),
@@ -248,7 +248,7 @@ it('can replace namespace prefixes with custom values using StrippedActionNameRe
     $router->get('invokable', InvokableController::class);
     $router->get('resource', [ResourceController::class, 'index']);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    $routes = app(ResolveRouteCollectionAction::class)->execute(
         new StrippedActionNameResolver([
             'Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses' => 'Test',
         ]),
@@ -268,7 +268,7 @@ it('can use a closure to resolve action names using ClosureActionNameResolver', 
     $router->get('invokable', InvokableController::class);
     $router->get('resource', [ResourceController::class, 'index']);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    $routes = app(ResolveRouteCollectionAction::class)->execute(
         new ClosureActionNameResolver(fn (string $class) => class_basename($class)),
         true
     );
@@ -286,7 +286,7 @@ it('throws DuplicateActionNameException when multiple controllers resolve to the
     $router->get('invokable', InvokableController::class);
     $router->get('error', ErrorController::class);
 
-    app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    app(ResolveRouteCollectionAction::class)->execute(
         new ClosureActionNameResolver(fn (string $class) => 'SameName'),
         true
     );
@@ -304,7 +304,7 @@ it('can filter out certain routes', function (
     $router->get('invokable', InvokableController::class)->name('invokable');
     $router->resource('resource', ResourceController::class);
 
-    $routes = app(ResolveLaravelRouteControllerCollectionsAction::class)->execute(
+    $routes = app(ResolveRouteCollectionAction::class)->execute(
         new DefaultActionNameResolver(),
         true,
         [$filter]

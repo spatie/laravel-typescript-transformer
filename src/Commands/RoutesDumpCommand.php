@@ -3,7 +3,7 @@
 namespace Spatie\LaravelTypeScriptTransformer\Commands;
 
 use Illuminate\Console\Command;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 
 class RoutesDumpCommand extends Command
 {
@@ -14,7 +14,7 @@ class RoutesDumpCommand extends Command
     protected $hidden = true;
 
     public function handle(
-        ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRouteControllerCollectionsAction
+        ResolveRouteCollectionAction $resolveRouteCollectionAction
     ): int {
         $actionNameResolver = unserialize($this->argument('actionNameResolver'));
 
@@ -24,7 +24,7 @@ class RoutesDumpCommand extends Command
             $filters = null;
         }
 
-        $routeCollection = $resolveLaravelRouteControllerCollectionsAction->execute(
+        $routeCollection = $resolveRouteCollectionAction->execute(
             actionNameResolver: $actionNameResolver,
             includeRouteClosures: $this->option('include-route-closures'),
             filters: $filters === null ? [] : unserialize($filters)

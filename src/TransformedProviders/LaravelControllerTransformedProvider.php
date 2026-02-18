@@ -6,13 +6,13 @@ use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelControllerReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
+
 use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\Data\WatchEventResult;
@@ -45,13 +45,13 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
         array $filters = [],
         protected array $controllerDirectories = [],
-        ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction = new ResolveLaravelRouteControllerCollectionsAction(),
+        ResolveRouteCollectionAction $resolveRouteCollectionAction = new ResolveRouteCollectionAction(),
         ?array $routeDirectories = null,
     ) {
         $this->generateSupportAction = new GenerateControllerSupportAction();
 
         parent::__construct(
-            resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
+            resolveRouteCollectionAction: $resolveRouteCollectionAction,
             actionNameResolver: $actionNameResolver,
             includeRouteClosures: false,
             filters: $filters,
@@ -293,7 +293,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
     }
 
     /**
-     * @param array<RouteParameter> $parameters
+     * @param array<array{name: string, optional: bool}> $parameters
      */
     protected function buildParamsType(array $parameters): string
     {
@@ -304,8 +304,8 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         $props = [];
 
         foreach ($parameters as $param) {
-            $optional = $param->optional ? '?' : '';
-            $props[] = "    {$param->name}{$optional}: string | number";
+            $optional = $param['optional'] ? '?' : '';
+            $props[] = "    {$param['name']}{$optional}: string | number";
         }
 
         return "{\n".implode(",\n", $props)."\n}";
@@ -337,7 +337,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         // Re-resolve the full route collection and rebuild transformed entries.
         // This is a simple approach - a future optimization could target only
         // the controllers whose files changed.
-        $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
+        $routeCollection = $this->resolveRouteCollectionAction->execute(
             actionNameResolver: $this->actionNameResolver,
             includeRouteClosures: false,
             filters: $this->filters,

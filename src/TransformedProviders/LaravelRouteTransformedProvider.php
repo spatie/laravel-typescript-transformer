@@ -5,14 +5,14 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
+
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptConditional;
@@ -43,14 +43,14 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
      * @param array<string>|null $routeDirectories
      */
     public function __construct(
-        ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction = new ResolveLaravelRouteControllerCollectionsAction(),
+        ResolveRouteCollectionAction $resolveRouteCollectionAction = new ResolveRouteCollectionAction(),
         array $filters = [],
         string $path = 'helpers/route.ts',
         ?array $routeDirectories = null,
         protected bool $absoluteUrlsByDefault = true,
     ) {
         parent::__construct(
-            resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
+            resolveRouteCollectionAction: $resolveRouteCollectionAction,
             actionNameResolver: new DefaultActionNameResolver(),
             includeRouteClosures: true,
             filters: $filters,
@@ -161,10 +161,10 @@ TS
     {
         $properties = $this->resolveActionCollection($collection)
             ->map(function (RouteControllerAction|RouteClosure $entity) {
-                $parameters = array_map(fn (RouteParameter $parameter) => new TypeScriptProperty(
-                    $parameter->name,
+                $parameters = array_map(fn (array $parameter) => new TypeScriptProperty(
+                    $parameter['name'],
                     new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
-                    isOptional: $parameter->optional,
+                    isOptional: $parameter['optional'],
                 ), $entity->parameters);
 
                 $type = empty($parameters)

@@ -11,9 +11,9 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
 
-class ResolveLaravelRouteControllerCollectionsAction
+
+class ResolveRouteCollectionAction
 {
     /** @param array<RouteFilter> $filters */
     public function execute(
@@ -111,16 +111,16 @@ class ResolveLaravelRouteControllerCollectionsAction
     }
 
     /**
-     * @return array<RouteParameter>
+     * @return array<array{name: string, optional: bool}>
      */
     protected function resolveRouteParameters(Route $route): array
     {
         preg_match_all('/\{(.*?)\}/', $route->getDomain().$route->uri, $matches);
 
-        return array_map(fn (string $match) => new RouteParameter(
-            trim($match, '?'),
-            str_ends_with($match, '?')
-        ), $matches[1]);
+        return array_map(fn (string $match) => [
+            'name' => trim($match, '?'),
+            'optional' => str_ends_with($match, '?'),
+        ], $matches[1]);
     }
 
     protected function resolveUrl(Route $route): string
