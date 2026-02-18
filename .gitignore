@@ -9,3 +9,4 @@ coverage
 .php-cs-fixer.cache
 .idea
 .phpunit.cache
+.claude/settings.local.json
