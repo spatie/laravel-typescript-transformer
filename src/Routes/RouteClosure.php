@@ -2,13 +2,14 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Routes;
 
-class RouteClosure implements RouterStructure
+class RouteClosure
 {
     /**
-     * @param  array<string>  $methods
+     * @param array<RouteParameter> $parameters
+     * @param array<string> $methods
      */
     public function __construct(
-        public RouteParameterCollection $parameters,
+        public array $parameters,
         public array $methods,
         public string $url,
         public ?string $name,

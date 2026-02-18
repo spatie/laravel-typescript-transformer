@@ -2,11 +2,11 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Routes;
 
-class RouteCollection implements RouterStructure
+class RouteCollection
 {
     /**
-     * @param  array<string, RouteController|RouteInvokableController>  $controllers
-     * @param  array<string, RouteClosure>  $closures
+     * @param array<string, RouteController> $controllers
+     * @param array<string, RouteClosure> $closures
      */
     public function __construct(
         public array $controllers,

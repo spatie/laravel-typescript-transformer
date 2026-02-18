@@ -11,9 +11,7 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteInvokableController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 
 class ResolveLaravelRouteControllerCollectionsAction
 {
@@ -23,7 +21,7 @@ class ResolveLaravelRouteControllerCollectionsAction
         bool $includeRouteClosures,
         array $filters = [],
     ): RouteCollection {
-        /** @var array<string, RouteController|RouteInvokableController> $controllers */
+        /** @var array<string, RouteController> $controllers */
         $controllers = [];
         /** @var array<RouteClosure> $closures */
         $closures = [];
@@ -66,26 +64,40 @@ class ResolveLaravelRouteControllerCollectionsAction
                 $nameMapping[$resolvedName][] = $controllerClass;
             }
 
-            if ($route->getActionMethod() === $route->getControllerClass()) {
-                $controllers[$resolvedName] = new RouteInvokableController(
-                    $this->resolveRouteParameters($route),
-                    $route->methods,
-                    $this->resolveUrl($route),
-                    $route->getName(),
+            $isInvokable = $route->getActionMethod() === $route->getControllerClass();
+
+            if ($isInvokable) {
+                $controllers[$resolvedName] = new RouteController(
+                    controllerClass: $controllerClass,
+                    invokable: true,
+                    actions: [
+                        '__invoke' => new RouteControllerAction(
+                            methodName: '__invoke',
+                            parameters: $this->resolveRouteParameters($route),
+                            methods: $route->methods,
+                            url: $this->resolveUrl($route),
+                            name: $route->getName(),
+                        ),
+                    ],
                 );
 
                 continue;
             }
 
             if (! array_key_exists($resolvedName, $controllers)) {
-                $controllers[$resolvedName] = new RouteController([]);
+                $controllers[$resolvedName] = new RouteController(
+                    controllerClass: $controllerClass,
+                    invokable: false,
+                    actions: [],
+                );
             }
 
             $controllers[$resolvedName]->actions[$route->getActionMethod()] = new RouteControllerAction(
-                $this->resolveRouteParameters($route),
-                $route->methods,
-                $this->resolveUrl($route),
-                $route->getName(),
+                methodName: $route->getActionMethod(),
+                parameters: $this->resolveRouteParameters($route),
+                methods: $route->methods,
+                url: $this->resolveUrl($route),
+                name: $route->getName(),
             );
         }
 
@@ -98,16 +110,17 @@ class ResolveLaravelRouteControllerCollectionsAction
         return new RouteCollection($controllers, $closures);
     }
 
-    protected function resolveRouteParameters(Route $route): RouteParameterCollection
+    /**
+     * @return array<RouteParameter>
+     */
+    protected function resolveRouteParameters(Route $route): array
     {
         preg_match_all('/\{(.*?)\}/', $route->getDomain().$route->uri, $matches);
 
-        $parameters = array_map(fn (string $match) => new RouteParameter(
+        return array_map(fn (string $match) => new RouteParameter(
             trim($match, '?'),
             str_ends_with($match, '?')
         ), $matches[1]);
-
-        return new RouteParameterCollection($parameters);
     }
 
     protected function resolveUrl(Route $route): string

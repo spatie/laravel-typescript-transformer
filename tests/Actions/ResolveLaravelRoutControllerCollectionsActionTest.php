@@ -12,8 +12,6 @@ use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteInvokableController;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController;
 use Symfony\Component\HttpKernel\Controller\ErrorController;
@@ -52,11 +50,12 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($actions)->toHaveCount(1);
             expect($actions['update'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($actions['update']->methodName)->toBe('update');
             expect($actions['update']->url)->toBe('action');
             expect($actions['update']->methods)->toBe(['GET', 'HEAD']);
 
-            expect($actions['update']->parameters)->toBeInstanceOf(RouteParameterCollection::class);
-            expect($actions['update']->parameters->parameters)->toBeEmpty();
+            expect($actions['update']->parameters)->toBeArray();
+            expect($actions['update']->parameters)->toBeEmpty();
         },
     ];
     yield 'invokable controller' => [
@@ -67,12 +66,18 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             $controller = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController'];
 
-            expect($controller)->toBeInstanceOf(RouteInvokableController::class);
-            expect($controller->url)->toBe('invokable');
-            expect($controller->methods)->toBe(['GET', 'HEAD']);
+            expect($controller)->toBeInstanceOf(RouteController::class);
+            expect($controller->invokable)->toBeTrue();
+            expect($controller->controllerClass)->toBe(InvokableController::class);
 
-            expect($controller->parameters)->toBeInstanceOf(RouteParameterCollection::class);
-            expect($controller->parameters->parameters)->toBeEmpty();
+            $action = $controller->actions['__invoke'];
+            expect($action)->toBeInstanceOf(RouteControllerAction::class);
+            expect($action->methodName)->toBe('__invoke');
+            expect($action->url)->toBe('invokable');
+            expect($action->methods)->toBe(['GET', 'HEAD']);
+
+            expect($action->parameters)->toBeArray();
+            expect($action->parameters)->toBeEmpty();
         },
     ];
     yield 'resource controller' => [
@@ -84,42 +89,51 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             $controller = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController'];
 
             expect($controller)->toBeInstanceOf(RouteController::class);
+            expect($controller->invokable)->toBeFalse();
+            expect($controller->controllerClass)->toBe(ResourceController::class);
             expect($controller->actions)->toHaveCount(7);
 
             expect($controller->actions['index'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['index']->methodName)->toBe('index');
             expect($controller->actions['index']->url)->toBe('resource');
             expect($controller->actions['index']->methods)->toBe(['GET', 'HEAD']);
-            expect($controller->actions['index']->parameters->parameters)->toBeEmpty();
+            expect($controller->actions['index']->parameters)->toBeEmpty();
 
             expect($controller->actions['create'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['create']->methodName)->toBe('create');
             expect($controller->actions['create']->url)->toBe('resource/create');
             expect($controller->actions['create']->methods)->toBe(['GET', 'HEAD']);
-            expect($controller->actions['create']->parameters->parameters)->toBeEmpty();
+            expect($controller->actions['create']->parameters)->toBeEmpty();
 
             expect($controller->actions['store'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['store']->methodName)->toBe('store');
             expect($controller->actions['store']->url)->toBe('resource');
             expect($controller->actions['store']->methods)->toBe(['POST']);
-            expect($controller->actions['store']->parameters->parameters)->toBeEmpty();
+            expect($controller->actions['store']->parameters)->toBeEmpty();
 
             expect($controller->actions['show'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['show']->methodName)->toBe('show');
             expect($controller->actions['show']->url)->toBe('resource/{resource}');
             expect($controller->actions['show']->methods)->toBe(['GET', 'HEAD']);
-            expect($controller->actions['show']->parameters->parameters)->toHaveCount(1);
+            expect($controller->actions['show']->parameters)->toHaveCount(1);
 
             expect($controller->actions['edit'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['edit']->methodName)->toBe('edit');
             expect($controller->actions['edit']->url)->toBe('resource/{resource}/edit');
             expect($controller->actions['edit']->methods)->toBe(['GET', 'HEAD']);
-            expect($controller->actions['edit']->parameters->parameters)->toHaveCount(1);
+            expect($controller->actions['edit']->parameters)->toHaveCount(1);
 
             expect($controller->actions['update'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['update']->methodName)->toBe('update');
             expect($controller->actions['update']->url)->toBe('resource/{resource}');
             expect($controller->actions['update']->methods)->toBe(['PUT', 'PATCH']);
-            expect($controller->actions['update']->parameters->parameters)->toHaveCount(1);
+            expect($controller->actions['update']->parameters)->toHaveCount(1);
 
             expect($controller->actions['destroy'])->toBeInstanceOf(RouteControllerAction::class);
+            expect($controller->actions['destroy']->methodName)->toBe('destroy');
             expect($controller->actions['destroy']->url)->toBe('resource/{resource}');
             expect($controller->actions['destroy']->methods)->toBe(['DELETE']);
-            expect($controller->actions['destroy']->parameters->parameters)->toHaveCount(1);
+            expect($controller->actions['destroy']->parameters)->toHaveCount(1);
         },
     ];
     yield 'nested' => [
@@ -161,9 +175,9 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($routes->closures['Closure(simple/{id})']->url)->toBe('simple/{id}');
             expect($routes->closures['Closure(simple/{id})']->methods)->toBe(['GET', 'HEAD']);
-            expect($routes->closures['Closure(simple/{id})']->parameters->parameters)->toHaveCount(1);
-            expect($routes->closures['Closure(simple/{id})']->parameters->parameters[0]->name)->toBe('id');
-            expect($routes->closures['Closure(simple/{id})']->parameters->parameters[0]->optional)->toBeFalse();
+            expect($routes->closures['Closure(simple/{id})']->parameters)->toHaveCount(1);
+            expect($routes->closures['Closure(simple/{id})']->parameters[0]->name)->toBe('id');
+            expect($routes->closures['Closure(simple/{id})']->parameters[0]->optional)->toBeFalse();
         },
     ];
     yield 'nullable parameter' => [
@@ -174,9 +188,9 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($routes->closures['Closure(simple/{id?})']->url)->toBe('simple/{id}');
             expect($routes->closures['Closure(simple/{id?})']->methods)->toBe(['GET', 'HEAD']);
-            expect($routes->closures['Closure(simple/{id?})']->parameters->parameters)->toHaveCount(1);
-            expect($routes->closures['Closure(simple/{id?})']->parameters->parameters[0]->name)->toBe('id');
-            expect($routes->closures['Closure(simple/{id?})']->parameters->parameters[0]->optional)->toBeTrue();
+            expect($routes->closures['Closure(simple/{id?})']->parameters)->toHaveCount(1);
+            expect($routes->closures['Closure(simple/{id?})']->parameters[0]->name)->toBe('id');
+            expect($routes->closures['Closure(simple/{id?})']->parameters[0]->optional)->toBeTrue();
         },
     ];
     yield 'named routes' => [
@@ -191,7 +205,8 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($routes->closures['Closure(simple)']->name)->toBe('simple');
 
-            expect($routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController']->name)->toBe('invokable');
+            $invokableController = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/InvokableController'];
+            expect($invokableController->actions['__invoke']->name)->toBe('invokable');
 
             $resourceController = $routes->controllers['Spatie/LaravelTypeScriptTransformer/Tests/FakeClasses/ResourceController'];
 

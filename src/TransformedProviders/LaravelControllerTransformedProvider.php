@@ -5,62 +5,134 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerAction;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelControllerReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteInvokableController;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
+use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
+use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
+use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
+use Spatie\TypeScriptTransformer\Data\WatchEventResult;
+use Spatie\TypeScriptTransformer\Events\SummarizedWatchEvent;
+use Spatie\TypeScriptTransformer\Events\WatchEvent;
+use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
-use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\ActionAwareTransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\PhpNodesAwareTransformedProvider;
+use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProviderActions;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
-use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
-use function PHPUnit\Framework\isEmpty;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
 
-class LaravelControllerTransformedProvider implements TransformedProvider
+class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransformedProvider implements PhpNodesAwareTransformedProvider, ActionAwareTransformedProvider
 {
-    protected ModuleWriter $writer;
+    protected PhpNodeCollection $phpNodeCollection;
 
-    /** @param array<RouteFilter> $filters */
+    protected TransformedProviderActions $providerActions;
+
+    protected ResolveLaravelControllerAction $resolveTypesAction;
+
+    protected GenerateControllerSupportAction $generateSupportAction;
+
+    /**
+     * @param array<RouteFilter> $filters
+     * @param array<string> $controllerDirectories
+     * @param array<string>|null $routeDirectories
+     */
     public function __construct(
-        protected ResolveLaravelRouteControllerCollectionsAction $resolveAction = new ResolveLaravelRouteControllerCollectionsAction(),
-        protected ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
-        protected GenerateControllerSupportAction $generateSupportAction = new GenerateControllerSupportAction(),
-        protected array $filters = [],
+        ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
+        array $filters = [],
+        protected array $controllerDirectories = [],
+        ResolveLaravelRouteControllerCollectionsAction $resolveLaravelRoutControllerCollectionsAction = new ResolveLaravelRouteControllerCollectionsAction(),
+        ?array $routeDirectories = null,
     ) {
-        $this->writer = new ModuleWriter('controllers');
+        $this->generateSupportAction = new GenerateControllerSupportAction();
+
+        parent::__construct(
+            resolveLaravelRoutControllerCollectionsAction: $resolveLaravelRoutControllerCollectionsAction,
+            actionNameResolver: $actionNameResolver,
+            includeRouteClosures: false,
+            filters: $filters,
+            path: 'controllers',
+            routeDirectories: $routeDirectories,
+        );
     }
 
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function setPhpNodeCollection(PhpNodeCollection $phpNodeCollection): void
     {
-        $routeCollection = $this->resolveAction->execute(
-            actionNameResolver: $this->actionNameResolver,
-            includeRouteClosures: false,
-            filters: $this->filters,
+        $this->phpNodeCollection = $phpNodeCollection;
+    }
+
+    public function setActions(TransformedProviderActions $actions): void
+    {
+        $this->providerActions = $actions;
+        $this->resolveTypesAction = new ResolveLaravelControllerAction(
+            transpilePhpStanAction: $actions->transpilePhpStanTypeToTypeScriptNodeAction,
+            transpilePhpTypeAction: $actions->transpilePhpTypeNodeToTypeScriptNodeAction,
+        );
+    }
+
+    public function directoriesToWatch(): array
+    {
+        return array_merge(
+            parent::directoriesToWatch(),
+            $this->controllerDirectories,
+        );
+    }
+
+    public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): ?WatchEventResult
+    {
+        if (! $watchEvent instanceof SummarizedWatchEvent) {
+            return WatchEventResult::continue();
+        }
+
+        parent::handleWatchEvent($watchEvent, $transformedCollection);
+
+        $changedFiles = array_merge(
+            $watchEvent->createdFiles,
+            $watchEvent->updatedFiles,
+            $watchEvent->deletedFiles,
         );
 
+        $controllerFilesChanged = $this->anyFilesInDirectories($changedFiles, $this->controllerDirectories);
+
+        if ($controllerFilesChanged) {
+            $this->handleControllerChanges($changedFiles, $transformedCollection);
+        }
+
+        return WatchEventResult::continue();
+    }
+
+    /** @return array<Transformed> */
+    protected function resolveTransformed(RouteCollection $routeCollection): array
+    {
         $transformed = [
-            $this->generateSupportAction->execute()->setWriter($this->writer),
+            $this->generateSupportAction->execute(),
         ];
 
-        foreach ($routeCollection->controllers as $controller) {
-            $transformed[] = $this->transformController($controller)->setWriter($this->writer);
+        foreach ($routeCollection->controllers as $resolvedName => $controller) {
+            $result = $this->transformController($resolvedName, $controller);
+
+            if ($result !== null) {
+                $transformed[] = $result;
+            }
         }
 
         return $transformed;
     }
 
-    protected function transformController(
-        RouteController|RouteInvokableController $controller,
-    ): ?Transformed {
-        $location = explode('/', $controller->controllerClass);
+    protected function transformController(string $resolvedName, RouteController $controller): ?Transformed
+    {
+        $location = explode('/', $resolvedName);
         $controllerName = end($location);
 
-        $code = $controller instanceof RouteInvokableController
-            ? $this->buildTransformedInvokableController($controllerName, $controller)
-            : $this->buildResourceControllerCode($controllerName, $controller);
+        $classNode = $this->resolveClassNode($controller->controllerClass);
+
+        $code = $controller->invokable
+            ? $this->buildInvokableControllerCode($controllerName, $controller, $classNode)
+            : $this->buildResourceControllerCode($controllerName, $controller, $classNode);
 
         if ($code === null) {
             return null;
@@ -74,33 +146,61 @@ class LaravelControllerTransformedProvider implements TransformedProvider
         );
     }
 
-    protected function buildTransformedInvokableController(
-        string $controllerName,
-        RouteInvokableController $controller
-    ): ?TypeScriptNode {
-        if (isEmpty($controller->routes)) {
+    protected function resolveClassNode(string $controllerClass): ?PhpClassNode
+    {
+        if (! isset($this->phpNodeCollection)) {
             return null;
         }
+
+        $classNode = $this->phpNodeCollection->get($controllerClass);
+
+        if ($classNode !== null) {
+            return $classNode;
+        }
+
+        if (! class_exists($controllerClass)) {
+            return null;
+        }
+
+        $classNode = PhpClassNode::fromClassString($controllerClass);
+        $this->phpNodeCollection->add($classNode);
+
+        return $classNode;
+    }
+
+    /**
+     * @return array{
+     *     response: ?TypeScriptNode,
+     *     request: ?TypeScriptNode
+     * }
+     */
+    protected function resolveActionTypes(string $methodName, ?PhpClassNode $classNode): array
+    {
+        if ($classNode === null || ! isset($this->resolveTypesAction)) {
+            return ['response' => null, 'request' => null];
+        }
+
+        $controller = $this->resolveTypesAction->execute($classNode);
+
+        return $controller->methods[$methodName] ?? ['response' => null, 'request' => null];
     }
 
     protected function buildInvokableControllerCode(
         string $controllerName,
-        RouteInvokableController $controller
-    ): string {
-        $routes = $controller->routes;
+        RouteController $controller,
+        ?PhpClassNode $classNode,
+    ): ?TypeScriptNode {
+        $action = array_values($controller->actions)[0] ?? null;
 
-        if (empty($routes)) {
-            return '';
+        if ($action === null) {
+            return null;
         }
 
-        $firstRoute = $routes[0];
-        $paramsType = $this->buildParamsType($firstRoute->parameters);
+        $types = $this->resolveActionTypes('__invoke', $classNode);
+        $paramsType = $this->buildParamsType($action->parameters);
         $hasParams = $paramsType !== 'undefined';
 
-        $depth = $this->calculateImportDepth($controller->controllerClass);
-        $importPath = str_repeat('../', $depth).'support';
-
-        $code = "import { createActionWithMethods } from '{$importPath}';\n\n";
+        $code = '';
 
         if ($hasParams) {
             $code .= "type Params = {$paramsType};\n\n";
@@ -109,46 +209,36 @@ class LaravelControllerTransformedProvider implements TransformedProvider
         $code .= "/**\n * {$controller->controllerClass}\n */\n";
 
         $paramsGeneric = $hasParams ? '<Params>' : '<undefined>';
+        $method = strtolower($action->methods[0] ?? 'get');
         $code .= "const {$controllerName} = createActionWithMethods{$paramsGeneric}([\n";
-
-        foreach ($routes as $route) {
-            $method = strtolower($route->method);
-            $code .= "    { method: '{$method}', url: '{$route->url}' },\n";
-        }
-
+        $code .= "    { method: '{$method}', url: '{$action->url}' },\n";
         $code .= "]);\n\n";
 
         $code .= "namespace {$controllerName} {\n";
-        $code .= "    export type Request = object;\n";
-        $code .= "    export type Response = object;\n";
+        $code .= $this->buildTypeExport('Request', $types['request']);
+        $code .= $this->buildTypeExport('Response', $types['response']);
         $code .= "}\n\n";
 
         $code .= "export { {$controllerName} };\n";
 
-        return $code;
+        return new TypeScriptRaw($code);
     }
 
     protected function buildResourceControllerCode(
         string $controllerName,
-        RouteController $controller
-    ): string {
+        RouteController $controller,
+        ?PhpClassNode $classNode,
+    ): ?TypeScriptNode {
         if (empty($controller->actions)) {
-            return '';
+            return null;
         }
 
-        $depth = $this->calculateImportDepth($controller->controllerClass);
-        $importPath = str_repeat('../', $depth).'support';
-
-        $code = "import { createActionWithMethods } from '{$importPath}';\n\n";
+        $code = '';
 
         $paramTypes = [];
-        foreach ($controller->actions as $actionName => $actions) {
-            if (empty($actions)) {
-                continue;
-            }
 
-            $firstAction = $actions[0];
-            $paramsType = $this->buildParamsType($firstAction->parameters);
+        foreach ($controller->actions as $actionName => $action) {
+            $paramsType = $this->buildParamsType($action->parameters);
 
             if ($paramsType !== 'undefined') {
                 $typeName = ucfirst($actionName).'Params';
@@ -164,22 +254,14 @@ class LaravelControllerTransformedProvider implements TransformedProvider
         $code .= "/**\n * {$controller->controllerClass}\n */\n";
         $code .= "const {$controllerName} = {\n";
 
-        foreach ($controller->actions as $actionName => $actions) {
-            if (empty($actions)) {
-                continue;
-            }
-
+        foreach ($controller->actions as $actionName => $action) {
             $paramsGeneric = isset($paramTypes[$actionName])
                 ? "<{$paramTypes[$actionName]}>"
                 : '<undefined>';
 
+            $method = strtolower($action->methods[0] ?? 'get');
             $code .= "    {$actionName}: createActionWithMethods{$paramsGeneric}([\n";
-
-            foreach ($actions as $action) {
-                $method = strtolower($action->method);
-                $code .= "        { method: '{$method}', url: '{$action->url}' },\n";
-            }
-
+            $code .= "        { method: '{$method}', url: '{$action->url}' },\n";
             $code .= "    ]),\n";
         }
 
@@ -187,14 +269,12 @@ class LaravelControllerTransformedProvider implements TransformedProvider
 
         $code .= "namespace {$controllerName} {\n";
 
-        foreach ($controller->actions as $actionName => $actions) {
-            if (empty($actions)) {
-                continue;
-            }
+        foreach ($controller->actions as $actionName => $action) {
+            $types = $this->resolveActionTypes($action->methodName, $classNode);
 
             $code .= "    export namespace {$actionName} {\n";
-            $code .= "        export type Request = object;\n";
-            $code .= "        export type Response = object;\n";
+            $code .= $this->buildTypeExport('Request', $types['request'], '    ');
+            $code .= $this->buildTypeExport('Response', $types['response'], '    ');
             $code .= "    }\n";
         }
 
@@ -202,21 +282,73 @@ class LaravelControllerTransformedProvider implements TransformedProvider
 
         $code .= "export { {$controllerName} };\n";
 
-        return $code;
+        return new TypeScriptRaw($code);
     }
 
-    protected function buildParamsType(RouteParameterCollection $parameters): string
+    protected function buildTypeExport(string $name, ?TypeScriptNode $type, string $indent = ''): string
     {
-        if (empty($parameters->parameters)) {
+        $typeString = $type !== null ? $type->__toString() : 'object';
+
+        return "{$indent}    export type {$name} = {$typeString};\n";
+    }
+
+    /**
+     * @param array<RouteParameter> $parameters
+     */
+    protected function buildParamsType(array $parameters): string
+    {
+        if (empty($parameters)) {
             return 'undefined';
         }
 
         $props = [];
-        foreach ($parameters->parameters as $param) {
+
+        foreach ($parameters as $param) {
             $optional = $param->optional ? '?' : '';
             $props[] = "    {$param->name}{$optional}: string | number";
         }
 
         return "{\n".implode(",\n", $props)."\n}";
+    }
+
+    /**
+     * @param array<string> $files
+     * @param array<string> $directories
+     */
+    protected function anyFilesInDirectories(array $files, array $directories): bool
+    {
+        foreach ($files as $file) {
+            foreach ($directories as $directory) {
+                if (str_starts_with($file, $directory)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array<string> $changedFiles
+     */
+    protected function handleControllerChanges(array $changedFiles, TransformedCollection $transformedCollection): void
+    {
+        // PhpNodeCollection is already updated by the file watcher's event handlers.
+        // Re-resolve the full route collection and rebuild transformed entries.
+        // This is a simple approach - a future optimization could target only
+        // the controllers whose files changed.
+        $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
+            actionNameResolver: $this->actionNameResolver,
+            includeRouteClosures: false,
+            filters: $this->filters,
+        );
+
+        $transformedEntities = $this->resolveTransformed($routeCollection);
+
+        foreach ($transformedEntities as $transformed) {
+            $transformedCollection->remove($transformed->reference);
+            $transformed->setWriter($this->writer);
+            $transformedCollection->add($transformed);
+        }
     }
 }

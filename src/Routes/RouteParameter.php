@@ -2,7 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\Routes;
 
-class RouteParameter implements RouterStructure
+class RouteParameter
 {
     public function __construct(
         public string $name,

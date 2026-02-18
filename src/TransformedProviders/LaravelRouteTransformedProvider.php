@@ -2,6 +2,8 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelRouteControllerCollectionsAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
@@ -10,9 +12,7 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteInvokableController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameter;
-use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptConditional;
@@ -62,7 +62,11 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
     /** @return Transformed[] */
     protected function resolveTransformed(RouteCollection $routeCollection): array
     {
-        $routesObject = $this->routeCollectionToTypedObject($routeCollection);
+        $routesObject = $this->resolveActionCollection($routeCollection)
+            ->mapWithKeys(fn (RouteControllerAction|RouteClosure $entity) => [
+                $entity->name => $entity->url,
+            ])
+            ->all();
 
         $transformedRoutes = new Transformed(
             TypeScriptVariableDeclaration::const(
@@ -155,78 +159,53 @@ TS
 
     protected function parseRouteCollection(RouteCollection $collection): TypeScriptNode
     {
-        $mappingFunction = fn (RouteControllerAction|RouteInvokableController|RouteClosure $entity) => new TypeScriptProperty(
-            $entity->name,
-            $this->parseRouteParameterCollection($entity->parameters),
-        );
+        $properties = $this->resolveActionCollection($collection)
+            ->map(function (RouteControllerAction|RouteClosure $entity) {
+                $parameters = array_map(fn (RouteParameter $parameter) => new TypeScriptProperty(
+                    $parameter->name,
+                    new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
+                    isOptional: $parameter->optional,
+                ), $entity->parameters);
 
-        $properties = collect(array_merge($collection->controllers, $collection->closures))
-            ->flatMap(function (RouteController|RouteInvokableController|RouteClosure $entity) use ($mappingFunction) {
-                $singleRoute = $entity instanceof RouteInvokableController || $entity instanceof RouteClosure;
+                $type = empty($parameters)
+                    ? new TypeScriptNever()
+                    : new TypeScriptObject($parameters);
 
-                if ($singleRoute && $entity->name) {
-                    return [$mappingFunction($entity)];
-                }
-
-                if ($entity instanceof RouteController) {
-                    return collect($entity->actions)
-                        ->filter(fn (RouteControllerAction $action) => $action->name !== null)
-                        ->values()
-                        ->map($mappingFunction);
-                }
-
-                return [];
+                return new TypeScriptProperty($entity->name, $type);
             })
+            ->values()
             ->all();
 
         return new TypeScriptObject($properties);
     }
 
-    protected function parseRouteParameterCollection(RouteParameterCollection $collection): TypeScriptNode
+    /**
+     * @return Collection<RouteControllerAction|RouteClosure>
+     */
+    private function resolveActionCollection(RouteCollection $collection): Collection
     {
-        if (empty($collection->parameters)) {
-            return new TypeScriptNever();
-        }
-
-        return new TypeScriptObject(array_map(function (RouteParameter $parameter) {
-            return $this->parseRouteParameter($parameter);
-        }, $collection->parameters));
-    }
-
-    protected function parseRouteParameter(RouteParameter $parameter): TypeScriptProperty
-    {
-        return new TypeScriptProperty(
-            $parameter->name,
-            new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
-            isOptional: $parameter->optional,
-        );
-    }
-
-    /** @return array<string, string> */
-    protected function routeCollectionToTypedObject(RouteCollection $collection): array
-    {
-        $mappingFunction = fn (RouteInvokableController|RouteControllerAction|RouteClosure $entity) => [
-            $entity->name => $entity->url,
-        ];
-
         return collect(array_merge($collection->controllers, $collection->closures))
-            ->flatMap(function (RouteController|RouteInvokableController|RouteClosure $entity) use ($mappingFunction) {
-                $singleRoute = $entity instanceof RouteInvokableController || $entity instanceof RouteClosure;
-
-                if ($singleRoute && $entity->name) {
-                    return $mappingFunction($entity);
+            ->flatMap(function (RouteController|RouteClosure $entity) {
+                if ($entity instanceof RouteClosure && $entity->name) {
+                    return [$entity];
                 }
 
-                if ($entity instanceof RouteController) {
-                    return collect($entity->actions)
-                        ->filter(fn (RouteControllerAction $action) => $action->name !== null)
-                        ->values()
-                        ->flatMap($mappingFunction)
-                        ->all();
+                if ($entity instanceof RouteClosure) {
+                    return [];
                 }
 
-                return [];
-            })
-            ->all();
+                if ($entity->invokable && ($action = Arr::first($entity->actions))) {
+                    return [$action];
+                }
+
+                if ($entity->invokable) {
+                    return [];
+                }
+
+                return collect($entity->actions)
+                    ->filter(fn (RouteControllerAction $action) => $action->name !== null)
+                    ->values()
+                    ->all();
+            });
     }
 }
