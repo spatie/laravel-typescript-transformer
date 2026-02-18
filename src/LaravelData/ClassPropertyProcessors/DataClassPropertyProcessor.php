@@ -12,7 +12,7 @@ use Spatie\TypeScriptTransformer\Attributes\Hidden;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpPropertyNode;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformers\ClassPropertyProcessors\ClassPropertyProcessor;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeReference;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
@@ -69,7 +69,7 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
         for ($i = 0; $i < count($property->type->types); $i++) {
             $subType = $property->type->types[$i];
 
-            if ($subType instanceof TypeReference && $this->shouldHideReference($subType)) {
+            if ($subType instanceof TypeScriptReference && $this->shouldHideReference($subType)) {
                 $property->isOptional = true;
 
                 unset($property->type->types[$i]);
@@ -86,7 +86,7 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
     }
 
     protected function shouldHideReference(
-        TypeReference $reference
+        TypeScriptReference $reference
     ): bool {
         if (! $reference->reference instanceof ClassStringReference) {
             return false;

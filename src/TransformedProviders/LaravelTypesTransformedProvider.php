@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeReference;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptArray;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptBoolean;
@@ -104,7 +104,7 @@ class LaravelTypesTransformedProvider implements TransformedProvider
                     [new TypeScriptIdentifier('T')],
                 ),
                 new TypeScriptGeneric(
-                    new TypeReference(new ClassStringReference(LengthAwarePaginator::class)),
+                    new TypeScriptReference(new ClassStringReference(LengthAwarePaginator::class)),
                     [new TypeScriptIdentifier('T')],
                 ),
             ),
@@ -176,7 +176,7 @@ class LaravelTypesTransformedProvider implements TransformedProvider
                     [new TypeScriptIdentifier('T')],
                 ),
                 new TypeScriptGeneric(
-                    new TypeReference(new ClassStringReference(CursorPaginator::class)),
+                    new TypeScriptReference(new ClassStringReference(CursorPaginator::class)),
                     [new TypeScriptIdentifier('T')],
                 ),
             ),
