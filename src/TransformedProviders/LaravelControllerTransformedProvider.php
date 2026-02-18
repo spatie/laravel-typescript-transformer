@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
+use function PHPUnit\Framework\isEmpty;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
@@ -14,10 +15,8 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
-use function PHPUnit\Framework\isEmpty;
 
 class LaravelControllerTransformedProvider implements TransformedProvider
 {
