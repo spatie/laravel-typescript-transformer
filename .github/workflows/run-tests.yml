@@ -49,9 +49,14 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, redis
           coverage: none
 
+      - name: Remove laravel-data for Laravel 13
+        if: matrix.laravel == '13.*'
+        run: composer remove spatie/laravel-data --dev --no-interaction --no-update
+
       - name: Install dependencies
         run: |
           composer config --unset repositories
+          composer require "spatie/typescript-transformer:dev-main" --no-interaction --no-update
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
