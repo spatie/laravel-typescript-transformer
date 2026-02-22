@@ -18,7 +18,6 @@ use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 use Spatie\TypeScriptTransformer\Writers\Writer;
 
@@ -53,7 +52,7 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
         return $this->routeDirectories;
     }
 
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function provide(): array
     {
         $routeCollection = $this->resolveLaravelRoutControllerCollectionsAction->execute(
             actionNameResolver: $this->actionNameResolver,

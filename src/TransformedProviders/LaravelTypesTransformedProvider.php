@@ -23,11 +23,10 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelTypesTransformedProvider implements TransformedProvider
 {
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function provide(): array
     {
         return [
             $this->lengthAwarePaginator(),

@@ -6,7 +6,6 @@ use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController;
 use Spatie\LaravelTypeScriptTransformer\TransformedProviders\LaravelRouteTransformedProvider;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfigFactory;
 
 it('generates correct TypeScript output for named routes', function () {
     $router = app(Router::class);
@@ -26,9 +25,7 @@ it('generates correct TypeScript output for named routes', function () {
         absoluteUrlsByDefault: true,
     );
 
-    $transformed = $provider->provide(
-        TypeScriptTransformerConfigFactory::create()->outputDirectory(sys_get_temp_dir())->get()
-    );
+    $transformed = $provider->provide();
 
     $transformedCollection = new TransformedCollection();
 

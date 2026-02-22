@@ -13,11 +13,10 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelDataTransformedProvider implements TransformedProvider
 {
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function provide(): array
     {
         return [
             $this->paginatedCollection(),

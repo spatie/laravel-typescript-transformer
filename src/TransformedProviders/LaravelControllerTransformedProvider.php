@@ -15,7 +15,6 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteParameterCollection;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
 
 class LaravelControllerTransformedProvider implements TransformedProvider
@@ -32,7 +31,7 @@ class LaravelControllerTransformedProvider implements TransformedProvider
         $this->writer = new ModuleWriter('controllers');
     }
 
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function provide(): array
     {
         $routeCollection = $this->resolveAction->execute(
             actionNameResolver: $this->actionNameResolver,
