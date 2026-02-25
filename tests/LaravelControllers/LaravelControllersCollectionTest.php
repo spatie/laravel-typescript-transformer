@@ -2,15 +2,18 @@
 
 use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelController;
 use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelControllersCollection;
+use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
 
 beforeEach(function () {
     $this->collection = new LaravelControllersCollection();
+    $this->classNode = PhpClassNode::fromClassString(stdClass::class);
 });
 
 it('can add and get a controller', function () {
     $controller = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: [],
     );
 
@@ -30,6 +33,7 @@ it('can remove a controller by fqcn', function () {
     $controller = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: [],
     );
 
@@ -45,6 +49,7 @@ it('can find a controller by file path', function () {
     $controller = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: [],
     );
 
@@ -61,6 +66,7 @@ it('can remove a controller by file path', function () {
     $controller = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: [],
     );
 
@@ -75,12 +81,14 @@ it('can remove controllers by directory', function () {
     $controller1 = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __DIR__ . '/LaravelControllersCollectionTest.php',
+        classNode: $this->classNode,
         methods: [],
     );
 
     $controller2 = new LaravelController(
         fqcn: 'App\Http\Controllers\PostController',
         filePath: __DIR__ . '/../TestCase.php',
+        classNode: $this->classNode,
         methods: [],
     );
 
@@ -98,12 +106,14 @@ it('replaces existing controller with same fqcn on add', function () {
     $controller1 = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: ['index' => ['response' => null, 'request' => null]],
     );
 
     $controller2 = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: ['show' => ['response' => null, 'request' => null]],
     );
 
@@ -118,12 +128,14 @@ it('is iterable', function () {
     $controller1 = new LaravelController(
         fqcn: 'App\Http\Controllers\UserController',
         filePath: __FILE__,
+        classNode: $this->classNode,
         methods: [],
     );
 
     $controller2 = new LaravelController(
         fqcn: 'App\Http\Controllers\PostController',
         filePath: __DIR__ . '/../TestCase.php',
+        classNode: $this->classNode,
         methods: [],
     );
 

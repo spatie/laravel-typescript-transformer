@@ -68,7 +68,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($controller)->toBeInstanceOf(RouteController::class);
             expect($controller->invokable)->toBeTrue();
-            expect($controller->controllerClass)->toBe(InvokableController::class);
+            expect($controller->class)->toBe(InvokableController::class);
 
             $action = $controller->actions['__invoke'];
             expect($action)->toBeInstanceOf(RouteControllerAction::class);
@@ -90,7 +90,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
 
             expect($controller)->toBeInstanceOf(RouteController::class);
             expect($controller->invokable)->toBeFalse();
-            expect($controller->controllerClass)->toBe(ResourceController::class);
+            expect($controller->class)->toBe(ResourceController::class);
             expect($controller->actions)->toHaveCount(7);
 
             expect($controller->actions['index'])->toBeInstanceOf(RouteControllerAction::class);

@@ -62,13 +62,22 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
 
         $this->routeCollectionHash = md5(serialize($routeCollection));
 
-        $transformed = $this->resolveTransformed($routeCollection);
+        $transformed = array_merge(
+            $this->resolveSupport(),
+            $this->resolveTransformed($routeCollection),
+        );
 
         foreach ($transformed as $transformedItem) {
             $transformedItem->setWriter($this->writer);
         }
 
         return $transformed;
+    }
+
+    /** @return array<Transformed> */
+    protected function resolveSupport(): array
+    {
+        return [];
     }
 
     public function handleWatchEvent(WatchEvent $watchEvent, TransformedCollection $transformedCollection): ?WatchEventResult

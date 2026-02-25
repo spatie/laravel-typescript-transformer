@@ -6,7 +6,8 @@ class RouteController
 {
     /** @param array<string, RouteControllerAction> $actions */
     public function __construct(
-        public string $controllerClass,
+        public string $class,
+        public string $file,
         public bool $invokable,
         public array $actions,
     ) {

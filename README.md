@@ -243,6 +243,7 @@ $config->provider(new LaravelRouteTransformedProvider(
         'another/directory/to/watch',
     ],
 ));
+```
 
 ## Testing
 

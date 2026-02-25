@@ -41,6 +41,7 @@ class ResolveLaravelControllerAction
         return new LaravelController(
             fqcn: $classNode->getName(),
             filePath: $classNode->getFileName(),
+            classNode: $classNode,
             methods: $methods,
         );
     }

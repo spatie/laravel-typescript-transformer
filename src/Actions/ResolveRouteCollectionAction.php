@@ -4,6 +4,7 @@ namespace Spatie\LaravelTypeScriptTransformer\Actions;
 
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
+use ReflectionClass;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Exceptions\DuplicateActionNameException;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
@@ -66,9 +67,16 @@ class ResolveRouteCollectionAction
 
             $isInvokable = $route->getActionMethod() === $route->getControllerClass();
 
+            $controllerFile = $this->resolveControllerFile($controllerClass);
+
+            if ($controllerFile === null) {
+                continue;
+            }
+
             if ($isInvokable) {
                 $controllers[$resolvedName] = new RouteController(
-                    controllerClass: $controllerClass,
+                    class: $controllerClass,
+                    file: $controllerFile,
                     invokable: true,
                     actions: [
                         '__invoke' => new RouteControllerAction(
@@ -86,7 +94,8 @@ class ResolveRouteCollectionAction
 
             if (! array_key_exists($resolvedName, $controllers)) {
                 $controllers[$resolvedName] = new RouteController(
-                    controllerClass: $controllerClass,
+                    class: $controllerClass,
+                    file: $controllerFile,
                     invokable: false,
                     actions: [],
                 );
@@ -121,6 +130,13 @@ class ResolveRouteCollectionAction
             'name' => trim($match, '?'),
             'optional' => str_ends_with($match, '?'),
         ], $matches[1]);
+    }
+
+    protected function resolveControllerFile(string $controllerClass): ?string
+    {
+        $fileName = (new ReflectionClass($controllerClass))->getFileName();
+
+        return $fileName ?: null;
     }
 
     protected function resolveUrl(Route $route): string
