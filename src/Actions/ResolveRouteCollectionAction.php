@@ -13,7 +13,6 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
 
-
 class ResolveRouteCollectionAction
 {
     /** @param array<RouteFilter> $filters */

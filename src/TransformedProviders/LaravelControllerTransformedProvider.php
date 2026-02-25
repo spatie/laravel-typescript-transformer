@@ -14,7 +14,6 @@ use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteController;
 use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
-use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\ActionAwareTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\PhpNodesAwareTransformedProvider;
@@ -95,7 +94,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         foreach ($routeCollection->controllers as $resolvedName => $routeController) {
             $controller = $this->resolveAndCacheControllerTypes($routeController);
 
-            if($controller === null){
+            if ($controller === null) {
                 continue;
             }
 

@@ -23,6 +23,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
+
 class LaravelTypesTransformedProvider implements TransformedProvider
 {
     public function provide(): array
