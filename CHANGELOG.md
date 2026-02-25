@@ -2,6 +2,11 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 2.6.0 - 2026-02-25
+
+- Added support for Laravel 13
+- Dropped support for Laravel 8 and 9
+
 ## 2.5.2 - 2025-04-25
 
 ### What's Changed
