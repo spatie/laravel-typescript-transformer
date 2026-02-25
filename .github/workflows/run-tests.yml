@@ -16,9 +16,9 @@ jobs:
           - laravel: 10.*
             testbench: ^8.37
           - laravel: 11.*
-            testbench: 9.*
+            testbench: ^9.16
           - laravel: 12.*
-            testbench: 10.*
+            testbench: ^10.9
           - laravel: 13.*
             testbench: 11.*
         exclude:
@@ -26,6 +26,8 @@ jobs:
             laravel: 13.*
           - php: 8.5
             laravel: 10.*
+          - laravel: 10.*
+            dependency-version: prefer-lowest
 
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
