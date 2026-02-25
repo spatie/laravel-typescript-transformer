@@ -9,7 +9,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptArray;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptBoolean;
@@ -21,6 +20,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNumber;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptOperator;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 class LaravelTypesTransformedProvider implements TransformedProvider

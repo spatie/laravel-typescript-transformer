@@ -12,9 +12,9 @@ use Spatie\TypeScriptTransformer\Attributes\Hidden;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpPropertyNode;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformers\ClassPropertyProcessors\ClassPropertyProcessor;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 
 class DataClassPropertyProcessor implements ClassPropertyProcessor
