@@ -5,8 +5,6 @@ namespace Spatie\LaravelTypeScriptTransformer\Actions;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
 use ReflectionClass;
-use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
-use Spatie\LaravelTypeScriptTransformer\Exceptions\DuplicateActionNameException;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
@@ -17,7 +15,6 @@ class ResolveRouteCollectionAction
 {
     /** @param array<RouteFilter> $filters */
     public function execute(
-        ActionNameResolver $actionNameResolver,
         bool $includeRouteClosures,
         array $filters = [],
     ): RouteCollection {
@@ -25,8 +22,6 @@ class ResolveRouteCollectionAction
         $controllers = [];
         /** @var array<RouteClosure> $closures */
         $closures = [];
-        /** @var array<string, array<string>> $nameMapping */
-        $nameMapping = [];
 
         foreach (app(Router::class)->getRoutes()->getRoutes() as $route) {
             foreach ($filters as $filter) {
@@ -54,16 +49,6 @@ class ResolveRouteCollectionAction
                 continue;
             }
 
-            $resolvedName = $actionNameResolver->resolve($controllerClass);
-
-            if (! array_key_exists($resolvedName, $nameMapping)) {
-                $nameMapping[$resolvedName] = [];
-            }
-
-            if (! in_array($controllerClass, $nameMapping[$resolvedName])) {
-                $nameMapping[$resolvedName][] = $controllerClass;
-            }
-
             $isInvokable = $route->getActionMethod() === $route->getControllerClass();
 
             $controllerFile = $this->resolveControllerFile($controllerClass);
@@ -73,7 +58,7 @@ class ResolveRouteCollectionAction
             }
 
             if ($isInvokable) {
-                $controllers[$resolvedName] = new RouteController(
+                $controllers[$controllerClass] = new RouteController(
                     class: $controllerClass,
                     file: $controllerFile,
                     invokable: true,
@@ -91,8 +76,8 @@ class ResolveRouteCollectionAction
                 continue;
             }
 
-            if (! array_key_exists($resolvedName, $controllers)) {
-                $controllers[$resolvedName] = new RouteController(
+            if (! array_key_exists($controllerClass, $controllers)) {
+                $controllers[$controllerClass] = new RouteController(
                     class: $controllerClass,
                     file: $controllerFile,
                     invokable: false,
@@ -100,19 +85,13 @@ class ResolveRouteCollectionAction
                 );
             }
 
-            $controllers[$resolvedName]->actions[$route->getActionMethod()] = new RouteControllerAction(
+            $controllers[$controllerClass]->actions[$route->getActionMethod()] = new RouteControllerAction(
                 methodName: $route->getActionMethod(),
                 parameters: $this->resolveRouteParameters($route),
                 methods: $route->methods,
                 url: $this->resolveUrl($route),
                 name: $route->getName(),
             );
-        }
-
-        $duplicates = array_filter($nameMapping, fn ($fqcns) => count($fqcns) > 1);
-
-        if (! empty($duplicates)) {
-            throw new DuplicateActionNameException($duplicates);
         }
 
         return new RouteCollection($controllers, $closures);

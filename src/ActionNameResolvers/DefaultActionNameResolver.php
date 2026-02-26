@@ -4,8 +4,9 @@ namespace Spatie\LaravelTypeScriptTransformer\ActionNameResolvers;
 
 class DefaultActionNameResolver implements ActionNameResolver
 {
-    public function resolve(string $controllerClass): string
+    /** @return array<string> */
+    public function resolve(string $controllerClass): array
     {
-        return str_replace('\\', '/', ltrim($controllerClass, '\\'));
+        return explode('\\', ltrim($controllerClass, '\\'));
     }
 }

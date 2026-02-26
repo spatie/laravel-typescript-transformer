@@ -4,7 +4,6 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
@@ -51,7 +50,6 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
     ) {
         parent::__construct(
             resolveRouteCollectionAction: $resolveRouteCollectionAction,
-            actionNameResolver: new DefaultActionNameResolver(),
             includeRouteClosures: true,
             filters: $filters,
             path: $path,

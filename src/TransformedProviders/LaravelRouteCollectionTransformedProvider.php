@@ -5,7 +5,6 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 use Illuminate\Process\Exceptions\ProcessFailedException;
 use Illuminate\Process\Exceptions\ProcessTimedOutException;
 use Illuminate\Support\Facades\Process;
-use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
@@ -32,7 +31,6 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
     /** @param array<RouteFilter> $filters */
     public function __construct(
         protected ResolveRouteCollectionAction $resolveRouteCollectionAction,
-        protected ActionNameResolver $actionNameResolver,
         protected bool $includeRouteClosures,
         protected array $filters,
         protected string $path,
@@ -55,7 +53,6 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
     public function provide(): array
     {
         $routeCollection = $this->resolveRouteCollectionAction->execute(
-            actionNameResolver: $this->actionNameResolver,
             includeRouteClosures: $this->includeRouteClosures,
             filters: $this->filters,
         );
@@ -92,7 +89,6 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
             'php',
             'artisan',
             'typescript:dump-routes',
-            serialize($this->actionNameResolver),
             $this->filters ? serialize($this->filters) : 'null',
             $this->includeRouteClosures ? '--include-route-closures' : '',
         ];

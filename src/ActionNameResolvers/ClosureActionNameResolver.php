@@ -9,13 +9,14 @@ class ClosureActionNameResolver implements ActionNameResolver
 {
     protected SerializableClosure $resolver;
 
-    /** @param Closure(string): string $resolver */
+    /** @param Closure(string): array<string> $resolver */
     public function __construct(Closure $resolver)
     {
         $this->resolver = new SerializableClosure($resolver);
     }
 
-    public function resolve(string $controllerClass): string
+    /** @return array<string> */
+    public function resolve(string $controllerClass): array
     {
         return ($this->resolver)($controllerClass);
     }

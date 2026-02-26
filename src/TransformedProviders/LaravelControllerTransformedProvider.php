@@ -37,7 +37,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
      * @param array<string>|null $routeDirectories
      */
     public function __construct(
-        ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
+        protected ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
         array $filters = [],
         protected array $controllerDirectories = [],
         ResolveRouteCollectionAction $resolveRouteCollectionAction = new ResolveRouteCollectionAction(),
@@ -48,7 +48,6 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
         parent::__construct(
             resolveRouteCollectionAction: $resolveRouteCollectionAction,
-            actionNameResolver: $actionNameResolver,
             includeRouteClosures: false,
             filters: $filters,
             path: 'controllers',
@@ -88,18 +87,31 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
     {
         $transformed = [];
 
-        foreach ($routeCollection->controllers as $resolvedName => $routeController) {
+        foreach ($routeCollection->controllers as $controllerClass => $routeController) {
             $controller = $this->resolveAndCacheControllerTypes($routeController);
 
             if ($controller === null) {
                 continue;
             }
 
-            $result = $this->transformController($resolvedName, $routeController);
+            $location = $this->actionNameResolver->resolve($controllerClass);
 
-            if ($result !== null) {
-                $transformed[] = $result;
+            $controllerName = end($location);
+
+            $code = $routeController->invokable
+                ? $this->buildInvokableControllerCode($controllerName, $controller)
+                : $this->buildResourceControllerCode($controllerName, $controller);
+
+            if ($code === null) {
+                continue;
             }
+
+            $transformed[] = new Transformed(
+                $code,
+                LaravelControllerReference::controller($controllerClass),
+                $location,
+                true,
+            );
         }
 
         return $transformed;
@@ -107,7 +119,6 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
     protected function resolveAndCacheControllerTypes(RouteController $routeController): ?LaravelController
     {
-        // Todo: this will use roave reflection on intial run but it is technically valid to use reflection
         $classNode = $this->phpNodeCollection->has($routeController->class)
             ? $this->phpNodeCollection->get($routeController->class)
             : $this->phpNodeCollection->addByFile($routeController->file);
@@ -129,27 +140,6 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         return $controller;
     }
 
-    protected function transformController(string $resolvedName, RouteController $controller): ?Transformed
-    {
-        $location = explode('/', $resolvedName);
-        $controllerName = end($location);
-
-        $code = $controller->invokable
-            ? $this->buildInvokableControllerCode($controllerName, $controller)
-            : $this->buildResourceControllerCode($controllerName, $controller);
-
-        if ($code === null) {
-            return null;
-        }
-
-        return new Transformed(
-            $code,
-            LaravelControllerReference::controller($controller->class),
-            $location,
-            true,
-        );
-    }
-
     /**
      * @return array{
      *     response: ?TypeScriptNode,
@@ -169,7 +159,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
     protected function buildInvokableControllerCode(
         string $controllerName,
-        RouteController $controller,
+        LaravelController $controller,
     ): ?TypeScriptNode {
         $action = array_values($controller->actions)[0] ?? null;
 
@@ -207,7 +197,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
     protected function buildResourceControllerCode(
         string $controllerName,
-        RouteController $controller,
+        LaravelController $controller,
     ): ?TypeScriptNode {
         if (empty($controller->actions)) {
             return null;

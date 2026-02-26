@@ -10,7 +10,8 @@ class StrippedActionNameResolver implements ActionNameResolver
     ) {
     }
 
-    public function resolve(string $controllerClass): string
+    /** @return array<string> */
+    public function resolve(string $controllerClass): array
     {
         $controllerClass = ltrim($controllerClass, '\\');
 
@@ -21,15 +22,15 @@ class StrippedActionNameResolver implements ActionNameResolver
                 continue;
             }
 
-            $remaining = str_replace('\\', '/', ltrim(substr($controllerClass, strlen($prefix)), '\\'));
+            $remainingSegments = explode('\\', ltrim(substr($controllerClass, strlen($prefix)), '\\'));
 
             if ($replacement === null) {
-                return $remaining;
+                return $remainingSegments;
             }
 
-            return $replacement.'/'.$remaining;
+            return [$replacement, ...$remainingSegments];
         }
 
-        return '/'.str_replace('\\', '/', $controllerClass);
+        return explode('\\', $controllerClass);
     }
 }
