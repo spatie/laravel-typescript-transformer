@@ -4,126 +4,305 @@ namespace Spatie\LaravelTypeScriptTransformer\Actions;
 
 use Spatie\LaravelTypeScriptTransformer\References\LaravelControllerReference;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptArray;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptBoolean;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptCallable;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptConditional;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptFunctionDeclaration;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeParameter;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIntersection;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptMappedType;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNull;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNumber;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptOperator;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptParameter;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUndefined;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 
 class GenerateControllerSupportAction
 {
-    protected static ?Transformed $cachedSupport = null;
+    /** @var ?array<Transformed> */
+    protected static ?array $cachedSupport = null;
 
-    public function execute(): Transformed
+    /** @return array<Transformed> */
+    public function execute(): array
     {
         if (static::$cachedSupport !== null) {
             return static::$cachedSupport;
         }
 
-        $supportCode = <<<'TS'
-export type RouteParams = Record<string, string | number>;
+        return static::$cachedSupport = [
+            new Transformed(
+                new TypeScriptAlias(
+                    'RouteParams',
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('Record'),
+                        [new TypeScriptString(), new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()])]
+                    )
+                ),
+                LaravelControllerReference::supportItem('RouteParams'),
+                [],
+                true,
+            ),
 
-export type RouteDefinition = {
-    url: string;
-    method: string;
-};
+            new Transformed(
+                new TypeScriptAlias(
+                    'RouteDefinition',
+                    new TypeScriptObject([
+                        new TypeScriptProperty('url', new TypeScriptString()),
+                        new TypeScriptProperty('method', new TypeScriptString()),
+                    ])
+                ),
+                LaravelControllerReference::supportItem('RouteDefinition'),
+                [],
+                true,
+            ),
 
-export type QueryParams = Record<string, string | number | boolean | null | undefined | (string | number | boolean)[]>;
+            new Transformed(
+                new TypeScriptAlias(
+                    'QueryParams',
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('Record'),
+                        [
+                            new TypeScriptString(),
+                            new TypeScriptUnion([
+                                new TypeScriptString(),
+                                new TypeScriptNumber(),
+                                new TypeScriptBoolean(),
+                                new TypeScriptNull(),
+                                new TypeScriptUndefined(),
+                                new TypeScriptArray([
+                                    new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber(), new TypeScriptBoolean()]),
+                                ]),
+                            ]),
+                        ]
+                    )
+                ),
+                LaravelControllerReference::supportItem('QueryParams'),
+                [],
+                true,
+            ),
 
-export type RouteOptions = {
-    query?: QueryParams;
-};
+            new Transformed(
+                new TypeScriptAlias(
+                    'RouteOptions',
+                    new TypeScriptObject([
+                        new TypeScriptProperty('query', new TypeScriptIdentifier('QueryParams'), isOptional: true),
+                    ])
+                ),
+                LaravelControllerReference::supportItem('RouteOptions'),
+                [],
+                true,
+            ),
 
-export type MethodRoute = {
-    method: string;
-    url: string;
-};
+            new Transformed(
+                new TypeScriptAlias(
+                    'MethodRoute',
+                    new TypeScriptObject([
+                        new TypeScriptProperty('method', new TypeScriptString()),
+                        new TypeScriptProperty('url', new TypeScriptString()),
+                    ])
+                ),
+                LaravelControllerReference::supportItem('MethodRoute'),
+                [],
+                true,
+            ),
 
-declare const baseUrl: string;
+            (new Transformed(
+                new TypeScriptRaw('declare const baseUrl: string;'),
+                LaravelControllerReference::supportItem('baseUrl'),
+                [],
+                false,
+            ))->nameAs('baseUrl'),
 
-export function buildUrl(
-    path: string,
-    params?: RouteParams,
-    options?: RouteOptions
-): string {
-    let url = path;
+            new Transformed(
+                new TypeScriptFunctionDeclaration(
+                    'buildUrl',
+                    [
+                        new TypeScriptParameter('path', new TypeScriptString()),
+                        new TypeScriptParameter('params', new TypeScriptIdentifier('RouteParams'), isOptional: true),
+                        new TypeScriptParameter('options', new TypeScriptIdentifier('RouteOptions'), isOptional: true),
+                    ],
+                    new TypeScriptString(),
+                    new TypeScriptRaw(<<<'TS'
+                        let url = path;
 
-    if (params) {
-        for (const [key, value] of Object.entries(params)) {
-            url = url.replace(`{${key}}`, String(value));
-        }
-    }
+                        if (params) {
+                            for (const [key, value] of Object.entries(params)) {
+                                url = url.replace(`{${key}}`, String(value));
+                            }
+                        }
 
-    if (options?.query) {
-        const searchParams = new URLSearchParams();
+                        if (options?.query) {
+                            const searchParams = new URLSearchParams();
 
-        for (const [key, value] of Object.entries(options.query)) {
-            if (value === null || value === undefined) {
-                continue;
-            }
+                            for (const [key, value] of Object.entries(options.query)) {
+                                if (value === null || value === undefined) {
+                                    continue;
+                                }
 
-            if (Array.isArray(value)) {
-                value.forEach((v) => searchParams.append(`${key}[]`, String(v)));
-            } else {
-                searchParams.append(key, String(value));
-            }
-        }
+                                if (Array.isArray(value)) {
+                                    value.forEach((v) => searchParams.append(`${key}[]`, String(v)));
+                                } else {
+                                    searchParams.append(key, String(value));
+                                }
+                            }
 
-        const queryString = searchParams.toString();
+                            const queryString = searchParams.toString();
 
-        if (queryString) {
-            url += '?' + queryString;
-        }
-    }
+                            if (queryString) {
+                                url += '?' + queryString;
+                            }
+                        }
 
-    return (typeof baseUrl !== 'undefined' ? baseUrl : '') + '/' + url;
-}
+                        return (typeof baseUrl !== 'undefined' ? baseUrl : '') + '/' + url;
+                    TS),
+                ),
+                LaravelControllerReference::supportItem('buildUrl'),
+                [],
+                true,
+            ),
 
-type ActionResult = RouteDefinition & {
-    url: string;
-};
+            new Transformed(
+                new TypeScriptAlias(
+                    'ActionResult',
+                    new TypeScriptIntersection([
+                        new TypeScriptIdentifier('RouteDefinition'),
+                        new TypeScriptObject([
+                            new TypeScriptProperty('url', new TypeScriptString()),
+                        ]),
+                    ])
+                ),
+                LaravelControllerReference::supportItem('ActionResult'),
+                [],
+                false,
+            ),
 
-type ActionFunction<P extends RouteParams | undefined> = P extends undefined
-    ? (options?: RouteOptions) => ActionResult
-    : (params: P, options?: RouteOptions) => ActionResult;
+            new Transformed(
+                new TypeScriptAlias(
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('ActionFunction'),
+                        [new TypeScriptGenericTypeParameter(
+                            new TypeScriptIdentifier('P'),
+                            extends: new TypeScriptUnion([new TypeScriptIdentifier('RouteParams'), new TypeScriptUndefined()])
+                        )]
+                    ),
+                    new TypeScriptConditional(
+                        TypeScriptOperator::extends(new TypeScriptIdentifier('P'), new TypeScriptUndefined()),
+                        new TypeScriptCallable(
+                            [new TypeScriptParameter('options', new TypeScriptIdentifier('RouteOptions'), isOptional: true)],
+                            new TypeScriptIdentifier('ActionResult')
+                        ),
+                        new TypeScriptCallable(
+                            [
+                                new TypeScriptParameter('params', new TypeScriptIdentifier('P')),
+                                new TypeScriptParameter('options', new TypeScriptIdentifier('RouteOptions'), isOptional: true),
+                            ],
+                            new TypeScriptIdentifier('ActionResult')
+                        ),
+                    )
+                ),
+                LaravelControllerReference::supportItem('ActionFunction'),
+                [],
+                false,
+            ),
 
-type ActionWithMethods<P extends RouteParams | undefined, M extends string> = ActionFunction<P> & {
-    [K in M]: ActionFunction<P>;
-};
+            new Transformed(
+                new TypeScriptAlias(
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('ActionWithMethods'),
+                        [
+                            new TypeScriptGenericTypeParameter(
+                                new TypeScriptIdentifier('P'),
+                                extends: new TypeScriptUnion([new TypeScriptIdentifier('RouteParams'), new TypeScriptUndefined()])
+                            ),
+                            new TypeScriptGenericTypeParameter(
+                                new TypeScriptIdentifier('M'),
+                                extends: new TypeScriptString()
+                            ),
+                        ]
+                    ),
+                    new TypeScriptIntersection([
+                        new TypeScriptGeneric(new TypeScriptIdentifier('ActionFunction'), [new TypeScriptIdentifier('P')]),
+                        new TypeScriptMappedType(
+                            'K',
+                            new TypeScriptIdentifier('M'),
+                            new TypeScriptGeneric(new TypeScriptIdentifier('ActionFunction'), [new TypeScriptIdentifier('P')])
+                        ),
+                    ])
+                ),
+                LaravelControllerReference::supportItem('ActionWithMethods'),
+                [],
+                false,
+            ),
 
-export function createActionWithMethods<P extends RouteParams | undefined = undefined, M extends string = string>(
-    routes: MethodRoute[]
-): ActionWithMethods<P, M> {
-    const defaultRoute = routes[0];
+            new Transformed(
+                new TypeScriptFunctionDeclaration(
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('createActionWithMethods'),
+                        [
+                            new TypeScriptGenericTypeParameter(
+                                new TypeScriptIdentifier('P'),
+                                extends: new TypeScriptUnion([new TypeScriptIdentifier('RouteParams'), new TypeScriptUndefined()]),
+                                default: new TypeScriptUndefined()
+                            ),
+                            new TypeScriptGenericTypeParameter(
+                                new TypeScriptIdentifier('M'),
+                                extends: new TypeScriptString(),
+                                default: new TypeScriptString()
+                            ),
+                        ]
+                    ),
+                    [
+                        new TypeScriptParameter(
+                            'routes',
+                            new TypeScriptArray([new TypeScriptIdentifier('MethodRoute')])
+                        ),
+                    ],
+                    new TypeScriptGeneric(
+                        new TypeScriptIdentifier('ActionWithMethods'),
+                        [new TypeScriptIdentifier('P'), new TypeScriptIdentifier('M')]
+                    ),
+                    new TypeScriptRaw(<<<'TS'
+                        const defaultRoute = routes[0];
 
-    const createFn = (route: MethodRoute): ActionFunction<P> => {
-        return ((...args: [P?, RouteOptions?]) => {
-            const params = args[0] && typeof args[0] === 'object' && !('query' in args[0])
-                ? args[0] as P
-                : undefined;
-            const options = params ? args[1] as RouteOptions : args[0] as RouteOptions;
+                        const createFn = (route: MethodRoute): ActionFunction<P> => {
+                            return ((...args: [P?, RouteOptions?]) => {
+                                const params = args[0] && typeof args[0] === 'object' && !('query' in args[0])
+                                    ? args[0] as P
+                                    : undefined;
+                                const options = params ? args[1] as RouteOptions : args[0] as RouteOptions;
 
-            const url = buildUrl(route.url, params as RouteParams, options);
+                                const url = buildUrl(route.url, params as RouteParams, options);
 
-            return {
-                url,
-                method: route.method,
-            };
-        }) as ActionFunction<P>;
-    };
+                                return {
+                                    url,
+                                    method: route.method,
+                                };
+                            }) as ActionFunction<P>;
+                        };
 
-    const fn = createFn(defaultRoute);
+                        const fn = createFn(defaultRoute);
 
-    const methodVariants: Record<string, ActionFunction<P>> = {};
-    for (const route of routes) {
-        methodVariants[route.method.toLowerCase()] = createFn(route);
-    }
+                        const methodVariants: Record<string, ActionFunction<P>> = {};
+                        for (const route of routes) {
+                            methodVariants[route.method.toLowerCase()] = createFn(route);
+                        }
 
-    return Object.assign(fn, methodVariants) as ActionWithMethods<P, M>;
-}
-TS;
-
-        return static::$cachedSupport = new Transformed(
-            new TypeScriptRaw($supportCode),
-            LaravelControllerReference::support(),
-            ['controllers'],
-            false,
-        );
+                        return Object.assign(fn, methodVariants) as ActionWithMethods<P, M>;
+                    TS),
+                ),
+                LaravelControllerReference::supportItem('createActionWithMethods'),
+                [],
+                true,
+            ),
+        ];
     }
 }

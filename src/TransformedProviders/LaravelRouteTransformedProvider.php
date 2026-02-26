@@ -5,7 +5,7 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
-use Spatie\LaravelTypeScriptTransformer\References\LaravelNamedRouteReference;
+use Spatie\LaravelTypeScriptTransformer\References\LaravelRouteReference;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\RouteFilter;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteClosure;
 use Spatie\LaravelTypeScriptTransformer\Routes\RouteCollection;
@@ -72,7 +72,7 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
                 'routes',
                 new TypeScriptObjectLiteral($routesObject)
             ),
-            LaravelNamedRouteReference::routes(),
+            LaravelRouteReference::routes(),
             [],
             false,
         );
@@ -82,7 +82,7 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
                 new TypeScriptIdentifier('RouteParameters'),
                 $this->parseRouteCollection($routeCollection),
             ),
-            LaravelNamedRouteReference::routeParameters(),
+            LaravelRouteReference::routeParameters(),
             [],
             false,
         );
@@ -144,7 +144,7 @@ return url;
 TS
                 )
             ),
-            LaravelNamedRouteReference::function(),
+            LaravelRouteReference::function(),
             [],
             true,
         );

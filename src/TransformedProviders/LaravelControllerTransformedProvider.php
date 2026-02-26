@@ -17,6 +17,7 @@ use Spatie\LaravelTypeScriptTransformer\Routes\RouteControllerAction;
 use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
 use Spatie\TypeScriptTransformer\Data\WritingContext;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
+use Spatie\TypeScriptTransformer\Support\ReservedWords;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\ActionAwareTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\PhpNodesAwareTransformedProvider;
@@ -28,6 +29,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptExport;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNamespace;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNumber;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptOperator;
@@ -99,9 +101,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
     /** @return array<Transformed> */
     protected function resolveSupport(): array
     {
-        return [
-            $this->generateSupportAction->execute(),
-        ];
+        return $this->generateSupportAction->execute();
     }
 
     /** @return array<Transformed> */
@@ -197,7 +197,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
             new Transformed(
                 $this->buildActionCall($controllerName, $action),
                 LaravelControllerReference::controller($controllerClass),
-                $location,
+                array_slice($location, 0, -1),
                 true,
                 $this->writer,
             ),
@@ -207,7 +207,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
                     new TypeScriptExport(new TypeScriptAlias('Response', $types['response'] ?? new TypeScriptObject([]))),
                 ], declare: false),
                 new LaravelControllerReference($controllerClass, 'types'),
-                $location,
+                array_slice($location, 0, -1),
                 false,
                 $this->writer,
             ),
@@ -235,19 +235,10 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
         foreach ($routeController->actions as $actionName => $action) {
             $paramsType = $this->buildParamsType($action->parameters);
+            $typeArgs = $paramsType ? $this->writeNode($paramsType) : 'undefined';
             $method = strtolower($action->methods[0] ?? 'get');
 
-            $actionEntries[] = "    {$actionName}: ".$this->writeNode(
-                new TypeScriptCallExpression(
-                    new TypeScriptIdentifier('createActionWithMethods'),
-                    [
-                        new TypeScriptArrayExpression([
-                            new TypeScriptRaw("{ method: '{$method}', url: '{$action->url}' }"),
-                        ]),
-                    ],
-                    [$paramsType ?? new TypeScriptUndefined()],
-                ),
-            ).',';
+            $actionEntries[] = "    {$actionName}: %createActionWithMethods%<{$typeArgs}>([{ method: '{$method}', url: '{$action->url}' }]),";
         }
 
         $objectBody = "{\n".implode("\n", $actionEntries)."\n}";
@@ -255,7 +246,9 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         $constNode = TypeScriptVariableDeclaration::const(
             $controllerName,
             TypeScriptOperator::as(
-                new TypeScriptRaw($objectBody),
+                new TypeScriptRaw($objectBody, references: [
+                    'createActionWithMethods' => LaravelControllerReference::supportItem('createActionWithMethods'),
+                ]),
                 new TypeScriptIdentifier('const'),
             ),
         );
@@ -265,8 +258,10 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         foreach ($routeController->actions as $actionName => $action) {
             $types = $this->resolveControllerMethod($controller, $action->methodName);
 
+            $namespaceName = ReservedWords::isReserved($actionName) ? "_{$actionName}" : $actionName;
+
             $namespaceTypes[] = new TypeScriptRaw(
-                "export namespace {$actionName} {\n".
+                "export namespace {$namespaceName} {\n".
                 "    export type Request = {$this->writeNode($types['request'] ?? new TypeScriptObject([]))};\n".
                 "    export type Response = {$this->writeNode($types['response'] ?? new TypeScriptObject([]))};\n".
                 '}'
@@ -277,14 +272,14 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
             new Transformed(
                 $constNode,
                 LaravelControllerReference::controller($controllerClass),
-                $location,
+                array_slice($location, 0, -1),
                 true,
                 $this->writer,
             ),
             new Transformed(
                 new TypeScriptNamespace($controllerName, $namespaceTypes, declare: false),
                 new LaravelControllerReference($controllerClass, 'types'),
-                $location,
+                array_slice($location, 0, -1),
                 false,
                 $this->writer,
             ),
@@ -299,7 +294,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
         return TypeScriptVariableDeclaration::const(
             $name,
             new TypeScriptCallExpression(
-                new TypeScriptIdentifier('createActionWithMethods'),
+                new TypeScriptReference(LaravelControllerReference::supportItem('createActionWithMethods')),
                 [
                     new TypeScriptArrayExpression([
                         new TypeScriptRaw("{ method: '{$method}', url: '{$action->url}' }"),

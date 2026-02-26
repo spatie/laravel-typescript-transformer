@@ -4,52 +4,35 @@ namespace Spatie\LaravelTypeScriptTransformer\References;
 
 use Spatie\TypeScriptTransformer\References\Reference;
 
-abstract class LaravelRouteReference implements Reference
+final class LaravelRouteReference implements Reference
 {
-    final protected function __construct(
+    private function __construct(
         protected string $key,
     ) {
     }
 
     public function getKey(): string
     {
-        return "{$this->getKind()}::{$this->key}";
+        return "laravel-route::{$this->key}";
     }
 
     public function humanFriendlyName(): string
     {
-        return "{$this->getKind()}::{$this->key}";
+        return "laravel-route::{$this->key}";
     }
 
-    abstract protected function getKind(): string;
-
-    public static function list(): static
+    public static function routes(): self
     {
-        return new static('list');
+        return new self('routes');
     }
 
-    public static function function(): static
+    public static function routeParameters(): self
     {
-        return new static('function');
+        return new self('routeParameters');
     }
 
-    public static function baseUrl(): static
+    public static function function(): self
     {
-        return new static('baseUrl');
-    }
-
-    public static function routes(): static
-    {
-        return new static('routes');
-    }
-
-    public static function routeParameters(): static
-    {
-        return new static('routeParameters');
-    }
-
-    public static function routeArgs(): static
-    {
-        return new static('routeArgs');
+        return new self('function');
     }
 }

@@ -121,7 +121,7 @@ class ResolveLaravelControllerMethodAction
 
         $class = $node->type->reference->classString;
 
-        if (! is_subclass_of($class, Response::class) && ! is_subclass_of($class, 'Inertia\Response')) {
+        if (! is_subclass_of($class, Response::class) && $class !== 'Inertia\Response') {
             return null;
         }
 

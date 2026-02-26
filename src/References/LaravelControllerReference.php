@@ -35,6 +35,11 @@ final class LaravelControllerReference implements Reference
         return new static('support');
     }
 
+    public static function supportItem(string $name): static
+    {
+        return new static('support', $name);
+    }
+
     public static function controller(string $controllerClass): static
     {
         return new static($controllerClass);

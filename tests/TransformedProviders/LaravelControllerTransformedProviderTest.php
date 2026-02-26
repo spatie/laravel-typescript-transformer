@@ -7,8 +7,10 @@ use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController;
 use Spatie\LaravelTypeScriptTransformer\TransformedProviders\LaravelControllerTransformedProvider;
+use Spatie\TypeScriptTransformer\Actions\ConnectReferencesAction;
 use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
+use Spatie\TypeScriptTransformer\Support\Loggers\NullLogger;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProviderActions;
 
 beforeEach(function () {
@@ -35,8 +37,8 @@ it('generates correct TypeScript output for controllers', function () {
 
     $transformed = $provider->provide();
 
-    // Should have 5 transformed items: support + 2 per controller (const + namespace)
-    expect($transformed)->toHaveCount(5);
+    // Should have 15 transformed items: 11 support + 2 per controller (const + namespace)
+    expect($transformed)->toHaveCount(15);
 
     $transformedCollection = new TransformedCollection();
 
@@ -44,18 +46,17 @@ it('generates correct TypeScript output for controllers', function () {
         $transformedCollection->add($item);
     }
 
+    (new ConnectReferencesAction(new NullLogger()))->execute($transformedCollection);
+
     [$writer] = $transformedCollection->getUniqueWriters();
 
     $files = $writer->output($transformed, $transformedCollection);
 
-    // Check that we have files
-    expect($files)->not->toBeEmpty();
+    $allContents = implode("\n", array_map(fn ($file) => $file->contents, $files));
 
-    // Check the file content
-    $contents = $files[0]->contents;
-    expect($contents)->toContain('createActionWithMethods');
-    expect($contents)->toContain('InvokableController');
-    expect($contents)->toContain('ResourceController');
+    expect($allContents)->toContain('createActionWithMethods');
+    expect($allContents)->toContain('InvokableController');
+    expect($allContents)->toContain('ResourceController');
 });
 
 it('generates snapshot output for controllers', function () {
@@ -82,10 +83,18 @@ it('generates snapshot output for controllers', function () {
         $transformedCollection->add($item);
     }
 
+    (new ConnectReferencesAction(new NullLogger()))->execute($transformedCollection);
+
     [$writer] = $transformedCollection->getUniqueWriters();
 
     $files = $writer->output($transformed, $transformedCollection);
 
     expect($files)->toHaveCount(1);
-    expect($files[0]->contents)->toMatchSnapshot();
+
+    $allContents = implode("\n---\n", array_map(
+        fn ($file) => "// {$file->path}\n{$file->contents}",
+        $files,
+    ));
+
+    expect($allContents)->toMatchSnapshot();
 });
