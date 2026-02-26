@@ -1,17 +1,30 @@
 <?php
 
+use Illuminate\Support\Collection;
+use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerAction;
 use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelController;
-use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController;
-use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController;
+use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\FakeData;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\TypedController;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptArray;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNumber;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptObject;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
+
+function resolveTypedController(): LaravelController
+{
+    $classNode = PhpClassNode::fromClassString(TypedController::class);
+
+    return (new ResolveLaravelControllerAction())->execute($classNode);
+}
 
 it('produces a LaravelController from a PhpClassNode', function () {
-    $classNode = PhpClassNode::fromClassString(TypedController::class);
-    $action = new ResolveLaravelControllerAction();
-
-    $result = $action->execute($classNode);
+    $result = resolveTypedController();
 
     expect($result)->toBeInstanceOf(LaravelController::class);
     expect($result->fqcn)->toBe(TypedController::class);
@@ -19,66 +32,89 @@ it('produces a LaravelController from a PhpClassNode', function () {
 });
 
 it('only includes public methods declared on the class', function () {
-    $classNode = PhpClassNode::fromClassString(TypedController::class);
-    $action = new ResolveLaravelControllerAction();
+    $result = resolveTypedController();
 
-    $result = $action->execute($classNode);
-
-    expect($result->methods)->toHaveKeys(['index', 'show', 'store']);
+    expect($result->methods)->toHaveKeys([
+        'returnsPhpType',
+        'returnsPhpStanType',
+        'returnsVoid',
+        'returnsUnknownType',
+        'returnsNothing',
+        'returnsDataObject',
+        'returnsArrayShape',
+        'returnsArrayOfArrayShapes',
+        'returnsCollectionOfDataObjects',
+        'returnsCollectionOfDataObjectsWithoutKey',
+        'returnsCollectionOfArrayShapes',
+        'returnsDataCollectionOfDataObjects',
+        'returnsResponseWrappingDataObject',
+        'returnsResponseWrappingDataCollection',
+        'acceptsDataObject',
+        'acceptsDataObjectWithOtherParams',
+        'acceptsNoDataObject',
+    ]);
     expect($result->methods)->not->toHaveKey('protectedMethod');
     expect($result->methods)->not->toHaveKey('privateMethod');
 });
 
-it('resolves native return types', function () {
-    $classNode = PhpClassNode::fromClassString(TypedController::class);
-    $action = new ResolveLaravelControllerAction();
+it('resolves response types', function (string $method, mixed $expected) {
+    $response = resolveTypedController()->methods[$method]['response'];
 
-    $result = $action->execute($classNode);
+    expect($response)->toEqual($expected);
+})->with([
+    'native PHP type' => ['returnsPhpType', new TypeScriptString()],
+    'PHPStan docblock type' => ['returnsPhpStanType', new TypeScriptGeneric(
+        new TypeScriptIdentifier('Record'),
+        [new TypeScriptString(), new TypeScriptNumber()],
+    )],
+    'data object' => ['returnsDataObject', TypeScriptReference::referencingPhpClass(FakeData::class)],
+    'array shape' => ['returnsArrayShape', new TypeScriptObject([
+        new TypeScriptProperty('name', new TypeScriptString()),
+        new TypeScriptProperty('age', new TypeScriptNumber()),
+    ])],
+    'array of array shapes' => ['returnsArrayOfArrayShapes', new TypeScriptArray([new TypeScriptObject([
+        new TypeScriptProperty('name', new TypeScriptString()),
+        new TypeScriptProperty('age', new TypeScriptNumber()),
+    ])])],
+    'collection of data objects' => ['returnsCollectionOfDataObjects', new TypeScriptGeneric(
+        TypeScriptReference::referencingPhpClass(Collection::class),
+        [new TypeScriptNumber(), TypeScriptReference::referencingPhpClass(FakeData::class)],
+    )],
+    'collection of data objects without key' => ['returnsCollectionOfDataObjectsWithoutKey', new TypeScriptGeneric(
+        TypeScriptReference::referencingPhpClass(Collection::class),
+        [TypeScriptReference::referencingPhpClass(FakeData::class)],
+    )],
+    'collection of array shapes' => ['returnsCollectionOfArrayShapes', new TypeScriptGeneric(
+        TypeScriptReference::referencingPhpClass(Collection::class),
+        [new TypeScriptObject([
+            new TypeScriptProperty('name', new TypeScriptString()),
+            new TypeScriptProperty('age', new TypeScriptNumber()),
+        ])],
+    )],
+    'data collection of data objects' => ['returnsDataCollectionOfDataObjects', new TypeScriptGeneric(
+        TypeScriptReference::referencingPhpClass(DataCollection::class),
+        [new TypeScriptNumber(), TypeScriptReference::referencingPhpClass(FakeData::class)],
+    )],
+    'response wrapping data object unwraps' => [
+        'returnsResponseWrappingDataObject',
+        TypeScriptReference::referencingPhpClass(FakeData::class),
+    ],
+    'response wrapping data collection unwraps' => ['returnsResponseWrappingDataCollection', new TypeScriptGeneric(
+        TypeScriptReference::referencingPhpClass(DataCollection::class),
+        [new TypeScriptNumber(), TypeScriptReference::referencingPhpClass(FakeData::class)],
+    )],
+    'void returns null' => ['returnsVoid', null],
+    'unknown type returns null' => ['returnsUnknownType', null],
+    'missing type returns null' => ['returnsNothing', null],
+]);
 
-    expect($result->methods['index']['response'])->not->toBeNull();
-    expect($result->methods['store']['response'])->not->toBeNull();
-});
+it('resolves request types', function (string $method, mixed $expected) {
+    $request = resolveTypedController()->methods[$method]['request'];
 
-it('resolves docblock return types over native types', function () {
-    $classNode = PhpClassNode::fromClassString(TypedController::class);
-    $action = new ResolveLaravelControllerAction();
-
-    $result = $action->execute($classNode);
-
-    // `show()` has @return array<string, int> docblock - should be resolved from docblock
-    expect($result->methods['show']['response'])->not->toBeNull();
-});
-
-it('handles a controller with no typed methods', function () {
-    $classNode = PhpClassNode::fromClassString(InvokableController::class);
-    $action = new ResolveLaravelControllerAction();
-
-    $result = $action->execute($classNode);
-
-    expect($result)->toBeInstanceOf(LaravelController::class);
-    expect($result->fqcn)->toBe(InvokableController::class);
-    expect($result->methods)->toHaveKey('__invoke');
-    expect($result->methods['__invoke']['response'])->toBeNull();
-    expect($result->methods['__invoke']['request'])->toBeNull();
-});
-
-it('handles a resource controller', function () {
-    $classNode = PhpClassNode::fromClassString(ResourceController::class);
-    $action = new ResolveLaravelControllerAction();
-
-    $result = $action->execute($classNode);
-
-    expect($result)->toBeInstanceOf(LaravelController::class);
-    expect($result->methods)->toHaveKeys(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
-});
-
-it('sets request type to null when no BaseData parameter exists', function () {
-    $classNode = PhpClassNode::fromClassString(TypedController::class);
-    $action = new ResolveLaravelControllerAction();
-
-    $result = $action->execute($classNode);
-
-    foreach ($result->methods as $method) {
-        expect($method['request'])->toBeNull();
-    }
-});
+    expect($request)->toEqual($expected);
+})->with([
+    'data object parameter' => ['acceptsDataObject', TypeScriptReference::referencingPhpClass(FakeData::class)],
+    'data object among other parameters' => ['acceptsDataObjectWithOtherParams', TypeScriptReference::referencingPhpClass(FakeData::class)],
+    'no data object parameter' => ['acceptsNoDataObject', null],
+    'no parameters' => ['returnsPhpType', null],
+]);

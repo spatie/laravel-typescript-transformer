@@ -27,7 +27,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
     protected TransformedProviderActions $providerActions;
 
-    protected ResolveLaravelControllerAction $resolveTypesAction;
+    protected ResolveLaravelControllerAction $resolveLaravelControllerAction;
 
     protected GenerateControllerSupportAction $generateSupportAction;
 
@@ -64,7 +64,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
     public function setActions(TransformedProviderActions $actions): void
     {
         $this->providerActions = $actions;
-        $this->resolveTypesAction = new ResolveLaravelControllerAction(
+        $this->resolveLaravelControllerAction = new ResolveLaravelControllerAction(
             transpilePhpStanAction: $actions->transpilePhpStanTypeToTypeScriptNodeAction,
             transpilePhpTypeAction: $actions->transpilePhpTypeNodeToTypeScriptNodeAction,
         );
@@ -72,10 +72,7 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
     public function directoriesToWatch(): array
     {
-        return array_merge(
-            parent::directoriesToWatch(),
-            $this->controllerDirectories,
-        );
+        return array_merge(parent::directoriesToWatch(), $this->controllerDirectories);
     }
 
     /** @return array<Transformed> */
@@ -121,11 +118,11 @@ class LaravelControllerTransformedProvider extends LaravelRouteCollectionTransfo
 
         $controller = $this->controllersCollection->get($routeController->class);
 
-        if ($controller !== null && $controller->classNode === $classNode) {
+        if ($controller) {
             return $controller;
         }
 
-        $controller = $this->resolveTypesAction->execute($classNode);
+        $controller = $this->resolveLaravelControllerAction->execute($classNode);
 
         $this->controllersCollection->add($controller);
 
