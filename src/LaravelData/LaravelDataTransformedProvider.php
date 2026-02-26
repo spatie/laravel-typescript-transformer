@@ -17,7 +17,7 @@ use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelDataTransformedProvider implements TransformedProvider
 {
-    public function provide(TypeScriptTransformerConfig $config): array
+    public function provide(): array
     {
         return [
             $this->paginatedCollection(),

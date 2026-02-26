@@ -8,7 +8,6 @@ use Spatie\LaravelData\Contracts\BaseData;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;
 use Spatie\LaravelData\PaginatedDataCollection;
-use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelController;
 use Spatie\TypeScriptTransformer\Actions\TranspilePhpStanTypeToTypeScriptNodeAction;
 use Spatie\TypeScriptTransformer\Actions\TranspilePhpTypeNodeToTypeScriptNodeAction;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
@@ -29,7 +28,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Symfony\Component\HttpFoundation\Response;
 
-class ResolveLaravelControllerAction
+class ResolveLaravelControllerMethodAction
 {
     public function __construct(
         protected DocTypeResolver $docTypeResolver = new DocTypeResolver(),
@@ -38,24 +37,26 @@ class ResolveLaravelControllerAction
     ) {
     }
 
-    public function execute(PhpClassNode $classNode): LaravelController
+    /**
+     * @return array{
+     *     request: ?TypeScriptNode,
+     *     response: ?TypeScriptNode
+     * }
+     */
+    public function execute(PhpClassNode $classNode, string $methodName): array
     {
-        $methods = [];
-
-        foreach ($classNode->getMethods(ReflectionMethod::IS_PUBLIC) as $methodNode) {
-            $methods[$methodNode->getName()] = [
-                'response' => $this->resolveResponseType($classNode, $methodNode),
-                'request' => $this->resolveRequestType($classNode, $methodNode),
-            ];
+        if(! $classNode->hasMethod($methodName)) {
+            return ['request' => null, 'response' => null];
         }
 
-        return new LaravelController(
-            fqcn: $classNode->getName(),
-            filePath: $classNode->getFileName(),
-            classNode: $classNode,
-            methods: $methods,
-        );
+        $methodNode = $classNode->getMethod($methodName);
+
+        return [
+            'response' => $this->resolveResponseType($classNode, $methodNode),
+            'request' => $this->resolveRequestType($classNode, $methodNode),
+        ];
     }
+
 
     protected function resolveResponseType(PhpClassNode $classNode, PhpMethodNode $methodNode): ?TypeScriptNode
     {

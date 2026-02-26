@@ -17,7 +17,6 @@ use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\LoggingTransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
-use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 use Spatie\TypeScriptTransformer\Writers\Writer;
 
 abstract class LaravelRouteCollectionTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider
@@ -26,23 +25,19 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
 
     protected Logger $logger;
 
-    protected Writer $writer;
-
     /** @param array<RouteFilter> $filters */
     public function __construct(
         protected ResolveRouteCollectionAction $resolveRouteCollectionAction,
         protected bool $includeRouteClosures,
         protected array $filters,
-        protected string $path,
         protected ?array $routeDirectories,
+        protected Writer $writer,
     ) {
         $this->routeDirectories ??= [
             base_path('routes'),
             base_path('bootstrap'),
             app_path('Providers'),
         ];
-
-        $this->writer = new FlatModuleWriter($this->path);
     }
 
     public function directoriesToWatch(): array
@@ -65,6 +60,10 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
         );
 
         foreach ($transformed as $transformedItem) {
+            if ($transformedItem->hasWriter()) {
+                continue;
+            }
+
             $transformedItem->setWriter($this->writer);
         }
 

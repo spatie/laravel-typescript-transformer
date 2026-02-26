@@ -2,8 +2,7 @@
 
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\DataCollection;
-use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerAction;
-use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelController;
+use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerMethodAction;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\FakeData;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\TypedController;
 use Spatie\TypeScriptTransformer\PhpNodes\PhpClassNode;
@@ -16,51 +15,17 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 
-function resolveTypedController(): LaravelController
+function resolveMethod(string $methodName): array
 {
     $classNode = PhpClassNode::fromClassString(TypedController::class);
 
-    return (new ResolveLaravelControllerAction())->execute($classNode);
+    return (new ResolveLaravelControllerMethodAction())->execute($classNode, $methodName);
 }
 
-it('produces a LaravelController from a PhpClassNode', function () {
-    $result = resolveTypedController();
-
-    expect($result)->toBeInstanceOf(LaravelController::class);
-    expect($result->fqcn)->toBe(TypedController::class);
-    expect($result->filePath)->toContain('TypedController.php');
-});
-
-it('only includes public methods declared on the class', function () {
-    $result = resolveTypedController();
-
-    expect($result->methods)->toHaveKeys([
-        'returnsPhpType',
-        'returnsPhpStanType',
-        'returnsVoid',
-        'returnsUnknownType',
-        'returnsNothing',
-        'returnsDataObject',
-        'returnsArrayShape',
-        'returnsArrayOfArrayShapes',
-        'returnsCollectionOfDataObjects',
-        'returnsCollectionOfDataObjectsWithoutKey',
-        'returnsCollectionOfArrayShapes',
-        'returnsDataCollectionOfDataObjects',
-        'returnsResponseWrappingDataObject',
-        'returnsResponseWrappingDataCollection',
-        'acceptsDataObject',
-        'acceptsDataObjectWithOtherParams',
-        'acceptsNoDataObject',
-    ]);
-    expect($result->methods)->not->toHaveKey('protectedMethod');
-    expect($result->methods)->not->toHaveKey('privateMethod');
-});
-
 it('resolves response types', function (string $method, mixed $expected) {
-    $response = resolveTypedController()->methods[$method]['response'];
+    $result = resolveMethod($method);
 
-    expect($response)->toEqual($expected);
+    expect($result['response'])->toEqual($expected);
 })->with([
     'native PHP type' => ['returnsPhpType', new TypeScriptString()],
     'PHPStan docblock type' => ['returnsPhpStanType', new TypeScriptGeneric(
@@ -109,12 +74,18 @@ it('resolves response types', function (string $method, mixed $expected) {
 ]);
 
 it('resolves request types', function (string $method, mixed $expected) {
-    $request = resolveTypedController()->methods[$method]['request'];
+    $result = resolveMethod($method);
 
-    expect($request)->toEqual($expected);
+    expect($result['request'])->toEqual($expected);
 })->with([
     'data object parameter' => ['acceptsDataObject', TypeScriptReference::referencingPhpClass(FakeData::class)],
     'data object among other parameters' => ['acceptsDataObjectWithOtherParams', TypeScriptReference::referencingPhpClass(FakeData::class)],
     'no data object parameter' => ['acceptsNoDataObject', null],
     'no parameters' => ['returnsPhpType', null],
 ]);
+
+it('returns null types for non-existent method', function () {
+    $result = resolveMethod('nonExistentMethod');
+
+    expect($result)->toEqual(['request' => null, 'response' => null]);
+});

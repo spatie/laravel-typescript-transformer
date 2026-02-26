@@ -98,90 +98,55 @@ export function createActionWithMethods<P extends RouteParams | undefined = unde
 
     return Object.assign(fn, methodVariants) as ActionWithMethods<P, M>;
 }
-/**
- * Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController
- */
-const InvokableController = createActionWithMethods<undefined>([
-    { method: 'get', url: 'invokable' },
-]);
-
+export const InvokableController = createActionWithMethods<undefined>([{ method: 'get', url: 'invokable' }])
 namespace InvokableController {
+export type Request = object;
+export type Response = object;
+}
+export const ResourceController = {
+    index: createActionWithMethods<undefined>([{ method: 'get', url: 'resource' }]),
+    create: createActionWithMethods<undefined>([{ method: 'get', url: 'resource/create' }]),
+    store: createActionWithMethods<undefined>([{ method: 'post', url: 'resource' }]),
+    show: createActionWithMethods<{
+resource: string | number
+}>([{ method: 'get', url: 'resource/{resource}' }]),
+    edit: createActionWithMethods<{
+resource: string | number
+}>([{ method: 'get', url: 'resource/{resource}/edit' }]),
+    update: createActionWithMethods<{
+resource: string | number
+}>([{ method: 'put', url: 'resource/{resource}' }]),
+    destroy: createActionWithMethods<{
+resource: string | number
+}>([{ method: 'delete', url: 'resource/{resource}' }]),
+} as const
+namespace ResourceController {
+export namespace index {
     export type Request = object;
     export type Response = object;
 }
-
-export { InvokableController };
-
-type ShowParams = {
-    resource: string | number
-};
-type EditParams = {
-    resource: string | number
-};
-type UpdateParams = {
-    resource: string | number
-};
-type DestroyParams = {
-    resource: string | number
-};
-
-/**
- * Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController
- */
-const ResourceController = {
-    index: createActionWithMethods<undefined>([
-        { method: 'get', url: 'resource' },
-    ]),
-    create: createActionWithMethods<undefined>([
-        { method: 'get', url: 'resource/create' },
-    ]),
-    store: createActionWithMethods<undefined>([
-        { method: 'post', url: 'resource' },
-    ]),
-    show: createActionWithMethods<ShowParams>([
-        { method: 'get', url: 'resource/{resource}' },
-    ]),
-    edit: createActionWithMethods<EditParams>([
-        { method: 'get', url: 'resource/{resource}/edit' },
-    ]),
-    update: createActionWithMethods<UpdateParams>([
-        { method: 'put', url: 'resource/{resource}' },
-    ]),
-    destroy: createActionWithMethods<DestroyParams>([
-        { method: 'delete', url: 'resource/{resource}' },
-    ]),
-} as const;
-
-namespace ResourceController {
-    export namespace index {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace create {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace store {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace show {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace edit {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace update {
-        export type Request = object;
-        export type Response = object;
-    }
-    export namespace destroy {
-        export type Request = object;
-        export type Response = object;
-    }
+export namespace create {
+    export type Request = object;
+    export type Response = object;
 }
-
-export { ResourceController };
-
+export namespace store {
+    export type Request = object;
+    export type Response = object;
+}
+export namespace show {
+    export type Request = object;
+    export type Response = object;
+}
+export namespace edit {
+    export type Request = object;
+    export type Response = object;
+}
+export namespace update {
+    export type Request = object;
+    export type Response = object;
+}
+export namespace destroy {
+    export type Request = object;
+    export type Response = object;
+}
+}

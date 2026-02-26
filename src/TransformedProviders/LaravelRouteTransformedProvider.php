@@ -34,6 +34,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptTuple;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
+use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 
 class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedProvider
 {
@@ -52,8 +53,8 @@ class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedP
             resolveRouteCollectionAction: $resolveRouteCollectionAction,
             includeRouteClosures: true,
             filters: $filters,
-            path: $path,
-            routeDirectories: $routeDirectories
+            routeDirectories: $routeDirectories,
+            writer:  new FlatModuleWriter($path)
         );
     }
 

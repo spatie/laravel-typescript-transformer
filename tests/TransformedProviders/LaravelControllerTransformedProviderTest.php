@@ -3,12 +3,19 @@
 use Illuminate\Routing\RouteCollection;
 use Illuminate\Routing\Router;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
+use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\InvokableController;
 use Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses\ResourceController;
 use Spatie\LaravelTypeScriptTransformer\TransformedProviders\LaravelControllerTransformedProvider;
 use Spatie\TypeScriptTransformer\Collections\PhpNodeCollection;
 use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProviderActions;
+
+beforeEach(function () {
+    $reflection = new ReflectionClass(GenerateControllerSupportAction::class);
+    $property = $reflection->getProperty('cachedSupport');
+    $property->setValue(null, null);
+});
 
 it('generates correct TypeScript output for controllers', function () {
     $router = app(Router::class);
@@ -28,8 +35,8 @@ it('generates correct TypeScript output for controllers', function () {
 
     $transformed = $provider->provide();
 
-    // Should have 3 transformed items: support, InvokableController, ResourceController
-    expect($transformed)->toHaveCount(3);
+    // Should have 5 transformed items: support + 2 per controller (const + namespace)
+    expect($transformed)->toHaveCount(5);
 
     $transformedCollection = new TransformedCollection();
 

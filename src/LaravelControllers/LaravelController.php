@@ -17,7 +17,7 @@ class LaravelController
         public string $fqcn,
         public string $filePath,
         public PhpClassNode $classNode,
-        public array $methods,
+        public array $methods = [],
     ) {
     }
 }
