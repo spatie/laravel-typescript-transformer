@@ -18,7 +18,8 @@ class TypeScriptTransformCommand extends Command
                             {--force : Force the operation to run when in production}
                             {--path= : Specify a path with classes to transform}
                             {--output= : Use another file to output}
-                            {--format : Use Prettier to format the output}';
+                            {--format : Use Prettier to format the output}
+                            {--compact : Only show the summary, hide the type table}';
 
     protected $description = 'Map PHP structures to TypeScript';
 
@@ -53,12 +54,14 @@ class TypeScriptTransformCommand extends Command
 
         $collection = $transformer->transform();
 
-        $this->table(
-            ['PHP class', 'TypeScript entity'],
-            collect($collection)->map(fn (TransformedType $type, string $class) => [
-                $class, $type->getTypeScriptName(),
-            ])
-        );
+        if (! $this->option('compact')) {
+            $this->table(
+                ['PHP class', 'TypeScript entity'],
+                collect($collection)->map(fn (TransformedType $type, string $class) => [
+                    $class, $type->getTypeScriptName(),
+                ])
+            );
+        }
 
         $this->info("Transformed {$collection->count()} PHP types to TypeScript");
 
