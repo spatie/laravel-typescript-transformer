@@ -2,6 +2,26 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 3.0.0 - 2026-03-13
+
+This is a major release built on top of the completely rewritten [spatie/typescript-transformer v3](https://github.com/spatie/typescript-transformer/releases/tag/3.0.0).
+
+### What's New
+
+- Everything new in [spatie/typescript-transformer v3](https://github.com/spatie/typescript-transformer/releases/tag/3.0.0)
+- **Service provider configuration** - Configure the package in a service provider instead of a config file
+- **Controller type generation** - Automatically generate TypeScript types for your Laravel controller actions, including request parameters and response types
+- **Route type generation** - Generate a typed route helper with full autocompletion for route names and parameters
+- **Watch mode** - File watcher that automatically regenerates TypeScript types as you develop
+
+### Breaking Changes
+
+- Requires PHP 8.2+ and Laravel 10+
+- Configuration moved from config file to service provider
+- Depends on `spatie/typescript-transformer ^3.0`
+
+Since it is a complete rewrite, we recommend reading through the new docs and updating your application accodingly.
+
 ## 2.6.0 - 2026-02-25
 
 - Added support for Laravel 13
