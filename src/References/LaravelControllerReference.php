@@ -30,11 +30,6 @@ final class LaravelControllerReference implements Reference
             : $this->controllerClass;
     }
 
-    public static function support(): static
-    {
-        return new static('support');
-    }
-
     public static function supportItem(string $name): static
     {
         return new static('support', $name);
@@ -43,5 +38,10 @@ final class LaravelControllerReference implements Reference
     public static function controller(string $controllerClass): static
     {
         return new static($controllerClass);
+    }
+
+    public static function types(string $controllerClass): static
+    {
+        return new static($controllerClass, 'types');
     }
 }

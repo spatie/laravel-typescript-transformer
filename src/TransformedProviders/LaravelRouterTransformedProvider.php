@@ -19,7 +19,7 @@ use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProvider;
 use Spatie\TypeScriptTransformer\TransformedProviders\WatchingTransformedProvider;
 use Spatie\TypeScriptTransformer\Writers\Writer;
 
-abstract class LaravelRouteCollectionTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider
+abstract class LaravelRouterTransformedProvider implements TransformedProvider, WatchingTransformedProvider, LoggingTransformedProvider
 {
     protected ?string $routeCollectionHash = null;
 
@@ -122,7 +122,7 @@ abstract class LaravelRouteCollectionTransformedProvider implements TransformedP
         $transformedEntities = $this->resolveTransformed($routesCollection);
 
         foreach ($transformedEntities as $transformed) {
-            $transformedCollection->remove($transformed->reference);
+            $transformedCollection->remove($transformed->getReference());
 
             $transformed->setWriter($this->writer);
 

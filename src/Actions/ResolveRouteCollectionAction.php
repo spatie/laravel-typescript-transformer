@@ -49,15 +49,13 @@ class ResolveRouteCollectionAction
                 continue;
             }
 
-            $isInvokable = $route->getActionMethod() === $route->getControllerClass();
-
             $controllerFile = $this->resolveControllerFile($controllerClass);
 
             if ($controllerFile === null) {
                 continue;
             }
 
-            if ($isInvokable) {
+            if ($route->getActionMethod() === $route->getControllerClass()) {
                 $controllers[$controllerClass] = new RouteController(
                     class: $controllerClass,
                     file: $controllerFile,

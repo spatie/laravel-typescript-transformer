@@ -8,6 +8,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNode;
 class LaravelController
 {
     /**
+     * @param array<string> $location
      * @param array<string, array{
      *     request: ?TypeScriptNode,
      *     response: ?TypeScriptNode
@@ -17,6 +18,7 @@ class LaravelController
         public string $fqcn,
         public string $filePath,
         public PhpClassNode $classNode,
+        public array $location = [],
         public array $methods = [],
     ) {
     }

@@ -36,7 +36,7 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
 use Spatie\TypeScriptTransformer\Writers\FlatModuleWriter;
 
-class LaravelRouteTransformedProvider extends LaravelRouteCollectionTransformedProvider
+class LaravelRouteTransformedProvider extends LaravelRouterTransformedProvider
 {
     /**
      * @param array<RouteFilter> $filters

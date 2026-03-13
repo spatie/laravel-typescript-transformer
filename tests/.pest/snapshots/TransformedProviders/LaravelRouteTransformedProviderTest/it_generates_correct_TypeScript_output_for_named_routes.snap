@@ -16,38 +16,38 @@ const routes = {
     "users.show": "users/{id}"
 }
 type RouteParameters = {
-invokable: never
-'resource.index': never
-'resource.create': never
-'resource.store': never
+invokable: never,
+'resource.index': never,
+'resource.create': never,
+'resource.store': never,
 'resource.show': {
-resource: string | number
-}
+resource: string | number,
+},
 'resource.edit': {
-resource: string | number
-}
+resource: string | number,
+},
 'resource.update': {
-resource: string | number
-}
+resource: string | number,
+},
 'resource.destroy': {
-resource: string | number
-}
-home: never
-pricing: never
-blog: never
+resource: string | number,
+},
+home: never,
+pricing: never,
+blog: never,
 'blog.show': {
-slug: string | number
-}
+slug: string | number,
+},
 'projects.show': {
-project: string | number
-}
+project: string | number,
+},
 'occurrences.show': {
-error: string | number
-errorOccurrence: string | number
-}
+error: string | number,
+errorOccurrence: string | number,
+},
 'users.show': {
-id?: string | number
-}
+id?: string | number,
+},
 };
 export function route<T extends keyof RouteParameters>(name: T, parameters?: [RouteParameters[T]] extends [never] ? Record<string, never> : RouteParameters[T], absolute: boolean = true): string {
 let url: string = '/' + routes[name];

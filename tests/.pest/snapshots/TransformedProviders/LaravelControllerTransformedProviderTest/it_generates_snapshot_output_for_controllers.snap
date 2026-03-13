@@ -1,72 +1,72 @@
 // controllers/index.ts
-namespace InvokableController {
+export namespace InvokableController {
 export type Request = object;
 export type Response = object;
 }
-namespace ResourceController {
-export namespace index {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace create {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace store {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace show {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace edit {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace update {
-    export type Request = object;
-    export type Response = object;
-}
-export namespace destroy {
-    export type Request = object;
-    export type Response = object;
-}
-}
 type ActionFunction<P extends RouteParams | undefined> = P extends undefined ? (options?: RouteOptions) => ActionResult : (params: P, options?: RouteOptions) => ActionResult;
 type ActionResult = RouteDefinition & {
-url: string
+url: string,
 };
 type ActionWithMethods<P extends RouteParams | undefined, M extends string> = ActionFunction<P> & { [K in M]: ActionFunction<P> };
-export const InvokableController = createActionWithMethods<undefined>([{ method: 'get', url: 'invokable' }])
+export const InvokableController = createActionWithMethods<undefined>([{ method: 'get', url: 'invokable' }, { method: 'head', url: 'invokable' }])
 export type MethodRoute = {
-method: string
-url: string
+method: string,
+url: string,
 };
 export type QueryParams = Record<string, string | number | boolean | null | undefined | (string | number | boolean)[]>;
 export const ResourceController = {
-    index: createActionWithMethods<undefined>([{ method: 'get', url: 'resource' }]),
-    create: createActionWithMethods<undefined>([{ method: 'get', url: 'resource/create' }]),
-    store: createActionWithMethods<undefined>([{ method: 'post', url: 'resource' }]),
-    show: createActionWithMethods<{
-resource: string | number
-}>([{ method: 'get', url: 'resource/{resource}' }]),
-    edit: createActionWithMethods<{
-resource: string | number
-}>([{ method: 'get', url: 'resource/{resource}/edit' }]),
-    update: createActionWithMethods<{
-resource: string | number
-}>([{ method: 'put', url: 'resource/{resource}' }]),
-    destroy: createActionWithMethods<{
-resource: string | number
+index: createActionWithMethods<undefined>([{ method: 'get', url: 'resource' }, { method: 'head', url: 'resource' }]),
+create: createActionWithMethods<undefined>([{ method: 'get', url: 'resource/create' }, { method: 'head', url: 'resource/create' }]),
+store: createActionWithMethods<undefined>([{ method: 'post', url: 'resource' }]),
+show: createActionWithMethods<{
+resource: string | number,
+}>([{ method: 'get', url: 'resource/{resource}' }, { method: 'head', url: 'resource/{resource}' }]),
+edit: createActionWithMethods<{
+resource: string | number,
+}>([{ method: 'get', url: 'resource/{resource}/edit' }, { method: 'head', url: 'resource/{resource}/edit' }]),
+update: createActionWithMethods<{
+resource: string | number,
+}>([{ method: 'put', url: 'resource/{resource}' }, { method: 'patch', url: 'resource/{resource}' }]),
+destroy: createActionWithMethods<{
+resource: string | number,
 }>([{ method: 'delete', url: 'resource/{resource}' }]),
 } as const
+export namespace ResourceController {
+export namespace index {
+export type Request = object;
+export type Response = object;
+}
+export namespace create {
+export type Request = object;
+export type Response = object;
+}
+export namespace store {
+export type Request = object;
+export type Response = object;
+}
+export namespace show {
+export type Request = object;
+export type Response = object;
+}
+export namespace edit {
+export type Request = object;
+export type Response = object;
+}
+export namespace update {
+export type Request = object;
+export type Response = object;
+}
+export namespace destroy {
+export type Request = object;
+export type Response = object;
+}
+}
 export type RouteDefinition = {
-url: string
-method: string
+url: string,
+method: string,
 };
 export type RouteOptions = {
-query?: QueryParams
+query?: QueryParams,
 };
 export type RouteParams = Record<string, string | number>;
 declare const baseUrl: string;
