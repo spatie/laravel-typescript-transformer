@@ -1,0 +1,10 @@
+export const TypedController = {
+returnsPhpType: createActionWithMethods([{ method: 'get', url: 'simple' }, { method: 'head', url: 'simple' }]),
+} as const
+export namespace TypedController {
+export namespace returnsPhpType {
+export type Request = object;
+export type Response = string;
+}
+}
+export createActionWithMethods

@@ -1,0 +1,13 @@
+export const TypedController = {
+returnsPhpType: createActionWithMethods<{
+user: string | number,
+slug?: string | number,
+}>([{ method: 'get', url: 'users/{user}/{slug}' }, { method: 'head', url: 'users/{user}/{slug}' }]),
+} as const
+export namespace TypedController {
+export namespace returnsPhpType {
+export type Request = object;
+export type Response = string;
+}
+}
+export createActionWithMethods

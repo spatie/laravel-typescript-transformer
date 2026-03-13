@@ -1,0 +1,10 @@
+export const TypedController = {
+returnsVoid: createActionWithMethods([{ method: 'get', url: 'void' }, { method: 'head', url: 'void' }]),
+} as const
+export namespace TypedController {
+export namespace returnsVoid {
+export type Request = object;
+export type Response = object;
+}
+}
+export createActionWithMethods

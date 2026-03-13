@@ -19,7 +19,10 @@ it('generates correct TypeScript output for named routes', function () {
     $router->get('errors/{error}/{errorOccurrence}', fn () => 'occurrences.show')->name('occurrences.show');
     $router->get('users/{id?}', fn () => 'users.show')->name('users.show');
     $router->get('invokable', InvokableController::class)->name('invokable');
+    $router->get('unnamed-invokable', InvokableController::class);
     $router->resource('resource', ResourceController::class);
+    $router->get('unnamed-action', [ResourceController::class, 'index']);
+    $router->get('unnamed-closure', fn () => 'unnamed');
 
     $provider = new LaravelRouteTransformedProvider(
         absoluteUrlsByDefault: true,

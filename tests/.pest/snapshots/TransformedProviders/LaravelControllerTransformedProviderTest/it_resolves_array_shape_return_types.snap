@@ -1,0 +1,13 @@
+export const TypedController = {
+returnsArrayShape: createActionWithMethods([{ method: 'get', url: 'shaped' }, { method: 'head', url: 'shaped' }]),
+} as const
+export namespace TypedController {
+export namespace returnsArrayShape {
+export type Request = object;
+export type Response = {
+name: string,
+age: number,
+};
+}
+}
+export createActionWithMethods

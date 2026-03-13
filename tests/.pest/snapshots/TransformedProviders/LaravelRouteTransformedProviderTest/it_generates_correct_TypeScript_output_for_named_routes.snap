@@ -1,6 +1,4 @@
 const routes = {
-    "invokable": "invokable",
-    "resource.index": "resource",
     "resource.create": "resource/create",
     "resource.store": "resource",
     "resource.show": "resource/{resource}",
@@ -16,8 +14,6 @@ const routes = {
     "users.show": "users/{id}"
 }
 type RouteParameters = {
-invokable: never,
-'resource.index': never,
 'resource.create': never,
 'resource.store': never,
 'resource.show': {
