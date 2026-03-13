@@ -139,9 +139,7 @@ class ResolveLaravelControllerMethodAction
             return true;
         }
 
-        if (! $node->type instanceof TypeScriptReference
-            || ! $node->type->reference instanceof ClassStringReference
-        ) {
+        if (! $node->type->reference instanceof ClassStringReference) {
             return false;
         }
 
