@@ -3,7 +3,6 @@
 namespace Spatie\LaravelTypeScriptTransformer\Actions;
 
 use Illuminate\Support\Collection;
-use ReflectionMethod;
 use Spatie\LaravelData\Contracts\BaseData;
 use Spatie\LaravelData\CursorPaginatedDataCollection;
 use Spatie\LaravelData\DataCollection;
@@ -45,7 +44,7 @@ class ResolveLaravelControllerMethodAction
      */
     public function execute(PhpClassNode $classNode, string $methodName): array
     {
-        if(! $classNode->hasMethod($methodName)) {
+        if (! $classNode->hasMethod($methodName)) {
             return ['request' => null, 'response' => null];
         }
 
@@ -56,7 +55,6 @@ class ResolveLaravelControllerMethodAction
             'request' => $this->resolveRequestType($classNode, $methodNode),
         ];
     }
-
 
     protected function resolveResponseType(PhpClassNode $classNode, PhpMethodNode $methodNode): ?TypeScriptNode
     {

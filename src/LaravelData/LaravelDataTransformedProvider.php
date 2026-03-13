@@ -13,7 +13,6 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptAlias;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
-use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class LaravelDataTransformedProvider implements TransformedProvider
 {
