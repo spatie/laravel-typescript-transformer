@@ -13,17 +13,7 @@ use Spatie\TypeScriptTransformer\Collections\TransformedCollection;
 use Spatie\TypeScriptTransformer\Support\Loggers\NullLogger;
 use Spatie\TypeScriptTransformer\Transformed\Transformed;
 use Spatie\TypeScriptTransformer\TransformedProviders\TransformedProviderActions;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptArray;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptFunctionDeclaration;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGeneric;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptGenericTypeParameter;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptParameter;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUndefined;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
-
 
 it('generates correct TypeScript output for controllers', function () {
     $router = app('router');
@@ -100,8 +90,7 @@ function transformControllers(): string
         actionNameResolver: new StrippedActionNameResolver([
             'Spatie\LaravelTypeScriptTransformer\Tests\FakeClasses' => null,
         ]),
-        generateSupportAction: new class extends GenerateControllerSupportAction
-        {
+        generateSupportAction: new class extends GenerateControllerSupportAction {
             public function execute(): array
             {
                 return [
