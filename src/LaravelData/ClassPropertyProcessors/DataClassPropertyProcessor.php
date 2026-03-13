@@ -6,6 +6,7 @@ use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use Spatie\LaravelData\Attributes\Hidden as DataHidden;
 use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\MapOutputName;
+use Spatie\LaravelData\Mappers\NameMapper;
 use Spatie\LaravelData\Optional;
 use Spatie\LaravelData\Support\DataConfig;
 use Spatie\TypeScriptTransformer\Attributes\Hidden;
@@ -13,6 +14,7 @@ use Spatie\TypeScriptTransformer\PhpNodes\PhpPropertyNode;
 use Spatie\TypeScriptTransformer\References\ClassStringReference;
 use Spatie\TypeScriptTransformer\Transformers\ClassPropertyProcessors\ClassPropertyProcessor;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptIdentifier;
+use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptNull;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
@@ -33,6 +35,7 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
     public function __construct(
         protected DataConfig $dataConfig,
         protected array $customLazyTypes = [],
+        protected bool $nullableAsOptional = false,
     ) {
         $this->lazyTypes = array_merge($this->lazyTypes, $this->customLazyTypes);
     }
@@ -46,30 +49,41 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
             return null;
         }
 
+        $propertyName = $phpPropertyNode->getName();
+
         $mapOutputNodes = $phpPropertyNode->getAttributes(MapOutputName::class);
-
-        if (! empty($mapOutputNodes)) {
-            $property->name = new TypeScriptIdentifier($mapOutputNodes[0]->getArgument('output'));
-        }
-
         $mapNodes = $phpPropertyNode->getAttributes(MapName::class);
 
-        if (! empty($mapNodes)) {
-            $name = $mapNodes[0]->getArgument('output') === null
-                ? $mapNodes[0]->getArgument('input')
-                : $mapNodes[0]->getArgument('output');
+        if (empty($mapOutputNodes) && empty($mapNodes)) {
+            $classNode = $phpPropertyNode->getDeclaringClass();
+            $mapOutputNodes = $classNode->getAttributes(MapOutputName::class);
+            $mapNodes = $classNode->getAttributes(MapName::class);
+        }
 
-            $property->name = new TypeScriptIdentifier($$name);
+        if (! empty($mapOutputNodes)) {
+            $property->name = new TypeScriptIdentifier(
+                $this->resolveOutputName($mapOutputNodes[0]->getArgument('output'), $propertyName)
+            );
+        }
+
+        if (! empty($mapNodes) && $mapNodes[0]->getArgument('output') !== null) {
+            $property->name = new TypeScriptIdentifier(
+                $this->resolveOutputName($mapNodes[0]->getArgument('output'), $propertyName)
+            );
         }
 
         if (! $property->type instanceof TypeScriptUnion) {
             return $property;
         }
 
-        for ($i = 0; $i < count($property->type->types); $i++) {
-            $subType = $property->type->types[$i];
-
+        foreach ($property->type->types as $i => $subType) {
             if ($subType instanceof TypeScriptReference && $this->shouldHideReference($subType)) {
+                $property->isOptional = true;
+
+                unset($property->type->types[$i]);
+            }
+
+            if ($this->nullableAsOptional && $subType instanceof TypeScriptNull) {
                 $property->isOptional = true;
 
                 unset($property->type->types[$i]);
@@ -83,6 +97,19 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
         }
 
         return $property;
+    }
+
+    protected function resolveOutputName(mixed $value, string $propertyName): string|int
+    {
+        if ($value instanceof NameMapper) {
+            return $value->map($propertyName);
+        }
+
+        if (is_string($value) && class_exists($value) && is_subclass_of($value, NameMapper::class)) {
+            return (new $value())->map($propertyName);
+        }
+
+        return $value;
     }
 
     protected function shouldHideReference(

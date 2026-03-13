@@ -22,6 +22,7 @@ class DataClassTransformer extends ClassTransformer
     public function __construct(
         protected array $customLazyTypes = [],
         protected array $customDataCollections = [],
+        protected bool $nullableAsOptional = false,
         DocTypeResolver $docTypeResolver = new DocTypeResolver(),
         TranspilePhpStanTypeToTypeScriptNodeAction $transpilePhpStanTypeToTypeScriptTypeAction = new TranspilePhpStanTypeToTypeScriptNodeAction(),
         TranspilePhpTypeNodeToTypeScriptNodeAction $transpilePhpTypeNodeToTypeScriptTypeAction = new TranspilePhpTypeNodeToTypeScriptNodeAction(),
@@ -42,6 +43,7 @@ class DataClassTransformer extends ClassTransformer
             new DataClassPropertyProcessor(
                 $this->dataConfig,
                 $this->customLazyTypes,
+                $this->nullableAsOptional,
             ),
             new FixArrayLikeStructuresClassPropertyProcessor(
                 replaceArrays: true,
