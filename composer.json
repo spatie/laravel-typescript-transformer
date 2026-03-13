@@ -15,16 +15,10 @@
             "role" : "Developer"
         }
     ],
-    "repositories" : [
-        {
-            "type" : "vcs",
-            "url" : "https://github.com/spatie/typescript-transformer"
-        }
-    ],
     "require" : {
         "php": "^8.2",
         "illuminate/contracts": "^11.0|^12.0|^13.0",
-        "spatie/typescript-transformer": "dev-main"
+        "spatie/typescript-transformer": "^3.0"
     },
     "require-dev" : {
         "friendsofphp/php-cs-fixer": "^3.0",
