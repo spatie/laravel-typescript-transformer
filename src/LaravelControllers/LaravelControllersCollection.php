@@ -20,10 +20,12 @@ class LaravelControllersCollection implements IteratorAggregate, Countable
 
     public function add(LaravelController $controller): void
     {
-        $this->remove($controller->fqcn);
+        $fqcn = $controller->routeController->class;
 
-        $this->items[$controller->fqcn] = $controller;
-        $this->fileMapping[$this->cleanupFilePath($controller->filePath)] = $controller->fqcn;
+        $this->remove($fqcn);
+
+        $this->items[$fqcn] = $controller;
+        $this->fileMapping[$this->cleanupFilePath($controller->routeController->file)] = $fqcn;
     }
 
     public function get(string $fqcn): ?LaravelController
@@ -56,7 +58,7 @@ class LaravelControllersCollection implements IteratorAggregate, Countable
             return;
         }
 
-        $path = $this->cleanupFilePath($controller->filePath);
+        $path = $this->cleanupFilePath($controller->routeController->file);
 
         unset($this->items[$fqcn], $this->fileMapping[$path]);
     }

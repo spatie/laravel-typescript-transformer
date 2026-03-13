@@ -35,7 +35,6 @@ use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptProperty;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptRaw;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptReference;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptString;
-use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUndefined;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptUnion;
 use Spatie\TypeScriptTransformer\TypeScriptNodes\TypeScriptVariableDeclaration;
 use Spatie\TypeScriptTransformer\Writers\ModuleWriter;
@@ -108,155 +107,117 @@ class LaravelControllerTransformedProvider extends LaravelRouterTransformedProvi
     {
         $transformed = [];
 
-        foreach ($routeCollection->controllers as $controller) {
-            $laravelController = $this->resolveAndCacheControllerTypes($controller);
+        foreach ($routeCollection->controllers as $routeController) {
+            $controller = $this->resolveAndCacheControllerTypes($routeController);
 
-            if ($laravelController === null) {
+            if ($controller === null) {
                 continue;
             }
 
-            $items = $controller->invokable
-                ? $this->buildInvokableController($controller, $laravelController)
-                : $this->buildResourceController($controller, $laravelController);
-
-            array_push($transformed, ...$items);
+            array_push($transformed, ...$this->buildController($controller));
         }
 
         return $transformed;
     }
 
-    protected function resolveAndCacheControllerTypes(RouteController $controller): ?LaravelController
+    protected function resolveAndCacheControllerTypes(RouteController $routeController): ?LaravelController
     {
         $classNode = match (true) {
-            $this->phpNodeCollection->has($controller->class) => $this->phpNodeCollection->get($controller->class),
-            $this->phpNodeCollection->isInitialRun() => $this->phpNodeCollection->add(PhpClassNode::fromClassString($controller->class)),
-            default => $this->phpNodeCollection->addByFile($controller->file),
+            $this->phpNodeCollection->has($routeController->class) => $this->phpNodeCollection->get($routeController->class),
+            $this->phpNodeCollection->isInitialRun() => $this->phpNodeCollection->add(PhpClassNode::fromClassString($routeController->class)),
+            default => $this->phpNodeCollection->addByFile($routeController->file),
         };
 
         if ($classNode === null) {
             return null;
         }
 
-        $laravelController = $this->controllersCollection->get($controller->class);
+        $controller = $this->controllersCollection->get($routeController->class);
 
-        if ($laravelController && $laravelController->classNode === $classNode) {
-            return $laravelController;
+        if ($controller && $controller->classNode === $classNode) {
+            $controller->routeController = $routeController;
+
+            return $controller;
         }
 
-        $laravelController = new LaravelController(
-            fqcn: $controller->class,
-            filePath: $controller->file,
+        $controller = new LaravelController(
+            routeController: $routeController,
             classNode: $classNode,
-            location: $this->actionNameResolver->resolve($controller->class),
+            location: $this->actionNameResolver->resolve($routeController->class),
         );
 
-        $this->controllersCollection->add($laravelController);
+        $this->controllersCollection->add($controller);
 
-        return $laravelController;
+        return $controller;
     }
 
     /** @return array<Transformed> */
-    protected function buildInvokableController(
-        RouteController $controller,
-        LaravelController $laravelController,
-    ): array {
-        if (empty($controller->actions)) {
+    protected function buildController(LaravelController $controller): array
+    {
+        if (empty($controller->routeController->actions)) {
             return [];
         }
 
-        $controllerName = Arr::last($laravelController->location);
-        $location = array_slice($laravelController->location, 0, -1);
+        $actionCallExpressions = [];
+        $actionTypeAliases = [];
 
-        $types = $this->resolveControllerMethod($laravelController, '__invoke');
+        foreach ($controller->routeController->actions as $action) {
+            $types = $this->resolveControllerMethod($controller, $action->methodName);
 
-        $action = $controller->actions['__invoke'];
+            $actionCallExpressions[$action->methodName] = $this->buildActionCallExpression($action);
+
+            $actionTypeAliases[$action->methodName] = [
+                TypeScriptOperator::export(new TypeScriptAlias('Request', $types['request'] ?? new TypeScriptObject([]))),
+                TypeScriptOperator::export(new TypeScriptAlias('Response', $types['response'] ?? new TypeScriptObject([]))),
+            ];
+        }
+
+        if ($controller->routeController->invokable && (! array_key_exists('__invoke', $actionCallExpressions) || ! array_key_exists('__invoke', $actionTypeAliases))) {
+            return [];
+        }
+
+        $constNode = $controller->routeController->invokable ? $actionCallExpressions['__invoke'] : TypeScriptOperator::as(
+            new TypeScriptObject(array_map(
+                fn (string $methodName) => new TypeScriptProperty($methodName, $actionCallExpressions[$methodName]),
+                array_keys($actionCallExpressions),
+            )),
+            new TypeScriptIdentifier('const'),
+        );
+
+        $typesNode = $controller->routeController->invokable ?
+            new TypeScriptNamespace(
+                $controller->getTransformedName(),
+                types: $actionTypeAliases['__invoke'],
+            ) :
+
+            new TypeScriptNamespace(
+                $controller->getTransformedName(),
+                types: [],
+                children: array_map(
+                    function (string $methodName) use ($actionTypeAliases) {
+                        $namespaceName = ReservedWords::isReserved($methodName)
+                            ? "_{$methodName}"
+                            : $methodName;
+
+                        return TypeScriptOperator::export(new TypeScriptNamespace($namespaceName, $actionTypeAliases[$methodName]));
+                    },
+                    array_keys($actionTypeAliases),
+                ),
+            );
 
         return [
             new Transformed(
                 TypeScriptVariableDeclaration::const(
-                    $controllerName,
-                    new TypeScriptCallExpression(
-                        new TypeScriptReference(LaravelControllerReference::supportItem('createActionWithMethods')),
-                        [new TypeScriptArrayExpression($this->buildMethodRoutes($action))],
-                        [$this->buildParameters(Arr::last($controller->actions))],
-                    ),
+                    $controller->getTransformedName(),
+                    $constNode
                 ),
-                LaravelControllerReference::controller($controller->class),
-                $location,
+                LaravelControllerReference::controller($controller),
+                $controller->getTransformedLocation(),
             ),
             new Transformed(
-                TypeScriptOperator::export(new TypeScriptNamespace($controllerName, [
-                    TypeScriptOperator::export(new TypeScriptAlias('Request', $types['request'] ?? new TypeScriptObject([]))),
-                    TypeScriptOperator::export(new TypeScriptAlias('Response', $types['response'] ?? new TypeScriptObject([]))),
-                ])),
-                LaravelControllerReference::types($controller->class),
-                $location,
-            ),
-        ];
-    }
-
-    /** @return array<Transformed> */
-    protected function buildResourceController(
-        RouteController $controller,
-        LaravelController $laravelController,
-    ): array {
-        if (empty($controller->actions)) {
-            return [];
-        }
-
-        $controllerName = Arr::last($laravelController->location);
-        $location = array_slice($laravelController->location, 0, -1);
-
-        $actionProperties = [];
-
-        foreach ($controller->actions as $actionName => $action) {
-            $paramsType = $this->buildParameters($action);
-
-            $actionProperties[] = new TypeScriptProperty(
-                $actionName,
-                new TypeScriptCallExpression(
-                    new TypeScriptReference(LaravelControllerReference::supportItem('createActionWithMethods')),
-                    [new TypeScriptArrayExpression($this->buildMethodRoutes($action))],
-                    [$paramsType],
-                ),
-            );
-        }
-
-        $constNode = TypeScriptVariableDeclaration::const(
-            $controllerName,
-            TypeScriptOperator::as(
-                new TypeScriptObject($actionProperties),
-                new TypeScriptIdentifier('const'),
-            ),
-        );
-
-        $subnamespaces = [];
-
-        foreach ($controller->actions as $actionName => $action) {
-            $types = $this->resolveControllerMethod($laravelController, $action->methodName);
-
-            $namespaceName = ReservedWords::isReserved($actionName) ? "_{$actionName}" : $actionName;
-
-            $subnamespaces[] = TypeScriptOperator::export(new TypeScriptNamespace($namespaceName, [
-                TypeScriptOperator::export(new TypeScriptAlias('Request', $types['request'] ?? new TypeScriptObject([]))),
-                TypeScriptOperator::export(new TypeScriptAlias('Response', $types['response'] ?? new TypeScriptObject([]))),
-            ]));
-        }
-
-        return [
-            new Transformed(
-                $constNode,
-                LaravelControllerReference::controller($controller->class),
-                $location,
-                true,
-                $this->writer,
-            ),
-            new Transformed(
-                new TypeScriptNamespace($controllerName, types: [], children: $subnamespaces),
-                LaravelControllerReference::types($controller->class),
-                $location,
-                true,
-                $this->writer,
+                $typesNode,
+                LaravelControllerReference::types($controller),
+                $controller->getTransformedLocation(),
             ),
         ];
     }
@@ -278,8 +239,7 @@ class LaravelControllerTransformedProvider extends LaravelRouterTransformedProvi
         return $controller->methods[$methodName] = $result;
     }
 
-    /** @return array<TypeScriptRaw> */
-    protected function buildMethodRoutes(RouteControllerAction $action): array
+    protected function buildActionCallExpression(RouteControllerAction $action): TypeScriptCallExpression
     {
         $methodPriorities = [
             'get' => 0,
@@ -298,25 +258,28 @@ class LaravelControllerTransformedProvider extends LaravelRouterTransformedProvi
 
         $methods = Arr::sort($methods, fn (string $method) => $methodPriorities[$method]);
 
-        return array_map(
+        $methodRoutes = new TypeScriptArrayExpression(array_map(
             fn (string $method) => new TypeScriptRaw("{ method: '{$method}', url: '{$action->url}' }"),
             $methods,
-        );
-    }
-
-    protected function buildParameters(RouteControllerAction $action): TypeScriptNode
-    {
-        if (empty($action->parameters)) {
-            return new TypeScriptUndefined();
-        }
-
-        return new TypeScriptObject(array_map(
-            fn (array $param) => new TypeScriptProperty(
-                $param['name'],
-                new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
-                isOptional: $param['optional'],
-            ),
-            $action->parameters,
         ));
+
+        $typeParameters = empty($action->parameters)
+            ? []
+            : [
+                new TypeScriptObject(array_map(
+                    fn (array $param) => new TypeScriptProperty(
+                        $param['name'],
+                        new TypeScriptUnion([new TypeScriptString(), new TypeScriptNumber()]),
+                        isOptional: $param['optional'],
+                    ),
+                    $action->parameters,
+                )),
+            ];
+
+        return new TypeScriptCallExpression(
+            new TypeScriptReference(LaravelControllerReference::supportItem('createActionWithMethods')),
+            [$methodRoutes],
+            $typeParameters,
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\References;
 
+use Spatie\LaravelTypeScriptTransformer\LaravelControllers\LaravelController;
 use Spatie\TypeScriptTransformer\References\Reference;
 
 final class LaravelControllerReference implements Reference
@@ -35,13 +36,13 @@ final class LaravelControllerReference implements Reference
         return new static('support', $name);
     }
 
-    public static function controller(string $controllerClass): static
+    public static function controller(LaravelController $controller): static
     {
-        return new static($controllerClass);
+        return new static($controller->routeController->class);
     }
 
-    public static function types(string $controllerClass): static
+    public static function types(LaravelController $controller): static
     {
-        return new static($controllerClass, 'types');
+        return new static($controller->routeController->class, 'types');
     }
 }

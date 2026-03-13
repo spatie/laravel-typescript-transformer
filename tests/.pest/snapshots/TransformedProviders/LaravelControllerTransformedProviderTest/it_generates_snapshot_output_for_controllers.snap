@@ -1,23 +1,23 @@
 // controllers/index.ts
-export namespace InvokableController {
-export type Request = object;
-export type Response = object;
-}
 type ActionFunction<P extends RouteParams | undefined> = P extends undefined ? (options?: RouteOptions) => ActionResult : (params: P, options?: RouteOptions) => ActionResult;
 type ActionResult = RouteDefinition & {
 url: string,
 };
 type ActionWithMethods<P extends RouteParams | undefined, M extends string> = ActionFunction<P> & { [K in M]: ActionFunction<P> };
-export const InvokableController = createActionWithMethods<undefined>([{ method: 'get', url: 'invokable' }, { method: 'head', url: 'invokable' }])
+export const InvokableController = createActionWithMethods([{ method: 'get', url: 'invokable' }, { method: 'head', url: 'invokable' }])
+export namespace InvokableController {
+export type Request = object;
+export type Response = object;
+}
 export type MethodRoute = {
 method: string,
 url: string,
 };
 export type QueryParams = Record<string, string | number | boolean | null | undefined | (string | number | boolean)[]>;
 export const ResourceController = {
-index: createActionWithMethods<undefined>([{ method: 'get', url: 'resource' }, { method: 'head', url: 'resource' }]),
-create: createActionWithMethods<undefined>([{ method: 'get', url: 'resource/create' }, { method: 'head', url: 'resource/create' }]),
-store: createActionWithMethods<undefined>([{ method: 'post', url: 'resource' }]),
+index: createActionWithMethods([{ method: 'get', url: 'resource' }, { method: 'head', url: 'resource' }]),
+create: createActionWithMethods([{ method: 'get', url: 'resource/create' }, { method: 'head', url: 'resource/create' }]),
+store: createActionWithMethods([{ method: 'post', url: 'resource' }]),
 show: createActionWithMethods<{
 resource: string | number,
 }>([{ method: 'get', url: 'resource/{resource}' }, { method: 'head', url: 'resource/{resource}' }]),
