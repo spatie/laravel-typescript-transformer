@@ -1,18 +1,3 @@
-const routes = {
-    "resource.create": "resource/create",
-    "resource.store": "resource",
-    "resource.show": "resource/{resource}",
-    "resource.edit": "resource/{resource}/edit",
-    "resource.update": "resource/{resource}",
-    "resource.destroy": "resource/{resource}",
-    "home": "/",
-    "pricing": "pricing",
-    "blog": "blog",
-    "blog.show": "blog/{slug}",
-    "projects.show": "{project}/errors",
-    "occurrences.show": "errors/{error}/{errorOccurrence}",
-    "users.show": "users/{id}"
-}
 type RouteParameters = {
 'resource.create': never,
 'resource.store': never,
@@ -59,4 +44,19 @@ if (absolute) {
 }
 
 return url;
+}
+const routes = {
+    "resource.create": "resource/create",
+    "resource.store": "resource",
+    "resource.show": "resource/{resource}",
+    "resource.edit": "resource/{resource}/edit",
+    "resource.update": "resource/{resource}",
+    "resource.destroy": "resource/{resource}",
+    "home": "/",
+    "pricing": "pricing",
+    "blog": "blog",
+    "blog.show": "blog/{slug}",
+    "projects.show": "{project}/errors",
+    "occurrences.show": "errors/{error}/{errorOccurrence}",
+    "users.show": "users/{id}"
 }
