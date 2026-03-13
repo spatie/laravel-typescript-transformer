@@ -1,0 +1,11 @@
+type DataWithAttributes = {
+plain: string,
+onlyDataHidden: string,
+mapped_output: string,
+output_name: string,
+lazyProperty?: string,
+optionalProperty?: string,
+lazyAndOptionalProperty?: string | number,
+customLazyProperty: undefined | string,
+nullableProperty: string | null,
+};
