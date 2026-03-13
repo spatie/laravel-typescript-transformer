@@ -193,7 +193,7 @@ TS
                     return [];
                 }
 
-                if ($entity->invokable && ($action = Arr::first($entity->actions))) {
+                if ($entity->invokable && ($action = Arr::first($entity->actions)) && $action->name) {
                     return [$action];
                 }
 

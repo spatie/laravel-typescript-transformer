@@ -4,7 +4,7 @@ namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
 use Illuminate\Support\Arr;
 use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\ActionNameResolver;
-use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\StrippedActionNameResolver;
+use Spatie\LaravelTypeScriptTransformer\ActionNameResolvers\DefaultActionNameResolver;
 use Spatie\LaravelTypeScriptTransformer\Actions\GenerateControllerSupportAction;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveLaravelControllerMethodAction;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
@@ -48,26 +48,21 @@ class LaravelControllerTransformedProvider extends LaravelRouterTransformedProvi
 
     protected ResolveLaravelControllerMethodAction $resolveLaravelControllerMethodAction;
 
-    protected GenerateControllerSupportAction $generateSupportAction;
-
     protected Writer $writer;
 
     /**
      * @param array<RouteFilter> $filters
-     * @param array<string> $controllerDirectories
      * @param array<string>|null $routeDirectories
      */
     public function __construct(
         protected string $location = 'controllers',
-        protected ActionNameResolver $actionNameResolver = new StrippedActionNameResolver(),
+        protected ActionNameResolver $actionNameResolver = new DefaultActionNameResolver(),
         array $filters = [],
-        protected array $controllerDirectories = [],
         ResolveRouteCollectionAction $resolveRouteCollectionAction = new ResolveRouteCollectionAction(),
         ?array $routeDirectories = null,
         protected LaravelControllersCollection $controllersCollection = new LaravelControllersCollection(),
+        protected GenerateControllerSupportAction $generateSupportAction = new GenerateControllerSupportAction(),
     ) {
-        $this->generateSupportAction = new GenerateControllerSupportAction();
-
         parent::__construct(
             resolveRouteCollectionAction: $resolveRouteCollectionAction,
             includeRouteClosures: false,
@@ -89,11 +84,6 @@ class LaravelControllerTransformedProvider extends LaravelRouterTransformedProvi
             transpilePhpStanAction: $actions->transpilePhpStanTypeToTypeScriptNodeAction,
             transpilePhpTypeAction: $actions->transpilePhpTypeNodeToTypeScriptNodeAction,
         );
-    }
-
-    public function directoriesToWatch(): array
-    {
-        return array_merge(parent::directoriesToWatch(), $this->controllerDirectories);
     }
 
     /** @return array<Transformed> */
