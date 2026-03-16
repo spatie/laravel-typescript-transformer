@@ -66,9 +66,9 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
             );
         }
 
-        if (! empty($mapNodes) && $mapNodes[0]->getArgument('output') !== null) {
+        if (! empty($mapNodes)) {
             $property->name = new TypeScriptIdentifier(
-                $this->resolveOutputName($mapNodes[0]->getArgument('output'), $propertyName)
+                $this->resolveOutputName($mapNodes[0]->getArgument('output') ?? $mapNodes[0]->getArgument('input'), $propertyName)
             );
         }
 
