@@ -7,8 +7,6 @@ use Illuminate\Console\Command;
 use Spatie\LaravelTypeScriptTransformer\Support\LaravelConsoleLogger;
 use Spatie\TypeScriptTransformer\Enums\RunnerMode;
 use Spatie\TypeScriptTransformer\Runners\Runner;
-use Spatie\TypeScriptTransformer\Support\Loggers\MultiLogger;
-use Spatie\TypeScriptTransformer\Support\Loggers\RayLogger;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfig;
 
 class TransformTypeScriptCommand extends Command
