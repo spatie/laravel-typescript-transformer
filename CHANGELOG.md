@@ -2,6 +2,15 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 3.0.2 - 2026-03-16
+
+### What's fixed
+
+- Fixed incorrect namespace and non-existent class in `typescript:install` command stub (#69)
+  - `Spatie\TypeScriptTransformer\Laravel\TypeScriptTransformerApplicationServiceProvider` → `Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceProvider`
+  - `NamespaceWriter` → `GlobalNamespaceWriter`
+  
+
 ## 3.0.1 - 2026-03-16
 
 ### What's Changed
