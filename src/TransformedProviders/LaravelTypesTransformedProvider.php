@@ -100,11 +100,11 @@ class LaravelTypesTransformedProvider implements TransformedProvider
             new TypeScriptAlias(
                 new TypeScriptGeneric(
                     new TypeScriptIdentifier('LengthAwarePaginatorInterface'),
-                    [new TypeScriptIdentifier('T')],
+                    [new TypeScriptIdentifier('TKey'), new TypeScriptIdentifier('TValue')],
                 ),
                 new TypeScriptGeneric(
                     new TypeScriptReference(new ClassStringReference(LengthAwarePaginator::class)),
-                    [new TypeScriptIdentifier('T')],
+                    [new TypeScriptIdentifier('TKey'), new TypeScriptIdentifier('TValue')],
                 ),
             ),
             new ClassStringReference(LengthAwarePaginatorInterface::class),
@@ -172,11 +172,11 @@ class LaravelTypesTransformedProvider implements TransformedProvider
             new TypeScriptAlias(
                 new TypeScriptGeneric(
                     new TypeScriptIdentifier('CursorPaginatorInterface'),
-                    [new TypeScriptIdentifier('T')],
+                    [new TypeScriptIdentifier('TKey'), new TypeScriptIdentifier('TValue')],
                 ),
                 new TypeScriptGeneric(
                     new TypeScriptReference(new ClassStringReference(CursorPaginator::class)),
-                    [new TypeScriptIdentifier('T')],
+                    [new TypeScriptIdentifier('TKey'), new TypeScriptIdentifier('TValue')],
                 ),
             ),
             new ClassStringReference(CursorPaginatorInterface::class),
