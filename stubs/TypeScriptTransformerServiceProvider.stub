@@ -6,8 +6,8 @@ use Spatie\TypeScriptTransformer\Formatters\PrettierFormatter;
 use Spatie\TypeScriptTransformer\Transformers\AttributedClassTransformer;
 use Spatie\TypeScriptTransformer\Transformers\EnumTransformer;
 use Spatie\TypeScriptTransformer\TypeScriptTransformerConfigFactory;
-use Spatie\TypeScriptTransformer\Writers\NamespaceWriter;
-use Spatie\TypeScriptTransformer\Laravel\TypeScriptTransformerApplicationServiceProvider as BaseTypeScriptTransformerServiceProvider;
+use Spatie\TypeScriptTransformer\Writers\GlobalNamespaceWriter;
+use Spatie\LaravelTypeScriptTransformer\TypeScriptTransformerApplicationServiceProvider as BaseTypeScriptTransformerServiceProvider;
 
 class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServiceProvider
 {
@@ -17,7 +17,7 @@ class TypeScriptTransformerServiceProvider extends BaseTypeScriptTransformerServ
             ->transformer(AttributedClassTransformer::class)
             ->transformer(EnumTransformer::class)
             ->watchDirectories(app_path())
-            ->writer(new NamespaceWriter(resource_path('types/generated.d.ts')))
+            ->writer(new GlobalNamespaceWriter(resource_path('types/generated.d.ts')))
             ->formatter(PrettierFormatter::class);
     }
 }
