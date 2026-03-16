@@ -2,6 +2,15 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 3.0.1 - 2026-03-16
+
+### What's Changed
+
+- Fix generic arity mismatch in paginator interface type aliases
+- Inject Runner via handle() method for testability
+- Add tests for TransformTypeScriptCommand
+- Update publishable service provider stub path
+
 ## 3.0.0 - 2026-03-13
 
 This is a major release built on top of the completely rewritten [spatie/typescript-transformer v3](https://github.com/spatie/typescript-transformer/releases/tag/3.0.0).
