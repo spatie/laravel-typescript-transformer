@@ -17,7 +17,7 @@ class TransformTypeScriptCommand extends Command
 
     public $description = 'Transforms PHP to TypeScript';
 
-    public function handle(): int
+    public function handle(Runner $runner): int
     {
         if (! app()->has(TypeScriptTransformerConfig::class)) {
             $this->error('Please, first publish the TypeScriptTransformerServiceProvider and configure it.');
@@ -25,13 +25,8 @@ class TransformTypeScriptCommand extends Command
             return self::FAILURE;
         }
 
-        $runner = new Runner();
-
         return $runner->run(
-            logger: new MultiLogger([
-                new RayLogger(),
-                new LaravelConsoleLogger($this),
-            ]),
+            logger: new LaravelConsoleLogger($this),
             config: app(TypeScriptTransformerConfig::class),
             mode: match ([$this->option('watch'), $this->option('worker')]) {
                 [false, false] => RunnerMode::Direct,
