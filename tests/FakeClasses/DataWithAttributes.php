@@ -7,6 +7,7 @@ use Spatie\LaravelData\Attributes\MapName;
 use Spatie\LaravelData\Attributes\MapOutputName;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Lazy;
+use Spatie\LaravelData\Mappers\SnakeCaseMapper;
 use Spatie\LaravelData\Optional;
 use Spatie\TypeScriptTransformer\Attributes\Hidden;
 
@@ -25,6 +26,8 @@ class DataWithAttributes extends Data
         public string $withMapOutputName,
         #[MapName(input: 'input_name', output: 'output_name')]
         public string $withMapNameBothSet,
+        #[MapName(SnakeCaseMapper::class)]
+        public string $withMapNameInputOnly,
         public string|Lazy $lazyProperty,
         public string|Optional $optionalProperty,
         public string|int|Lazy|Optional $lazyAndOptionalProperty,
