@@ -2,6 +2,15 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 3.0.3 - 2026-03-17
+
+### What's Changed
+
+* Fix method name in TypeScriptTransformerServiceProvider configuration by @dominosaurs in https://github.com/spatie/laravel-typescript-transformer/pull/71
+* fix: laravel data MapName attribute output by @bensherred in https://github.com/spatie/laravel-typescript-transformer/pull/70
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/3.0.2...3.0.3
+
 ## 3.0.2 - 2026-03-16
 
 ### What's fixed
