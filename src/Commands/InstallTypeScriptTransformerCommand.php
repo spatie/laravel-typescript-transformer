@@ -46,7 +46,7 @@ class InstallTypeScriptTransformerCommand extends Command
 
     protected function registerServiceProvider(string $namespace): void
     {
-        $configFile = version_compare($this->laravel->version(), '11.0.0', '>=') ?
+        $configFile = file_exists(base_path('bootstrap/providers.php')) ?
             base_path('bootstrap/providers.php') :
             config_path('app.php');
 
