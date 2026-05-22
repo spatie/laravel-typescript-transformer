@@ -45,6 +45,9 @@ if (absolute) {
 
 return url;
 }
+export function routeExists(name: string): name is keyof RouteParameters {
+return Object.prototype.hasOwnProperty.call(routes, name);
+}
 const routes = {
     "resource.create": "resource/create",
     "resource.store": "resource",

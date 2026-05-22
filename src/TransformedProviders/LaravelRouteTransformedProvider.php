@@ -149,10 +149,25 @@ TS
             true,
         );
 
+        $transformedRouteExistsFunction = new Transformed(
+            new TypeScriptFunctionDeclaration(
+                new TypeScriptIdentifier('routeExists'),
+                [
+                    new TypeScriptParameter('name', new TypeScriptIdentifier('string')),
+                ],
+                new TypeScriptRaw('name is keyof RouteParameters'),
+                new TypeScriptRaw('return Object.prototype.hasOwnProperty.call(routes, name);')
+            ),
+            LaravelRouteReference::existsFunction(),
+            [],
+            true,
+        );
+
         return [
             $transformedRoutes,
             $transformedRouteParameters,
             $transformedRouteFunction,
+            $transformedRouteExistsFunction,
         ];
     }
 
