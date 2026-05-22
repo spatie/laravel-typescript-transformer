@@ -128,6 +128,10 @@ class LaravelRouteTransformedProvider extends LaravelRouterTransformedProvider
                 new TypeScriptString(),
                 new TypeScriptRaw(
                     <<<'TS'
+if (! Object.prototype.hasOwnProperty.call(routes, name)) {
+    throw new Error(`Route "${name}" not found.`);
+}
+
 let url: string = '/' + routes[name];
 
 if (parameters) {
