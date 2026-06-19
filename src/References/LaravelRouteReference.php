@@ -36,8 +36,8 @@ final class LaravelRouteReference implements Reference
         return new self('function');
     }
 
-    public static function hasFunction(): self
+    public static function hasRouteFunction(): self
     {
-        return new self('hasFunction');
+        return new self('hasRouteFunction');
     }
 }

@@ -162,7 +162,7 @@ TS
                 new TypeScriptRaw('name is keyof RouteParameters'),
                 new TypeScriptRaw('return Object.prototype.hasOwnProperty.call(routes, name);')
             ),
-            LaravelRouteReference::hasFunction(),
+            LaravelRouteReference::hasRouteFunction(),
             [],
             true,
         );
