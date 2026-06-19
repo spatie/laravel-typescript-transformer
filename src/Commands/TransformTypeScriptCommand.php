@@ -18,7 +18,7 @@ class TransformTypeScriptCommand extends Command
     public function handle(Runner $runner): int
     {
         if (! app()->has(TypeScriptTransformerConfig::class)) {
-            $this->error('Please, first publish the TypeScriptTransformerServiceProvider and configure it.');
+            $this->error('TypeScript Transformer is not configured. Run `php artisan typescript:install` first.');
 
             return self::FAILURE;
         }
