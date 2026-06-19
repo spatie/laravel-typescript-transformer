@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\ControllerRouteFilter;
 use Spatie\LaravelTypeScriptTransformer\RouteFilters\NamedRouteFilter;
@@ -50,7 +51,7 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->controllers)->toHaveCount(1);
             expect($routes->closures)->toBeEmpty();
 
-            $actions = $routes->controllers[ResourceController::class]->actions;
+            $actions = Arr::keyBy($routes->controllers[ResourceController::class]->actions, 'methodName');
 
             expect($actions)->toHaveCount(1);
             expect($actions['update'])->toBeInstanceOf(RouteControllerAction::class);
@@ -74,7 +75,9 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($controller->invokable)->toBeTrue();
             expect($controller->class)->toBe(InvokableController::class);
 
-            $action = $controller->actions['__invoke'];
+            expect($controller->actions)->toHaveCount(1);
+
+            $action = Arr::keyBy($controller->actions, 'methodName')['__invoke'];
             expect($action)->toBeInstanceOf(RouteControllerAction::class);
             expect($action->methodName)->toBe('__invoke');
             expect($action->url)->toBe('invokable');
@@ -96,6 +99,8 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($controller->invokable)->toBeFalse();
             expect($controller->class)->toBe(ResourceController::class);
             expect($controller->actions)->toHaveCount(7);
+
+            $controller->actions = Arr::keyBy($controller->actions, 'methodName');
 
             expect($controller->actions['index'])->toBeInstanceOf(RouteControllerAction::class);
             expect($controller->actions['index']->methodName)->toBe('index');
@@ -210,9 +215,11 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($routes->closures['Closure(simple)']->name)->toBe('simple');
 
             $invokableController = $routes->controllers[InvokableController::class];
-            expect($invokableController->actions['__invoke']->name)->toBe('invokable');
+            $invokableActions = Arr::keyBy($invokableController->actions, 'methodName');
+            expect($invokableActions['__invoke']->name)->toBe('invokable');
 
             $resourceController = $routes->controllers[ResourceController::class];
+            $resourceController->actions = Arr::keyBy($resourceController->actions, 'methodName');
 
             expect($resourceController->actions['index']->name)->toBe('resource.index');
             expect($resourceController->actions['show']->name)->toBe('resource.show');
@@ -221,6 +228,43 @@ it('can resolve all possible routes', function (Closure $route, Closure $expecta
             expect($resourceController->actions['store']->name)->toBe('resource.store');
             expect($resourceController->actions['edit']->name)->toBe('resource.edit');
             expect($resourceController->actions['destroy']->name)->toBe('resource.destroy');
+        },
+    ];
+    yield 'multiple routes sharing an invokable controller' => [
+        function (Router $router) {
+            $router->get('terms', InvokableController::class)->name('terms');
+            $router->get('privacy', InvokableController::class)->name('privacy');
+            $router->get('cookies', InvokableController::class)->name('cookies');
+        },
+        function (RouteCollection $routes) {
+            expect($routes->controllers)->toHaveCount(1);
+
+            $controller = $routes->controllers[InvokableController::class];
+
+            expect($controller->invokable)->toBeTrue();
+            expect($controller->actions)->toHaveCount(3);
+            expect(Arr::pluck($controller->actions, 'name'))
+                ->toBe(['terms', 'privacy', 'cookies']);
+            expect(Arr::pluck($controller->actions, 'url'))
+                ->toBe(['terms', 'privacy', 'cookies']);
+        },
+    ];
+    yield 'multiple routes sharing a controller method' => [
+        function (Router $router) {
+            $router->get('en/about', [ResourceController::class, 'show'])->name('en.about');
+            $router->get('nl/about', [ResourceController::class, 'show'])->name('nl.about');
+        },
+        function (RouteCollection $routes) {
+            expect($routes->controllers)->toHaveCount(1);
+
+            $controller = $routes->controllers[ResourceController::class];
+
+            expect($controller->invokable)->toBeFalse();
+            expect($controller->actions)->toHaveCount(2);
+            expect(Arr::pluck($controller->actions, 'methodName'))
+                ->toBe(['show', 'show']);
+            expect(Arr::pluck($controller->actions, 'name'))
+                ->toBe(['en.about', 'nl.about']);
         },
     ];
 });
@@ -261,7 +305,7 @@ it('can filter out certain routes', function (
                     ResourceController::class,
                     InvokableController::class,
                 ]);
-            expect($routes->controllers[ResourceController::class]->actions)
+            expect(Arr::keyBy($routes->controllers[ResourceController::class]->actions, 'methodName'))
                 ->toHaveCount(5)
                 ->toHaveKeys([
                     'show',
@@ -310,7 +354,7 @@ it('can filter out certain routes', function (
                     ResourceController::class,
                     InvokableController::class,
                 ]);
-            expect($routes->controllers[ResourceController::class]->actions)
+            expect(Arr::keyBy($routes->controllers[ResourceController::class]->actions, 'methodName'))
                 ->toHaveCount(5)
                 ->toHaveKeys([
                     'show',
