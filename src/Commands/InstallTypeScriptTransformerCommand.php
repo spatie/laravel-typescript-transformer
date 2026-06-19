@@ -25,7 +25,7 @@ class InstallTypeScriptTransformerCommand extends Command
 
     protected function registerServiceProvider(): void
     {
-        $providersPath = $this->laravel->getBootstrapProvidersPath();
+        $providersPath = base_path('bootstrap/providers.php');
 
         $contents = file_exists($providersPath) ? file_get_contents($providersPath) : '';
 
