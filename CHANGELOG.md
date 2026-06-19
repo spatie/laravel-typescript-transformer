@@ -2,6 +2,59 @@
 
 All notable changes to `typescript-transformer` will be documented in this file
 
+## 3.3.0 - 2026-06-19
+
+A round of fixes for the route generator and the `typescript:install` command.
+
+### Fix provider config file detection in install command (#84)
+
+`typescript:install` failed for apps created before Laravel 11 that later upgraded, because those apps have no `bootstrap/providers.php` file and the command assumed it was always present. The command now detects the correct provider registration target instead of relying on that file existing.
+
+Thanks @TheoGibbons.
+
+### Fix silent failure registering the service provider in `typescript:install` (#89)
+
+`typescript:install` injected the service provider into `bootstrap/providers.php` with a `str_replace` anchored on a literal fully qualified class string, so it silently did nothing (while still reporting success) whenever that file used short, imported class names (#86). It now uses Laravel's `ServiceProvider::addProviderToBootstrapFile()`, which evaluates the file rather than matching raw text and therefore handles every layout, and it reports an honest error when registration is not possible.
+
+The misleading `typescript:transform` message now points users to `typescript:install`, and the unreachable namespace rewriting was dropped to keep the command simple.
+
+Thanks @rubenvanassche.
+
+### Keep routes that share a controller in the route generator (#90)
+
+Routes were indexed by controller identity (invokable class, or `class@method`), so any two routes pointing at the same endpoint overwrote each other and only the last one survived in the generated TypeScript (#87). This silently dropped `Route::inertia()` pages and the per-locale routes registered by localized routing packages. `RouteController::$actions` is now a flat list of route bindings instead of a map keyed by method, so the resolver appends every route and the helper emits all named routes.
+
+Thanks @rubenvanassche.
+
+### Throw on missing route in generated `route()`, add `hasRoute` predicate (#85)
+
+Calling the generated `route()` with an unknown name returned the literal string `/undefined` (an accidental result of `'/' + undefined`), which silently produced broken URLs in `href` attributes and elsewhere. `route()` now throws when the name is not in the manifest, matching Laravel's server-side `RouteNotFoundException` and surfacing the bug at the call site (spatie/typescript-transformer#151).
+
+A new exported `hasRoute(name): name is keyof RouteParameters` predicate is emitted alongside `route()`, mirroring Laravel's `Route::has()`. It is the safe way to guard the throw for callers that work with dynamic names, such as locale routing wrappers or runtime-composed strings.
+
+```ts
+// before: could silently produce /undefined
+const url = route(maybeName);
+
+// after
+if (hasRoute(maybeName)) {
+    const url = route(maybeName);
+}
+
+```
+For well-typed TypeScript this is impossible to hit, since the parameter type already constrains the name. Dynamic-name callers should guard with `hasRoute()` first.
+
+Thanks @rubenvanassche.
+
+### What's Changed
+
+* Fix provider config file detection in install command by @TheoGibbons in https://github.com/spatie/laravel-typescript-transformer/pull/84
+* Throw on missing route in generated `route()`, add `hasRoute` predicate by @rubenvanassche in https://github.com/spatie/laravel-typescript-transformer/pull/85
+* Fix silent failure registering the service provider in typescript:install by @rubenvanassche in https://github.com/spatie/laravel-typescript-transformer/pull/89
+* Keep routes that share a controller in the route generator by @rubenvanassche in https://github.com/spatie/laravel-typescript-transformer/pull/90
+
+**Full Changelog**: https://github.com/spatie/laravel-typescript-transformer/compare/3.2.0...3.3.0
+
 ## 3.2.0 - 2026-05-08
 
 ### Narrow the controller `method` type and prioritize HTTP methods (#83)
@@ -10,6 +63,7 @@ Fixes #76. The generated `RouteDefinition` and `MethodRoute` types previously de
 
 ```ts
 router.visit(SomeController.update(), { data: { ... } });
+
 
 ```
 just works. On top of that, `LaravelControllerTransformedProvider` accepts a new `httpMethodsPriority` argument that doubles as both filter and sort order. Methods absent from the list are dropped from the output, and the ones that survive are emitted in list order. The default is `['get', 'post', 'put', 'patch', 'delete']`, so HEAD and OPTIONS (auto-registered by Laravel for every GET route, never invoked by SPAs) are no longer emitted.
@@ -30,6 +84,7 @@ If your `config/data.php` looked like this:
 ],
 
 
+
 ```
 The transformer was silently ignoring it and emitting camelCase keys. The processor now resolves property output names through `DataConfig::getDataClass()`, so the global mapper, class level, and property level `MapName` / `MapOutputName` attributes all flow through one source. Thanks @rubenvanassche.
 
@@ -40,6 +95,7 @@ The transformer was silently ignoring it and emitting camelCase keys. The proces
 ```ts
 route('home');         // '/'  (was '//')
 route('help.index');   // '/help' (unchanged)
+
 
 
 ```
@@ -59,6 +115,7 @@ Passing an absolute path resulted in the output directory being concatenated in 
 
 ```
 resources/js/generated/home/user/project/resources/types/generated.d.ts
+
 
 
 ```
