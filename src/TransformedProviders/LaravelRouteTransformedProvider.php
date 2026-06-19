@@ -2,7 +2,6 @@
 
 namespace Spatie\LaravelTypeScriptTransformer\TransformedProviders;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Spatie\LaravelTypeScriptTransformer\Actions\ResolveRouteCollectionAction;
 use Spatie\LaravelTypeScriptTransformer\References\LaravelRouteReference;
@@ -185,20 +184,8 @@ TS
     {
         return collect(array_merge($collection->controllers, $collection->closures))
             ->flatMap(function (RouteController|RouteClosure $entity) {
-                if ($entity instanceof RouteClosure && $entity->name) {
-                    return [$entity];
-                }
-
                 if ($entity instanceof RouteClosure) {
-                    return [];
-                }
-
-                if ($entity->invokable && ($action = Arr::first($entity->actions)) && $action->name) {
-                    return [$action];
-                }
-
-                if ($entity->invokable) {
-                    return [];
+                    return $entity->name ? [$entity] : [];
                 }
 
                 return collect($entity->actions)

@@ -55,36 +55,19 @@ class ResolveRouteCollectionAction
                 continue;
             }
 
-            if ($route->getActionMethod() === $route->getControllerClass()) {
-                $controllers[$controllerClass] = new RouteController(
-                    class: $controllerClass,
-                    file: $controllerFile,
-                    invokable: true,
-                    actions: [
-                        '__invoke' => new RouteControllerAction(
-                            methodName: '__invoke',
-                            parameters: $this->resolveRouteParameters($route),
-                            methods: $route->methods,
-                            url: $this->resolveUrl($route),
-                            name: $route->getName(),
-                        ),
-                    ],
-                );
-
-                continue;
-            }
+            $invokable = $route->getActionMethod() === $route->getControllerClass();
 
             if (! array_key_exists($controllerClass, $controllers)) {
                 $controllers[$controllerClass] = new RouteController(
                     class: $controllerClass,
                     file: $controllerFile,
-                    invokable: false,
+                    invokable: $invokable,
                     actions: [],
                 );
             }
 
-            $controllers[$controllerClass]->actions[$route->getActionMethod()] = new RouteControllerAction(
-                methodName: $route->getActionMethod(),
+            $controllers[$controllerClass]->actions[] = new RouteControllerAction(
+                methodName: $invokable ? '__invoke' : $route->getActionMethod(),
                 parameters: $this->resolveRouteParameters($route),
                 methods: $route->methods,
                 url: $this->resolveUrl($route),
