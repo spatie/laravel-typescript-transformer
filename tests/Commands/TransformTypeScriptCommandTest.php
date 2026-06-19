@@ -12,7 +12,7 @@ it('shows an error when the config is not published', function () {
     app()->forgetInstance(TypeScriptTransformerConfig::class);
 
     $this->artisan('typescript:transform')
-        ->expectsOutputToContain('Please, first publish the TypeScriptTransformerServiceProvider and configure it.')
+        ->expectsOutputToContain('TypeScript Transformer is not configured.')
         ->assertExitCode(1);
 });
 
