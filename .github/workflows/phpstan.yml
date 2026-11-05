@@ -4,11 +4,13 @@ on:
   push:
     paths:
       - '**.php'
+      - 'composer.json'
       - 'phpstan.neon.dist'
       - 'phpstan-baseline.neon'
   pull_request:
     paths:
       - '**.php'
+      - 'composer.json'
       - 'phpstan.neon.dist'
       - 'phpstan-baseline.neon'
 

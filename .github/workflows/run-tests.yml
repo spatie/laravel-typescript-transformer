@@ -6,26 +6,17 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest ]
-        php: [ 8.2, 8.3, 8.4, 8.5 ]
-        laravel: [ 11.*, 12.*, 13.* ]
+        php: [ 8.3, 8.4, 8.5, 8.6 ]
+        laravel: [ 12.*, 13.* ]
         dependency-version: [ prefer-lowest, prefer-stable ]
         include:
-          - laravel: 11.*
-            testbench: 9.*
           - laravel: 12.*
             testbench: 10.*
           - laravel: 13.*
             testbench: 11.*
-        exclude:
-          - php: 8.2
-            laravel: 12.*
-          - php: 8.2
-            laravel: 13.*
-          - php: 8.5
-            laravel: 11.*
 
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
@@ -51,6 +42,14 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
+
+      - name: Show runtime and test dependencies
+        run: |
+          php --version
+          composer show laravel/framework
+          composer show orchestra/testbench
+          composer show pestphp/pest
+          composer show phpunit/phpunit
 
       - name: Execute tests
         run: vendor/bin/pest
