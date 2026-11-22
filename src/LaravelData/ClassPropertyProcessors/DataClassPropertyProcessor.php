@@ -47,7 +47,7 @@ class DataClassPropertyProcessor implements ClassPropertyProcessor
         ?TypeNode $annotation,
         TypeScriptProperty $property
     ): ?TypeScriptProperty {
-        if (! empty($phpPropertyNode->getAttributes(Hidden::class)) && ! empty($phpPropertyNode->getAttributes(DataHidden::class))) {
+        if (! empty($phpPropertyNode->getAttributes(Hidden::class)) || ! empty($phpPropertyNode->getAttributes(DataHidden::class))) {
             return null;
         }
 

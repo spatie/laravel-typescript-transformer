@@ -1,6 +1,5 @@
 type DataWithAttributes = {
 plain: string,
-onlyDataHidden: string,
 mapped_output: string,
 output_name: string,
 with_map_name_input_only: string,
